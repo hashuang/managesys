@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,9 +85,32 @@ DATABASES = {
         'PASSWORD': 'qinggang',
         'HOST': '10.30.0.152',
         'PORT': '1521',
+    },
+    'own': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'maksim',
+        'USER': 'changxin',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '1521',
+    },
+    'mes': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'mesdb',
+        'USER': 'BD_query',
+        'PASSWORD': 'BD_query',
+        'HOST': '10.30.0.17',
+        'PORT': '1521',
+    },
+    'l2': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'qgil2db',
+        'USER': 'BD_query',
+        'PASSWORD': 'BD_query',
+        'HOST': '10.20.0.22',
+        'PORT': '1521',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
