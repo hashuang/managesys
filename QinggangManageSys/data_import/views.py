@@ -6,8 +6,9 @@ from django.http import HttpResponse,HttpResponseRedirect
 from . import util
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import auth
+from django.contrib.auth.models import User
 
-# Create your views here.
+
 def home(req):
 	sqlVO = util.create_ora_select_sqlVO(models.TransRelation,{'own_uid':'changxin'})
 	# sqlVO={}
@@ -18,9 +19,66 @@ def home(req):
 	rs=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	print(rs)
 	#util.get_primary_key(models.TransRelation)
-	return render(req,'index.html',{'title':"青特钢大数据项目组数据管理"})
+	return render(req,'index.html',{'title':"青特钢大数据项目组数据管理",'username':'changxin'})
+
+def data_import(req):
+	filepath = 'F:\\development\\python\\data_exchange\\数据迁移中间表1.xlsx'
+	util.batch_import_data(filepath,models.TransRelation)
+	records=models.TransRelation.objects.direct_select_query_sqlVO({'sql':'select * from {0}'.format(models.TransRelation._meta.db_table)})
+	if records !=None:
+		return render(req,'index.html',{'title':"导入结果",'records':records})
+	else:
+		return HttpResponseRedirect("/index")
+	
+#用户登录
+def user_login(req):
+	return render(req,'login.html',{'title':'数据管理系统-用户登录'})
 
 
+def process_user_login(req):
+	print('process_user_login')
+	username = req.POST.get('username', '')
+	password = req.POST.get('password', '')
+	print("username:{0},password:{1}".format(username,password))
+	user = auth.authenticate(username=username, password=password)
+	if user is not None and user.is_active:
+		print(user.__dict__)
+		print(user.is_active)
+		# Correct password, and the user is marked "active"
+		auth.login(req, user)
+		# Redirect to a success page.
+		return HttpResponseRedirect("/index")
+	else:
+		# Show an error page
+		return HttpResponseRedirect("/login")
+#用户注册
+def user_register(req):
+	print('load_user_register_page')
+	#urForm=forms.RegisterForm()
+	return render(req,'register.html', {'title': '用户注册'})
+
+def process_user_register(req):
+	print("进行注册处理")
+	if req.method == 'POST':
+		form = UserCreationForm(req.POST)
+		print('是POST')
+		if form.is_valid():
+			print('校验是否通过')
+			print(form)
+			new_user = form.save()
+			print(new_user)
+			return HttpResponseRedirect("/login")
+	else:
+		print('here2')
+		form = UserCreationForm()
+	return render(req,'register.html')
+
+#用户登出
+def user_logout(req):
+	auth.logout(req)
+	return HttpResponseRedirect('/login')
+
+	
 def search(req):
 
 	return render(req,'index.html',{'title':"青特钢大数据项目组数据管理--检索结果"})
@@ -28,20 +86,6 @@ def search(req):
 def about(req):
 
 	return render(req,'about.html',{'title':"关于项目"})
-
-
-def data_import(req):
-	filepath = 'F:\\development\\python\\data_exchange\\数据迁移中间表1.xlsx'
-	util.batch_import_data(filepath,models.TransRelation)
-	records=models.TransRelation.objects.direct_select_query_sqlVO({'sql':'select * from {0}'.format(models.TransRelation._meta.db_table)})
-
-	# for record in records:
-	# 	print(record.own_col)
-	# print(records)
-	# for r in records:
-	# 	print(r.from_uid)
-	return render(req,'index.html',{'title':"导入结果",'records':records})
-
 
 def transfer():
 	tr = models.TransRelation.objects.all()
@@ -53,8 +97,8 @@ def transfer():
 		sql_insert= 'INSERT INTO {0} (own_col) values({1})'.format(each.own_table,each.own_col)
 
 def contact(req):
-	cform = forms.ContactForm()
-	return render(req,'contact_form.html', {'form': cform})
+	form = forms.ContactForm()
+	return render(req,'contact_form.html', {'form': form})
 
 
 def process_contact(req):
@@ -73,8 +117,8 @@ def process_contact(req):
 
 
 def file(req):
-	fform = forms.UploadFileForm()
-	return render(req,'form.html', {'form': fform})   
+	form = forms.UploadFileForm()
+	return render(req,'form.html', {'form': form})   
 
 def upload_file(req):
 	print(os.path.abspath('/'))
@@ -105,48 +149,8 @@ def success(req):
 
 
 
-def process_user_register(req):
-	print("进行注册处理")
-	if req.method == 'POST':
-		form = UserCreationForm(req.POST)
-		if form.is_valid():
-			print(form)
-			new_user = form.save()
-			print(new_user)
-			return HttpResponseRedirect("/success/")
-	else:
-		print('here2')
-		form = UserCreationForm()
-	return render(req,'form.html', {'form': form})
 
 
-def user_register(req):
-	print('here_user_register')
-	#urForm=forms.RegisterForm()
-	form=UserCreationForm()
-
-	return render(req,'form.html', {'form': form})
 
 
-def user_login(req):
-	print('user_login')
-	form = forms.LoginForm()
-	return render(req,'form.html', {'form': form})
-
-
-def process_user_login(req):
-	print('process_user_login')
-	username = req.POST.get('username', '')
-	password = req.POST.get('password', '')
-	user = auth.authenticate(username=username, password=password)
-	print(user.__dict__)
-	print(user.is_active)
-	if user is not None and user.is_active:
-		# Correct password, and the user is marked "active"
-		auth.login(req, user)
-		# Redirect to a success page.
-		return HttpResponseRedirect("/success")
-	else:
-		# Show an error page
-		return HttpResponseRedirect("/accounts/login")
 	

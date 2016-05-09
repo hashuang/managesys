@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block username %}{% if username %}{{ username }}{% endif %}{% endblock %}
 
 {% block content %}
+    <form action='/data_import'>
+        <input type='submit' value="导入" > </input>
+    </form>
     <ul>
         {% for record in records %}
             <li>{{ record.from_uid }}</li>
         {% endfor %}
     </ul>
-    <form action='/data_import'>
-        <input type='submit' value="导入" > </input>
-    </form>
 {% endblock %}
