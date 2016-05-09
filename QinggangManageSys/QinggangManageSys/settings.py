@@ -96,7 +96,7 @@ DATABASES = {
     },
     'mes': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'mesdb',
+        'NAME': 'mesdb2',#sid:mesdb2;service:mesdb
         'USER': 'BD_query',
         'PASSWORD': 'BD_query',
         'HOST': '10.30.0.17',
