@@ -8,3 +8,4 @@ class TransRelationAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(models.TransRelation,TransRelationAdmin)
+admin.site.register(models.CONVERTER)

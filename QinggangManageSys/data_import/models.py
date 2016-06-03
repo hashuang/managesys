@@ -26,7 +26,6 @@ class BaseManage(models.Manager):
 	#将结果返回为dict
 	def dictfetchall(seff,cursor):
 		columns = [col[0] for col in cursor.description]
-		print(columns)
 		return [
 	        dict(zip(columns, row))
 	        for row in cursor.fetchall()
@@ -40,12 +39,10 @@ class BaseManage(models.Manager):
 			cursor = connections[db_name].cursor()
 		else:
 			cursor = connection.cursor()
-		cursor.execute(sqlVO.get('sql'),sqlVO.get('vars'))
+		cursor.execute(sqlVO.get('sql'),sqlVO.get('vars',None))
 		return self.dictfetchall(cursor)
 
 	def direct_execute_query_sqlVO(self,sqlVO):
-		#如果是多数据库
-		#cursor = connections['my_db_alias'].cursor()
 		db_name=sqlVO.get('db_name')
 		if sqlVO.get('db_name')!=None:
 			cursor = connections[db_name].cursor()
@@ -54,14 +51,16 @@ class BaseManage(models.Manager):
 		cursor.execute(sqlVO.get('sql'),sqlVO.get('vars'))
 
 
+
 # Create your models here.
 class TransRelationManage(BaseManage):
 	def get_all_tr(self):
 		return self.all()
 
 
-
-
+class  CONVERTERManage(BaseManage):
+	def get_all_tr(self):
+		return self.all()
 
 class TransRelation(models.Model):
 	own_uid = models.CharField(max_length=200,blank=True)
@@ -96,6 +95,38 @@ class steel_price(models.Model):
 	lowest_price =models.FloatField(blank=True)
 	count = models.FloatField(blank=True)
 	count_price = models.FloatField(blank=True)
+
+
+class KR(models.Model):
+	steelNetWgt=models.FloatField(blank=True)#铁水净重(kg)
+	arriveWgt=models.FloatField(blank=True)#到站重量(kg)
+	leaveWgt=models.FloatField(blank=True)#出站重量(kg)
+	materialWgt=models.FloatField(blank=True)#备用加入量
+	slagCondenserWgt=models.FloatField(blank=True)#凝渣剂
+	compressedAirConsumption=models.FloatField(blank=True)#压缩空气用量
+	slagRemoveWgt=models.FloatField(blank=True)#扒渣量
+	n2GasConsumption=models.FloatField(blank=True)#N2用量
+
+class CONVERTER(models.Model):
+	heat_no=models.CharField(max_length=200,blank=True) 
+	steelWgt=models.FloatField(blank=True,null=True)#出钢量(t)
+	scrapWgt=models.FloatField(blank=True,null=True)#废钢
+	slagWgt=models.FloatField(blank=True,null=True)#渣钢
+
+	objects = CONVERTERManage()
+
+	def set_attr(self,**kwargs):
+		#print(kwargs.items())
+		for item in kwargs.items():
+			for each in item[1].items():
+				#print('{0}:{1}'.format(each[0],each[1]))
+				setattr(self,each[0],each[1])
+
+
+
+
+
+
 
 
 

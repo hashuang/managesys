@@ -36,11 +36,27 @@
         </div>
         <input type="submit" value="Submit">
     </form> -->
-    <form  action="/upload_file" method="post" >
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-            <input type="submit" value="Submit">
-        </table>
+    <!-- {% if form.is_multipart %}
+        <form enctype="multipart/form-data" method="post" action="/foo/">
+    {% else %}
+        <form method="post" action="/foo/">
+    {% endif %}
+        {{ form }}
+    </form> -->
+    {% if form.errors %}
+        
+            Please correct the error{{ form.errors|pluralize }} below.
+        
+    {% endif %}
+
+    <form  action="/upload_file" method="post" enctype="multipart/form-data">
+        {% csrf_token %} 
+        {{form}}
+                <div class="form-group row">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-secondary">Submit</button>
+            </div>
+        </div>
+  
     </form>
 {% endblock %}<html>

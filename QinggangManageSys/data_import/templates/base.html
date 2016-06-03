@@ -6,6 +6,7 @@
     <script type="text/javascript" src="/static/libs/jquery/jquery-3.0.0.js"></script>
     <script type="text/javascript" src="/static/libs/jquery/jquery.cookie.js"></script>
     <script type="text/javascript" src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/libs/echarts/echarts.js"></script>
  
 
     <link rel="stylesheet" type="text/css" href="/static/libs/bootstrap/css/bootstrap.min.css" />
@@ -27,7 +28,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">数据迁移<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="/data_import">导入中间表</a></li>
-                            <li><a href="/file">上传文件</a></li>
+                            <li><a href="/upload_file">上传文件</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -41,10 +42,10 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="userInfo">{% block username %}{% endblock %}<span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="userInfo">{% block username %}{% if user %}{{ user.username }}{% endif %}{% endblock %}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="javascript:void(0)" id="userPsw">修改密码</a></li>
-                            <li><a href="javascript:void(0)" id="checkOut">退出</a></li>
+                            <li><a href="/modify_password" id="userPsw">修改密码</a></li>
+                            <li><a href="/logout" id="checkOut">退出</a></li>
                         </ul>
                     </li>
                 </ul>   
@@ -55,5 +56,9 @@
     <div class="content" style="width: 95%; margin-left: auto;margin-right: auto">
         {% block content %}{% endblock %}
     </div> 
-
+<script type="text/javascript">
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    });
+</script>
 

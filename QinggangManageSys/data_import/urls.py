@@ -7,19 +7,20 @@ urlpatterns = [
     url(r'^index', views.home),
     #用户登录
     url(r'^login',views.user_login),
-    url(r'^process_login',views.process_user_login),
     #用户注册
     url(r'^register', views.user_register),
-    url(r'^process_register',views.process_user_register),
-    #用户注册
-    url(r'^logout',views.user_logout)
-    url(r'^search', views.search),
-    url(r'^about', views.about),
+    #用户登出
+    url(r'^logout',views.user_logout),
+    #修改密码
+    url(r'^modify_password', views.modify_password),
+  
     url(r'^data_import', views.data_import),
-    url(r'^contact', views.contact),
-    url(r'^process_contact',views.process_contact),
-    url(r'^file',views.file),
+    #上传
     url(r'^upload_file',views.upload_file),
+    #重置密码
+    url(r'^reset_password',views.reset_password),
     url(r'^success',views.success),
-   
+    #
+    url(r'^ajaxtest',views.ajaxtest),
+    url(r'^json',views.loadjson),
 ]

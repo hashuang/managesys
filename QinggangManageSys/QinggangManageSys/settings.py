@@ -31,8 +31,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.auth',#the core of the authentication framework
+    'django.contrib.contenttypes',#allows permissions to be associated with models you create.
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -42,11 +42,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',#manages sessions across requests.
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',# associates users with requests using sessions.
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',#logs users out of their other sessions after a password change.
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -76,7 +77,7 @@ WSGI_APPLICATION = 'QinggangManageSys.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    '1default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.oracle',
@@ -86,7 +87,7 @@ DATABASES = {
         'HOST': '10.30.0.152',
         'PORT': '1521',
     },
-    'own': {
+    'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'maksim',
         'USER': 'changxin',
@@ -154,6 +155,18 @@ STATIC_URL = '/static/'
 '''
 自己添加
 '''
+#@login_required,redirect
+LOGIN_URL = '/login'
+
 ADMINS = (
-    ('Caksim Cheng', 'ccxysfh1993@gmail.com'),
+    ('Maksim Cheng', 'ccxysfh1993@gmail.com'),
 )
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '525794244@qq.com'
+EMAIL_HOST_PASSWORD = 'chengcx1993Ysfh'
+DEFAULT_FROM_EMAIL = '525794244@qq.com'

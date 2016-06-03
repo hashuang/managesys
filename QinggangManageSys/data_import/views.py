@@ -1,91 +1,183 @@
-from django.shortcuts import render
 import os
-from . import models
-from . import forms
+import json
+
+from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
-from . import util
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db.models import F
+
+from . import models
+from data_import.forms import UploadFileForm
+from . import util
+from . import const
 
 
-def home(req):
+
+def home(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
 	sqlVO = util.create_ora_select_sqlVO(models.TransRelation,{'own_uid':'changxin'})
 	# sqlVO={}
 	# sqlVO['sql']='select * from db.tbaa011b t where rownum<=20'#'select * from qg_ift_user.if_bf1_l2l2_bfthroattemp t where rownum<=20'
 	#'select * from db.tbaa011b t where rownum<=20'#'SELECT * FROM data_import_transrelation WHERE rownum<=200';
 	# sqlVO['db_name']='mes'
 	print(sqlVO)
+	{'vars': {'slagWgt': 0}, 'sql': 'UODATE data_import_converter SET slagWgt=:slagWgt WHERE heat_no=1530501'}
 	rs=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	print(rs)
+	print("records:{records}".format(records=rs))
 	#util.get_primary_key(models.TransRelation)
-	return render(req,'index.html',{'title':"青特钢大数据项目组数据管理",'username':'changxin'})
+	return render(request,'index.html',{'title':"青特钢大数据项目组数据管理"})
 
-def data_import(req):
-	filepath = 'F:\\development\\python\\data_exchange\\数据迁移中间表1.xlsx'
+def data_import(request):
+	print('导入中间表')
+	filepath = 'F:\\development\\python\\data_exchange\\数据迁移中间表终极样式初稿.xlsx'
 	util.batch_import_data(filepath,models.TransRelation)
 	records=models.TransRelation.objects.direct_select_query_sqlVO({'sql':'select * from {0}'.format(models.TransRelation._meta.db_table)})
+	print("records:{records}".format(records=records))
+	records=None
+	model=None
 	if records !=None:
-		return render(req,'index.html',{'title':"导入结果",'records':records})
+		#通过表名反射相应的对象
+		i=1
+		for record in records:
+			sqlVO={}
+			class_name = record['OWN_TABLE']
+			print(class_name)
+			model = getattr(models,class_name)
+			table_name=model._meta.db_table
+			print(model)
+			#select所有的关联字段,获取所有的关联字段
+			if i==1:
+				sqlVO=util.get_all_uid_sqlVO(record)
+				#取所有的own-col
+				print(sqlVO)
+				uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+				for uid in uids:
+					attrdict={}
+					attrdict[record['OWN_UID']]=uid[record['FROM_UID'].upper()]
+					real_model=model()
+					real_model.set_attr(attrdict=attrdict)
+					real_model.save()
+					#real_model.save()
+				#print(type(uids))
+				i=i+1
+			#sql = 'SELECT '+record['FROM_COL']+' FROM '+record['FROM_TABLE']+' WHERE '+record['FROM_UID']
+			#取出所有的关联字段
+			print(table_name)
+			select_uid_sql = 'SELECT ' +record['OWN_UID'] +' FROM ' +table_name
+			sqlVO={'sql':select_uid_sql}
+			print(sqlVO)
+			own_uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+			for uid in own_uids:
+				own_uid_col=record['OWN_UID'].upper()
+				own_id=uid[own_uid_col]
+				sqlVO=util.get_value_by_uid_sqlVO(record,own_id)
+				value=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+				insert_value=util.change_value_2_insert(value)
+				dictVO={'record':record,'value':insert_value,'table_name':table_name,'own_id':own_id}
+				sqlVO=util.create_update_by_uid_sqlVO(dictVO)
+				print(sqlVO)
+				models.BaseManage().direct_execute_query_sqlVO(sqlVO)
+			print(sqlVO)
+
+				#model.objects.filter(F(own_uid_col)=own_id).update(F(own_col)=insert_value)
+				#print(sqlVO)
+			print('################################################3')
+		return render(request,'index.html',{'title':"导入结果",'records':records})
 	else:
 		return HttpResponseRedirect("/index")
-	
+'''
+{'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)', 
+'FROM_COL': 'steelWgt', 'FROM_DEPT': '炼钢转炉', 'OWN_TABLE': 'CONVERTER
+'OWN_COL': 'steelWgt', 'CLASSIFICATION': '出钢量', 'REMARKS': '0', 'FROM_SYSTEM': 'MES',}
+'''
 #用户登录
-def user_login(req):
-	return render(req,'login.html',{'title':'数据管理系统-用户登录'})
-
-
-def process_user_login(req):
-	print('process_user_login')
-	username = req.POST.get('username', '')
-	password = req.POST.get('password', '')
+def user_login(request):
+	print('用户登录')
+	contentVO={
+		'title':'用户登录',
+		'state':None
+	}
+	username = request.POST.get('username', '')
+	password = request.POST.get('password', '')
 	print("username:{0},password:{1}".format(username,password))
 	user = auth.authenticate(username=username, password=password)
 	if user is not None and user.is_active:
 		print(user.__dict__)
 		print(user.is_active)
 		# Correct password, and the user is marked "active"
-		auth.login(req, user)
+		auth.login(request, user)
 		# Redirect to a success page.
+		contentVO['state']='success'
 		return HttpResponseRedirect("/index")
-	else:
-		# Show an error page
-		return HttpResponseRedirect("/login")
-#用户注册
-def user_register(req):
-	print('load_user_register_page')
-	#urForm=forms.RegisterForm()
-	return render(req,'register.html', {'title': '用户注册'})
+	print(contentVO['state'])
+	return render(request,'login.html',contentVO)
 
-def process_user_register(req):
+#用户注册
+def user_register(request):
 	print("进行注册处理")
-	if req.method == 'POST':
-		form = UserCreationForm(req.POST)
-		print('是POST')
-		if form.is_valid():
-			print('校验是否通过')
-			print(form)
-			new_user = form.save()
-			print(new_user)
-			return HttpResponseRedirect("/login")
-	else:
-		print('here2')
-		form = UserCreationForm()
-	return render(req,'register.html')
+	contentVO={
+		'title':'用户注册',
+		'state':None
+	}
+	if request.method == 'POST':
+		password = request.POST.get('password', '')
+		repeat_password = request.POST.get('repeat_password', '')
+		if password == '' or repeat_password == '':
+			contentVO['state'] = 'empty'
+		elif password != repeat_password:
+			contentVO['state'] = 'repeat_error'
+		else:
+			username = request.POST.get('username', '')
+			if User.objects.filter(username=username):
+				contentVO['state'] = 'user_exist'
+			else:
+				new_user = User.objects.create_user(username=username, password=password,email=request.POST.get('email', ''))
+				new_user.save()
+				contentVO['state'] = 'success'
+				return HttpResponseRedirect('/login')
+	print(contentVO['state'])
+	return render(request,'register.html',contentVO)
 
 #用户登出
-def user_logout(req):
-	auth.logout(req)
+def user_logout(request):
+	auth.logout(request)
 	return HttpResponseRedirect('/login')
 
-	
-def search(req):
+#修改密码
+@login_required()
+def modify_password(request):
+	print("修改密码")
+	contentVO={
+		'title':'修改密码',
+		'state':None
+	}
+	user=request.user
+	print('用户名：{0}'.format(user.username))
+	oldpassword = request.POST.get('oldpassword','')
+	if user.check_password(oldpassword):
+		newpassword = request.POST.get('newpassword', '')
+		repeat_newpassword = request.POST.get('repeat_newpassword', '')
+		if newpassword == '' or repeat_newpassword == '':
+			contentVO['state']='empty'
+		elif newpassword != repeat_newpassword:
+			contentVO['state'] = 'repeat_error'
+		else:
+			user.set_password(newpassword)
+			user.save()
+			contentVO['state'] = 'success'
+	print(contentVO['state'])
+	return render(request,'modify_password.html',contentVO)
 
-	return render(req,'index.html',{'title':"青特钢大数据项目组数据管理--检索结果"})
 
-def about(req):
+#重置密码
+def reset_password(request):
+	return HttpResponseRedirect("/index")
 
-	return render(req,'about.html',{'title':"关于项目"})
 
 def transfer():
 	tr = models.TransRelation.objects.all()
@@ -95,58 +187,57 @@ def transfer():
 		util.BaseManage.generic_query(sql_select)
 		#先通过uid获取元素
 		sql_insert= 'INSERT INTO {0} (own_col) values({1})'.format(each.own_table,each.own_col)
-
-def contact(req):
-	form = forms.ContactForm()
-	return render(req,'contact_form.html', {'form': form})
-
-
-def process_contact(req):
-    if req.method == 'POST':
-        form = forms.ContactForm(req.POST)
-        if form.is_valid():
-            print('收到并通过验证')
-            form = forms.ContactForm(
-           		initial={'subject': 'I love your site!'}
-        	)
-    else:
-        form = forms.ContactForm(
-           initial={'subject': 'I love your site!'}
-        )
-    return render(req,'contact_form.html', {'form': form})
-
-
-def file(req):
-	form = forms.UploadFileForm()
-	return render(req,'form.html', {'form': form})   
-
-def upload_file(req):
-	print(os.path.abspath('/'))
-	print(req.path)
-	if req.method == 'POST':
-		form = forms.UploadFileForm(req.POST, req.FILES)
+from QinggangManageSys.settings import BASE_DIR
+def upload_file(request):
+	if request.method == 'POST':
+		form = UploadFileForm(request.POST, request.FILES)
 		if form.is_valid():
-			# print(req.FILES['file'].content_type)
-			# handle_uploaded_file(req.FILES['file'])
-			print(form.__dict__)
+			handle_uploaded_file(request.FILES['file'])
 			return HttpResponseRedirect('/success')
 	else:
-		form = forms.UploadFileForm()
-	return render(req,'form.html', {'form': form})
+		form = UploadFileForm()
+		print(form.__dict__)
+	return render(request,'form.html', {'form': form})
 
 def handle_uploaded_file(f):
-    destination = open(os.path.abspath('.')+'\\name.txt', 'wb+')
-    print(os.path.abspath('.')+'\\name.txt')
-    print('begin')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
+	filename=f._name
+	filetype=filename.split('.')[-1]
+	print(filetype)
+	filepath=BASE_DIR +"\\data_import\\media\\upload\\"+filename
+	with open(filepath, 'wb+') as destination:
+		for chunk in f.chunks():
+			destination.write(chunk)
 
 
-def success(req):
-	return render(req,'success.html')
+def success(request):
+	return render(request,'success.html')
+from django.core.mail import send_mail
+def ajaxtest(request):
+	filepath=BASE_DIR +"\\data_import\\media\\jsonfile\\"
+	print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+	contentVO={
+		'title':'ajaxtest请求结果',
+		'state':'success'
+	}
+	#send_mail('Subject here', 'Here is the message.', '525794244@qq.com',
+    #['525794244@qq.com'], fail_silently=False)
+	with open(filepath+'world.json','r')as f:
+		data=json.load(f)
+	contentVO['greet']="hello world"
+	print(type(data.get("features")))
+	return HttpResponse(json.dumps(contentVO), content_type='application/json')
 
+def loadjson(request):
+	filepath=BASE_DIR +"\\data_import\\static\\libs\\echarts\\map\\"
+	contentVO={
 
+		'title':'json请求结果',
+		'state':'success'
+	}
+	with open(filepath+'aweibo.json','r',encoding='utf-8')as f:
+		data=json.load(f)
+	contentVO['data']=data
+	return HttpResponse(json.dumps(contentVO), content_type='application/json')
 
 
 
