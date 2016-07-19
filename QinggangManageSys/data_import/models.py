@@ -62,18 +62,22 @@ class  CONVERTERManage(BaseManage):
 	def get_all_tr(self):
 		return self.all()
 
+class SALEManage(BaseManage):
+	def get_all_tr(self):
+		return self.all()
+
 class TransRelation(models.Model):
-	own_uid = models.CharField(max_length=200,blank=True)
-	classification = models.CharField(max_length=200,blank=True)
-	real_meaning = models.CharField(max_length=200,blank=True)
-	own_table = models.CharField(max_length=200,blank=True)
-	own_col = models.CharField(max_length=200,blank=True)
-	from_uid = models.CharField(max_length=200)
-	from_system = models.CharField(max_length=200,blank=True)
-	from_dept = models.CharField(max_length=200,blank=True)
-	from_table = models.CharField(max_length=200,blank=True)
-	from_col = models.CharField(max_length=200,blank=True)
-	remarks = models.CharField(max_length=200,blank=True)
+	own_uid = models.CharField(max_length=200,blank=True)#关联字段在自己设计数据库的字段名
+	classification = models.CharField(max_length=200,blank=True)#分类
+	real_meaning = models.CharField(max_length=200,blank=True)#物理意义
+	own_table = models.CharField(max_length=200,blank=True)#自己设计的表名
+	own_col = models.CharField(max_length=200,blank=True)#需要迁移字段在自己设计数据库的表中的字段名
+	from_uid = models.CharField(max_length=200)#关联字段在原数据库中的字段名
+	from_system = models.CharField(max_length=200,blank=True)#需要迁移字段所在的系统
+	from_dept = models.CharField(max_length=200,blank=True)#需要迁移字段所在部分
+	from_table = models.CharField(max_length=200,blank=True)#需要迁移字段在原数据库的表名
+	from_col = models.CharField(max_length=200,blank=True)#需要迁移字段在原数据库表的列名
+	remarks = models.CharField(max_length=200,blank=True)#备注
  	
 	def set_attr(self,**kwargs):
 		#print(kwargs.items())
@@ -125,8 +129,39 @@ class CONVERTER(models.Model):
 
 
 
+class Sale(models.Model):
+	order_weight =models.FloatField(blank=True)#订单重量
+	order_baseprice =models.FloatField(blank=True)#订单金额
+	order_date = models.DateField()#CREATEDATE CY
+	
+	def set_attr(self,**kwargs):
+		#print(kwargs.items())
+		for item in kwargs.items():
+			for each in item[1].items():
+				#print('{0}:{1}'.format(each[0],each[1]))
+				setattr(self,each[0],each[1])
 
+	
+	objects = SALEManage()
 
+class external_eles(models.Model):
+	shipping_price =models.FloatField(blank=True)#海运费
+	scrap =models.FloatField(blank=True)#废钢
+	cooking_coal=models.FloatField(blank=True)#炼焦煤
+	iron_powder=models.FloatField(blank=True)#铁精粉
+	now_ore=models.FloatField(blank=True)#现矿
+	import_ore=models.FloatField(blank=True)#进口矿
+	now_date = models.DateField()#CREATEDATE CY
+	
+	def set_attr(self,**kwargs):
+		#print(kwargs.items())
+		for item in kwargs.items():
+			for each in item[1].items():
+				#print('{0}:{1}'.format(each[0],each[1]))
+				setattr(self,each[0],each[1])
+
+	
+	objects = SALEManage()
 
 
 

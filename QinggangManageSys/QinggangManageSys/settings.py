@@ -87,13 +87,21 @@ DATABASES = {
         'HOST': '10.30.0.152',
         'PORT': '1521',
     },
-    'default': {
+    'default2': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'maksim',
         'USER': 'changxin',
         'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '1521',
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'qinggang',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '3306',
     },
     'mes': {
         'ENGINE': 'django.db.backends.oracle',

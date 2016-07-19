@@ -20,15 +20,15 @@ def home(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	sqlVO = util.create_ora_select_sqlVO(models.TransRelation,{'own_uid':'changxin'})
+	#sqlVO = util.create_select_sqlVO(models.TransRelation,{'own_uid':'changxin'})
 	# sqlVO={}
 	# sqlVO['sql']='select * from db.tbaa011b t where rownum<=20'#'select * from qg_ift_user.if_bf1_l2l2_bfthroattemp t where rownum<=20'
 	#'select * from db.tbaa011b t where rownum<=20'#'SELECT * FROM data_import_transrelation WHERE rownum<=200';
 	# sqlVO['db_name']='mes'
-	print(sqlVO)
-	{'vars': {'slagWgt': 0}, 'sql': 'UODATE data_import_converter SET slagWgt=:slagWgt WHERE heat_no=1530501'}
-	rs=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	print("records:{records}".format(records=rs))
+	#print(sqlVO)
+	#{'vars': {'slagWgt': 0}, 'sql': 'UODATE data_import_converter SET slagWgt=:slagWgt WHERE heat_no=1530501'}
+	#rs=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#print("records:{records}".format(records=rs))
 	#util.get_primary_key(models.TransRelation)
 	return render(request,'index.html',{'title':"青特钢大数据项目组数据管理"})
 
@@ -38,14 +38,14 @@ def data_import(request):
 	util.batch_import_data(filepath,models.TransRelation)
 	records=models.TransRelation.objects.direct_select_query_sqlVO({'sql':'select * from {0}'.format(models.TransRelation._meta.db_table)})
 	print("records:{records}".format(records=records))
-	records=None
+	#records=None
 	model=None
 	if records !=None:
 		#通过表名反射相应的对象
 		i=1
 		for record in records:
 			sqlVO={}
-			class_name = record['OWN_TABLE']
+			class_name = record['own_table']
 			print(class_name)
 			model = getattr(models,class_name)
 			table_name=model._meta.db_table
@@ -56,9 +56,10 @@ def data_import(request):
 				#取所有的own-col
 				print(sqlVO)
 				uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+				print(uids)
 				for uid in uids:
 					attrdict={}
-					attrdict[record['OWN_UID']]=uid[record['FROM_UID'].upper()]
+					attrdict[record['own_uid']]=uid[record['from_uid'].upper()]
 					real_model=model()
 					real_model.set_attr(attrdict=attrdict)
 					real_model.save()
@@ -68,12 +69,12 @@ def data_import(request):
 			#sql = 'SELECT '+record['FROM_COL']+' FROM '+record['FROM_TABLE']+' WHERE '+record['FROM_UID']
 			#取出所有的关联字段
 			print(table_name)
-			select_uid_sql = 'SELECT ' +record['OWN_UID'] +' FROM ' +table_name
+			select_uid_sql = 'SELECT ' +record['own_uid'] +' FROM ' +table_name
 			sqlVO={'sql':select_uid_sql}
 			print(sqlVO)
 			own_uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 			for uid in own_uids:
-				own_uid_col=record['OWN_UID'].upper()
+				own_uid_col=record['own_uid'].lower()
 				own_id=uid[own_uid_col]
 				sqlVO=util.get_value_by_uid_sqlVO(record,own_id)
 				value=models.BaseManage().direct_select_query_sqlVO(sqlVO)
@@ -211,9 +212,10 @@ def handle_uploaded_file(f):
 
 def success(request):
 	return render(request,'success.html')
+
 from django.core.mail import send_mail
 def ajaxtest(request):
-	filepath=BASE_DIR +"\\data_import\\media\\jsonfile\\"
+	filepath=BASE_DIR +"\\data_import\\static\\libs\\echarts\\map\\"
 	print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 	contentVO={
 		'title':'ajaxtest请求结果',
@@ -234,7 +236,7 @@ def loadjson(request):
 		'title':'json请求结果',
 		'state':'success'
 	}
-	with open(filepath+'aweibo.json','r',encoding='utf-8')as f:
+	with open(filepath+'china.json','r',encoding='utf-8')as f:
 		data=json.load(f)
 	contentVO['data']=data
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')

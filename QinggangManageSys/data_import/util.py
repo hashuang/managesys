@@ -60,7 +60,7 @@ def create_select_condition(dictVO):
 	varlist=[]
 	whereCondition=" where "
 	for each in dictVO:
-		whereCondition+=each+'=:'+each+' and '
+		whereCondition+=each+'=%s'+' and '
 		varlist.append(dictVO[each])
 	whereCondition=whereCondition[:len(whereCondition)-1]+')'
 	print('{0}'.format(whereCondition))
@@ -115,8 +115,8 @@ def create_update_condition(dictVO,primary_key):
 	whereCondition=''
 	for each in dictVO:
 		if each==primary_key:
-			whereCondition=' where '+each+'=:'+each
-		setCondition+= each+'=:'+each+','
+			whereCondition=' where '+each+'=%s'
+		setCondition+= each+'=%s'+','
 		varlist.append(dictVO[each])
 	setCondition=setCondition[:len(setCondition)-1]
 	result['setCondition']=setCondition
@@ -136,6 +136,7 @@ def create_update_sqlVO(model,dictVO):
 		table_name = model._meta.db_table
 	sql='UPDATE '+table_name+' SET '+setCondition
 	return {'sql':sql,'vars':condition.get('vars')}
+
 #DELETE
 def create_delete_condition(dictVO,primary_key):
 	result={}
@@ -160,6 +161,45 @@ def create_delete_sqlVO(model,dictVO):
 		table_name = model._meta.db_table
 	sql='DELETE FROM '+table_name+ whereCondition
 	return {'sql':sql,'vars':condition.get('vars')}
+
+
+
+
+#由record和从自己设计的数据库里取出的数据own_uid去对应的数据库里取值并返回
+def get_all_uid_sqlVO(record):
+	sqlVO={}
+	select_uid_sql = 'SELECT ' +record['from_uid'] +' FROM ' +record['from_table']+' where rownum<10'
+	db_name=record['from_system'].lower()
+	sqlVO={'sql':select_uid_sql,'db_name':db_name}
+	return sqlVO
+
+
+def get_value_by_uid_sqlVO(record,own_id):
+	sqlVO={}
+	select_uid_sql = 'SELECT ' +record['from_col'] +' FROM ' +record['from_table']+' where '+record['from_uid']+'='+own_id
+	db_name=record['from_system'].lower()
+	sqlVO={'sql':select_uid_sql,'db_name':db_name}
+	return sqlVO
+
+def create_update_by_uid_sqlVO(dictVO):
+	sqlVO={}
+	#dictVO={'record':record,'value':insert_value,'table_name':table_name,'own_id':own_id}
+	record=dictVO['record']
+	print('dictVO:{0}'.format(dictVO))
+	print('record:{0}'.format(record))
+	select_uid_sql = 'UPDATE '+dictVO['table_name']+' SET ' +record['own_col'] +'=%s'+' WHERE '+ record['own_uid']+'='+dictVO['own_id']
+	sqlVO={'sql':select_uid_sql,'vars':[dictVO['value'][0][record['own_col'].upper()]]}
+	return sqlVO
+
+
+#多个数据组合到一起类型问题
+def change_value_2_insert(value):
+	return value
+
+
+
+
+
 '''
 我为oracle数据库专门写一个
 '''
@@ -209,7 +249,7 @@ def create_ora_select_sqlVO(model,dictVO):
 	print(sql)
 	return {'sql':sql,'vars':condition.get('vars')}
 
-	#update
+#update
 def create_ora_update_condition(dictVO,primary_key):
 	result={}
 	varlist=[]
@@ -271,33 +311,3 @@ def create_ora_delete_sqlVO(model,dictVO):
 	sql='DELETE FROM '+table_name+ whereCondition
 	return {'sql':sql,'vars':condition.get('vars')}
 
-
-
-#由record和从自己设计的数据库里取出的数据own_uid去对应的数据库里取值并返回
-def get_all_uid_sqlVO(record):
-	sqlVO={}
-	select_uid_sql = 'SELECT ' +record['FROM_UID'] +' FROM ' +record['FROM_TABLE']+' where rownum<10'
-	db_name=record['FROM_SYSTEM'].lower()
-	sqlVO={'sql':select_uid_sql,'db_name':db_name}
-	return sqlVO
-
-
-def get_value_by_uid_sqlVO(record,own_id):
-	sqlVO={}
-	select_uid_sql = 'SELECT ' +record['FROM_COL'] +' FROM ' +record['FROM_TABLE']+' where '+record['FROM_UID']+'='+own_id
-	db_name=record['FROM_SYSTEM'].lower()
-	sqlVO={'sql':select_uid_sql,'db_name':db_name}
-	return sqlVO
-
-def create_update_by_uid_sqlVO(dictVO):
-	sqlVO={}
-	#dictVO={'record':record,'value':insert_value,'table_name':table_name,'own_id':own_id}
-	record=dictVO['record']
-	select_uid_sql = 'UPDATE '+dictVO['table_name']+' SET ' +record['OWN_COL'] +'=:'+record['OWN_COL']+' WHERE '+ record['OWN_UID']+'='+dictVO['own_id']
-	sqlVO={'sql':select_uid_sql,'vars':{record['OWN_COL']:dictVO['value'][0][record['OWN_COL'].upper()]}}
-	return sqlVO
-
-
-#多个数据组合到一起类型问题
-def change_value_2_insert(value):
-	return value
