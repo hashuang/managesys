@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block content %}
+    <form action='/data_import'>
+        <input type='submit' value="导入" > </input>
+    </form>
+    <button onclick='functionDemo()'>功能测试</button>
+    <button onclick='anaDataLack()'>数据缺失分析</button>
+    <button onclick='ajaxtest()'>hello,测试ajax请求</button>
+     <button onclick='getjsondata()'>测试echarts绘图</button>
+    <ul>
+        {% for record in records %}
+            <li>{{ record.FROM_TABLE }}</li>
+        {% endfor %}
+    </ul>
+    <p>greet:<span id="result"></span></p>
+
+    <form  action="/data_import" method="post" enctype="multipart/form-data">
+        {% csrf_token %} 
+        <div class="form-group">
+            <div class="col-xs-12  ">
+                
+                <div class="input-group">
+                <label>工序</label>
+                    <select name="procedure"  class="procedurename">     
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group form-actions">
+            <div class="col-xs-4 col-xs-offset-0 ">
+                <button type="submit" class="btn btn-sm btn-info" ><span
+                        class="glyphicon glyphicon-off"></span> 迁移
+                </button>
+            </div>
+        </div>    
+    </form>
+    <!-- <form  action="/ana_data_lack" method="post" enctype="multipart/form-data">
+        {% csrf_token %}  -->
+        <div class="form-group">
+            <div class="col-xs-12  ">
+                
+                <div class="input-group">
+                <label>工序</label>
+                    <select name="procedure" id="procedure" class="procedurename">     
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group form-actions">
+            <div class="col-xs-4 col-xs-offset-0 ">
+                <button  class="btn btn-sm btn-info"  onclick="getFilepath()"><span
+                        class="glyphicon glyphicon-off"></span> 数据缺失分析
+                </button>
+            </div>
+        </div>    
+    <!-- </form> -->
+   <!--  <div id="filedownload"></div> -->
+    <div id="main1" style="width: 600px;height:400px;"></div>
+    <div id="main2" style="width: 600px;height:400px;"></div>
+    <div id="main3" style="width: 600px;height:400px;"></div>
+    <div id="main4" style="width: 600px;height:400px;"></div>
+    <div id="main5" style="width: 600px;height:400px;"></div>
+    <div id="main6" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript" src="/static/js/loadChart.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/vintage.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/dark.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/infographic.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/roma.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/shine.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/macarons.js"></script>
+<script type="text/javascript">
+    $(function(){
+        loadOption()
+    })
+	function ajaxtest(){
+		$.ajax({
+	        type: "post",
+	        url:  "/ajaxtest",
+	        data: {'greet':'hello'},
+	        error: function() {
+	            alert("404");
+	        },
+	        success: function(data) {
+	        	$('#result').html(data);
+	        	drawBarChart(data)
+	        	drawBrokenLineChart(data)
+	        	drawBarAndBrokenLineChart(data)
+	        	//drawMapChart(data)
+	        	drawBarAndBrokenLineBofItChart(data)
+        	}
+    	})
+	}
+	function getjsondata(){
+		$.ajax({
+	        type: "post",
+	        url:  "/json",
+	        data: {'greet':'hello'},
+	        error: function() {
+	            alert("404");
+	        },
+	        success: function(data) {
+	        	alert("叫一声佛祖，回头无岸")
+        	}
+    	})
+	}
+	function anaDataLack(){
+            $.ajax({
+                type: "post",
+                url:  "/ana_data_lack",
+                data: {'greet':'hello'},
+                error: function() {
+                    alert("404");
+                },
+                success: function(data) {
+                    console.log(data);
+                }
+            })
+        }
+
+        function functionDemo(){
+            $.ajax({
+                type: "post",
+                url:  "/functionDemo",
+                data: {'greet':'hello'},
+                error: function() {
+                    alert("404");
+                },
+                success: function(data) {
+                    console.log("叫一声佛祖，回头无岸");
+                    alert("叫一声佛祖，回头无岸");
+                }
+            })
+        }
+</script>
+
+{% endblock %}
+
+
