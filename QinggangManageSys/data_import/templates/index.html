@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block content %}
+    <form action='/data_import'>
+        <input type='submit' value="导入" > </input>
+    </form>
+    <button onclick='ajaxtest()'>hello</button>
+     <button onclick='getjsondata()'>json</button>
+    <ul>
+        {% for record in records %}
+            <li>{{ record.FROM_TABLE }}</li>
+        {% endfor %}
+    </ul>
+    <p>greet:<span id="result"></span></p>
+
+
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <div id="theme" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript" src="/static/js/loadChart.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/vintage.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/dark.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/infographic.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/roma.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/shine.js"></script>
+<script type="text/javascript" src="/static/libs/echarts/theme/macarons.js"></script>
+<script type="text/javascript">
+    drawChart()
+	
+
+	function ajaxtest(){
+		$.ajax({
+	        type: "post",
+	        url:  "/ajaxtest",
+	        data: {'greet':'hello'},
+	        error: function() {
+	            alert("404");
+	        },
+	        success: function(data) {
+	        	alert(data);
+	        	$('#result').html(data.greet);
+	        }
+    	});
+	}
+	function getjsondata(){
+		$.get('json', function (chinaJson) {
+            echarts.registerMap('china', chinaJson);
+            var chart = echarts.init(document.getElementById('main'));
+            chart.setOption({
+                series: [{
+                type: 'map',
+                map: 'china'
+                }]
+            });
+        });
+	}
+</script>
+
+{% endblock %}
+
+

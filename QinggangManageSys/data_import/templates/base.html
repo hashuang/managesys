@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <script type="text/javascript" src="/static/libs/jquery/jquery-3.0.0.js"></script>
+    <script type="text/javascript" src="/static/libs/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/libs/echarts/echarts.js"></script>
+ 
+
+    <link rel="stylesheet" type="text/css" href="/static/libs/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css" />
+</head>
+
+<body>
+
+    <nav id="ccc" class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/index">青特钢大数据项目组数据管理</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">数据迁移<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/data_import">导入中间表</a></li>
+                            <li><a href="/upload_file">上传文件</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目控制<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0)">项目进度</a></li>
+                            <li><a href="javascript:void(0)">查看任务</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="userInfo">{% block username %}{% if user %}{{ user.username }}{% endif %}{% endblock %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/modify_password" id="userPsw">修改密码</a></li>
+                            <li><a href="/logout" id="checkOut">退出</a></li>
+                        </ul>
+                    </li>
+                </ul>   
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="content" style="width: 95%; margin-left: auto;margin-right: auto">
+        {% block content %}{% endblock %}
+    </div> 
+
+<script type="text/javascript">
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    });
+</script>
+
