@@ -3,14 +3,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{% block title %}{% endblock %}</title>
-    <script type="text/javascript" src="/static/libs/jquery/jquery-3.0.0.js"></script>
-    <script type="text/javascript" src="/static/libs/jquery/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/libs/echarts/echarts.js"></script>
+    <script type="text/javascript" src="/static/data_import/libs/jquery/jquery-3.0.0.js"></script>
+    <script type="text/javascript" src="/static/data_import/libs/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/static/data_import/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
  
 
-    <link rel="stylesheet" type="text/css" href="/static/libs/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/static/data_import/libs/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/data_import/css/common.css" />
 </head>
 
 <body>
@@ -57,7 +57,7 @@
     <div class="content" style="width: 95%; margin-left: auto;margin-right: auto">
         {% block content %}{% endblock %}
     </div> 
-<script type="text/javascript" src="/static/js/loadParams.js"></script>
+<script type="text/javascript" src="/static/data_import/js/loadParams.js"></script>
 <script type="text/javascript">
     $.ajaxSetup({
         data: {csrfmiddlewaretoken: '{{ csrf_token }}' },

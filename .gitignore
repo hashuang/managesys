@@ -1,0 +1,15 @@
+.pydevproject
+.project
+.settings/*
+db.sqlite3
+css3template_blog/migrations/*
+css3template_blog/static/css3template_blog/css/unused/*
+css3template_blog/static/css3template_blog/images_before_compression/*
+computer_science_flash_cards/migrations/*
+*.pyc
+*.swp
+*.swo
+.idea
+.DS_Store
+myblog/.ropeproject/
+.ropeproject

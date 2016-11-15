@@ -21,7 +21,7 @@ def home(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'index.html',{'title':"青特钢大数据项目组数据管理"})
+	return render(request,'data_import/index.html',{'title':"青特钢大数据项目组数据管理"})
 
 #用户登录
 def user_login(request):
@@ -43,7 +43,7 @@ def user_login(request):
 		contentVO['state']='success'
 		return HttpResponseRedirect("/index")
 	print(contentVO['state'])
-	return render(request,'login.html',contentVO)
+	return render(request,'data_import/login.html',contentVO)
 
 #用户注册
 def user_register(request):
@@ -69,7 +69,7 @@ def user_register(request):
 				contentVO['state'] = 'success'
 				return HttpResponseRedirect('/login')
 	print(contentVO['state'])
-	return render(request,'register.html',contentVO)
+	return render(request,'data_import/register.html',contentVO)
 
 #用户登出
 def user_logout(request):
@@ -99,7 +99,7 @@ def modify_password(request):
 			user.save()
 			contentVO['state'] = 'success'
 	print(contentVO['state'])
-	return render(request,'modify_password.html',contentVO)
+	return render(request,'data_import/modify_password.html',contentVO)
 
 
 #重置密码
@@ -150,7 +150,7 @@ def upload_file(request):
 			util.import_multikey_file(filepath,models.TransRelationMultikey,procedurename)
 		else:
 			util.batch_import_data(filepath,models.TransRelation,procedurename)
-	return render(request,'form.html')
+	return render(request,'data_import/form.html')
 
 def handle_uploaded_file(f):
 	filename=f._name
@@ -171,7 +171,7 @@ def delete_records(request):
 	else:
 		records_sqlVO=util.create_delete_records_sqlVO(procedurename,models.TransRelation._meta.db_table)
 	result=models.BaseManage().direct_execute_query_sqlVO(records_sqlVO)
-	return render(request,'form.html')
+	return render(request,'data_import/form.html')
 
 def ana_data_lack(request):
 	if request.method == 'POST':
@@ -212,12 +212,12 @@ def ana_data_lack(request):
 		'filepath':filepath
 	}
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
-	# return render(request,'index.html',contentVO)
+	# return render(request,'data_import/index.html',contentVO)
 
 
 
 def success(request):
-	return render(request,'success.html')
+	return render(request,'data_import/success.html')
 
 # import xlrd
 # import pandas as pd
@@ -433,7 +433,7 @@ def data_import(request):
 			import_by_multikey(procedurename)
 		else:
 			import_by_single(procedurename)
-	return render(request,'index.html',{'title':"导入结果"})
+	return render(request,'data_import/index.html',{'title':"导入结果"})
 
 '''
 {'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)', 
