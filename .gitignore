@@ -10,5 +10,5 @@ data_import/migrations/*
 *.swo
 .idea
 .DS_Store
-managesys/.ropeproject/
+QinggangManageSys/.ropeproject/
 .ropeproject
