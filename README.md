@@ -19,9 +19,11 @@ sudo /etc/init.d/nginx restart
 ```
 
 ##fork代码并更新
-git  remote -v
-git remote add upstream  (rpo you fork from)
+```
+git  remote -v  
+git remote add upstream  (rpo you fork from)  
 
-git fetch upstream 
-git checkout master
-git merge upstream/master
+git fetch upstream   
+git checkout master  
+git merge upstream/master  
+```
