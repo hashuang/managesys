@@ -86,10 +86,10 @@ else:
             'PORT': '1521',
         }
     }
-    PROJECT_DIR = '/root/Env/blog/MyBlog'
-    MEDIA_ROOT = '/root/Env/blog/media/'
+    PROJECT_DIR = '/home/maksim/venv/qinggang/managesys'
+    MEDIA_ROOT = '/home/maksim/venv/qinggang/media/'
     MEDIA_URL = '/media/'
-    STATIC_ROOT = '/root/Env/blog/static/'
+    STATIC_ROOT = '/home/maksim/venv/qinggang/static/'
     STATIC_URL = '/static/'
 
     STATICFILES_DIRS = (
