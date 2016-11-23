@@ -10,11 +10,12 @@
 2.  git commit -m '本次提交的相关说明' //此时已经把代码同步到
 3.  git push remote branch //提交到某一远程仓库的某一分支
 4.  git checkout -- filename  //（文件回到最后一次 git commit 或者 git add 的状态即修改后还未add，则撤销到上一次commit的状态，及add之后继续做出修改，撤销到上一次add的状态）
-5.  git pull remote branch   
+5.  git pull remote branch   //仅指定分枝
+6.  git clone remote  //完整复制所有分支
 
 ##结合github进行协同工作
 ###fork
-github的fork是将别人的代码库（标记为origin）克隆到自己github的代码库（标记为clone-own），可以直接对自己账号的此仓库clone-own进行修改，但是此时的修改只影响自己账号下的clone-own，origin不发生改变；我们需要做3件事情. 
+github的fork是将别人的代码库（标记为origin）克隆到自己github的代码库（标记为clone-own），可以直接对自己账号的此仓库clone-own进行修改，但是此时的修改只影响自己账号下的clone-own，origin不发生改变；我们需要做3件事  
 1. 保持与origin仓库的同步
 ```
 git  remote -v  
