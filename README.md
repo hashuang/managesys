@@ -32,3 +32,10 @@ git merge upstream/master
 ```
 
 ##把scrapy框架嵌入django
+###两种方案
+1. 使用scrapyd部署scrapy
+[scrapyd部署说明](http://scrapyd.readthedocs.io/en/latest/install.html)
+2. 将scrapy嵌入django
+[可能会有效的参考](https://github.com/holgerd77/django-dynamic-scraper/blob/master/example_project/example_project/settings.py)
+ 
+
