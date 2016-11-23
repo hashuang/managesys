@@ -2,11 +2,14 @@
 ##使用Django搭建的数据管理系统
 ###提供数据整合，分析，以及分析结果展示
 
-###项目启动之前需要安装oracle client以连接oracle数据库，需要下载相应的basic和sdk，之后pip install cx_Oracle
-###http://www.oracle.com/technetwork/database/features/instant-client/index-097480.html
+###项目启动之前需要安装oracle  client以连接oracle数据库，需要下载相应的basic和sdk，并按照下载页面末端的安装步骤配置oracle client，然后才能成功执行。
+```
+pip install cx_Oracle
+```
+[oracle client下载及安装说明](http://www.oracle.com/technetwork/database/features/instant-client/index-097480.html)
 
 ###Setting up Django and your web server with uWSGI and nginx
-###https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
+[这是一个非常详尽的Django+uWSGI+nginx安装说明](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html)
 ```
 pip install uwsgi  
 将项目配置写入mysite_uwsgi.ini中，本项目参考uwsgi.ini  
@@ -27,3 +30,5 @@ git fetch upstream
 git checkout master  
 git merge upstream/master  
 ```
+
+##把scrapy框架嵌入django
