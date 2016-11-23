@@ -1,11 +1,10 @@
 // 条形图
 function drawBarChart(data){
 	var myChart = echarts.init(document.getElementById('main1'));
-        alert(data.greet)
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: 'ECharts 入门示例'
+                text: 'ECharts柱状图示例'
             },
             tooltip: {},
             legend: {
@@ -31,9 +30,6 @@ function drawBarChart(data){
 //折线图
 function drawBrokenLineChart(data){
     var myChart = echarts.init(document.getElementById('main2'));
-
-    
-
     option = {
         title: {
             text: '折线图堆叠'

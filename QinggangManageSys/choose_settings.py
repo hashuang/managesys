@@ -14,7 +14,8 @@ import os
 import platform
 
 node = platform.node()
-dev_machines = ('cheng-cx', )
+print(node)
+dev_machines = ('cheng-cx','cheng-cx.local' )
 
 if node in dev_machines:
     # folder My_Blog

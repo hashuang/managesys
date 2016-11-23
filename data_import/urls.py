@@ -30,5 +30,8 @@ urlpatterns = [
     url(r'^json',views.loadjson),
     #功能测试
     url(r'^delete',views.delete_records),
-    url(r'^functionDemo',views.functionDemo)
+    url(r'^functionDemo',views.functionDemo),
+
+    #echarts展示示例
+    url(r'^echarts',views.echarts),
 ]

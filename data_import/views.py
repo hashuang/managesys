@@ -560,3 +560,10 @@ def download_file(request):
 	response['Content-Type'] = 'application/octet-stream'
 	response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filepath)
 	return response
+
+
+def echarts(request):
+	print('echarts示例')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})

@@ -1,0 +1,29 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block content %}  
+   <!--  <div id="filedownload"></div> -->
+    <div id="main1" style="width: 600px;height:400px;"></div>
+    <div id="main2" style="width: 600px;height:400px;"></div>
+    <div id="main3" style="width: 600px;height:400px;"></div>
+    <div id="main4" style="width: 600px;height:400px;"></div>
+    <div id="main5" style="width: 600px;height:400px;"></div>
+    <div id="main6" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/vintage.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/dark.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/infographic.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/roma.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/shine.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/macarons.js"></script>
+<script type="text/javascript">
+	drawBarChart();
+ 	drawBrokenLineChart();
+ 	drawBarAndBrokenLineChart();
+ 	drawMapChart();
+</script>
+
+{% endblock %}
+
+
