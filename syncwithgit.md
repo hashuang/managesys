@@ -50,7 +50,7 @@ git merge upstream/master
 ```
 2. 同步后将自己的修改添加到clone-own
 3. 向origin提交pull request,等待origin审核
-can pull from differnt branch   
+
 ###网站基本框架的初始代码
 [网站基本框架的初始代码](https://github.com/ccxysfh/managesys)  
 ##操作流程，未测试
