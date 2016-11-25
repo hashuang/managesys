@@ -26,7 +26,7 @@ sudo /etc/init.d/nginx restart
 git  remote -v  
 git remote add upstream  (rpo you fork from)  
 
-git fetch upstream   
+git fetch upstream   //fetch会拉取远程仓库的所有分支
 git checkout master  
 git merge upstream/master  
 ```
