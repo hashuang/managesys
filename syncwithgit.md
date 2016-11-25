@@ -50,9 +50,9 @@ git merge upstream/master
 ```
 2. 同步后将自己的修改添加到clone-own
 3. 向origin提交pull request,等待origin审核
-can pull from differnt branch 
+can pull from differnt branch   
 ###网站基本框架的初始代码
-[网站基本框架的初始代码](https://github.com/ccxysfh/managesys)
+[网站基本框架的初始代码](https://github.com/ccxysfh/managesys)  
 ##操作流程，未测试
 1. 在本地新建空文件夹，并git init创建本地版本库
 2. 从[网站基本框架的初始代码](https://github.com/ccxysfh/managesys)fork仓库到自己账号，获取http或ssh地址rpourl
@@ -61,5 +61,5 @@ can pull from differnt branch
 ```
 
 ```
-5.  
+
 
