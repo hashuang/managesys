@@ -44,12 +44,20 @@ if node in dev_machines:
 else:
     DEBUG = True
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'qinggang',
-            'USER': 'root',
+        'l2own': {
+            'ENGINE': 'django.db.backends.oracle',
+            'NAME':'orcl',
+            'USER': 'qg_user',
             'PASSWORD': '123456',
             'HOST': '202.204.54.102',
+            'PORT': '1521',
+        },
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'managesys',
+            'USER': 'root',
+            'PASSWORD': '123',
+            'HOST': 'localhost',
             'PORT': '3306',
         },
         '1default': {
