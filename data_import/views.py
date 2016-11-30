@@ -567,3 +567,32 @@ def echarts(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
+
+	def num(request):
+	print("success")
+	#tableno=request.POST.get("tableno");
+	bookno=request.POST.get("bookno");
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)	
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result,ana_describe=num_descibe(scrapy_records)
+	contentVO['result']=ana_result
+	contentVO['describe']=ana_describe
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+from . import zhuanlu
+def lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
+	contentVO['procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
