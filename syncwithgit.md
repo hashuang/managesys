@@ -8,8 +8,8 @@
 
 ###git配置
 git有3个级别的配置，当前目录，global（用户主目录），system（系统级配置文件），优先级以版本库的配置最高，依次向下。
-1. git config --global user.name "changxin cheng"
-2. git config --global user.email ccxysfh1993@gmail.com
+1. git config --global user.name "xxxx xxx"
+2. git config --global user.email ccx@gmail.com
 3. git config --system alias.st stauts //设置指令别名，简化指令
 4. git config --system alias.ci commit
 5. git config --system alias.co checkout

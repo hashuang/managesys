@@ -24,7 +24,7 @@ class BaseManage(models.Manager):
 	queries that don’t map cleanly to models, or directly execute UPDATE, INSERT, or DELETE queries.
 	'''
 	#将结果返回为dict
-	def dictfetchall(seff,cursor):
+	def dictfetchall(self,cursor):
 		columns = [col[0] for col in cursor.description]
 		return [
 	        dict(zip(columns, row))
