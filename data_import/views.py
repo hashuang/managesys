@@ -528,7 +528,7 @@ def echarts(request):
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
-	def num(request):
+def num(request):
 	print("success")
 	#tableno=request.POST.get("tableno");
 	bookno=request.POST.get("bookno");
