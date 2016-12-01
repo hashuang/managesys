@@ -219,26 +219,6 @@ def ana_data_lack(request):
 def success(request):
 	return render(request,'data_import/success.html')
 
-# import xlrd
-# import pandas as pd
-# import numpy as np
-# def chart_data():
-# 	bof=pd.read_excel('E:\\qinggang\\reference\\7-21\\BOF-IT.xls')
-# 	bof1=bof.sort_values(by='MIRON_TEMP')
-# 	bof2=bof1[bof1>0].dropna(how='any').drop_duplicates()
-# 	bof3=bof2.MIRON_TEMP
-# 	L=np.percentile(bof3,25)-1.5*(np.percentile(bof3,75)-np.percentile(bof3,25))
-# 	U=np.percentile(bof3,75)+1.5*(np.percentile(bof3,75)-np.percentile(bof3,25))
-# 	bof4=bof3[(bof3<U)&(bof3>L)]
-# 	bc=(bof4.max()-bof4.min())/10
-# 	bof5=pd.cut(bof4,(bof4.max()-bof4.min())/bc)
-# 	bof6= pd.value_counts(bof5,sort=False)/bof4.count()
-# 	print(type(bof6))
-# 	numx=[ele for ele in bof6.index]
-# 	numy=[ele for ele in bof6]
-# 	return {'numx':numx,'numy':numy}
-# from django.core.mail import send_mail
-
 def ajaxtest(request):
 	filepath=BASE_DIR +"\\data_import\\static\\libs\\echarts\\map\\"
 	print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -258,26 +238,6 @@ def ajaxtest(request):
 	print(type(chinaJson.get("features")))
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
 
-def loadjson(request):
-	#filepath = 'E:\\qinggang\\reference\\7-21\\需要迁移数据各工序模板\\销售\\空间分布7-21.xlsx'
-	#util.import_multikey_file(filepath,models.TransRelationMultikey)
-	#filepath = 'E:\\qinggang\\reference\\7-21\\需要迁移数据各工序模板\\转炉\\转炉迁移表1(1).xlsx'
-	#util.batch_import_data(filepath,models.TransRelation)
-	return HttpResponseRedirect("/index")
-
-# def insert_uid_data(uids):
-# 	for uid in uids:
-# 		sqlVO=util.insert_uid_sqlVO(uid)
-# 		models.BaseManage().direct_execute_query_sqlVO(sqlVO)
-# 	print(len(uids))
-
-# def unique_uid_datas():
-# 	sqlVO=util.unique_uids_sqlVO()
-# 	unique_uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-# 	print(len(unique_uids))
-# 	delete_sqlVO=util.delete_table('unique_col')
-# 	models.BaseManage().direct_execute_query_sqlVO(delete_sqlVO)
-# 	return unique_uids
 def get_all_unique_table_records(records):
 	unique_table_records=[]
 	for record in records:
