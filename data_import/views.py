@@ -226,14 +226,9 @@ def ajaxtest(request):
 		'title':'ajaxtest请求结果',
 		'state':'success'
 	}
-	#send_mail('Subject here', 'Here is the message.', '525794244@qq.com',
-    #['525794244@qq.com'], fail_silently=False)
 	with open(filepath+'world.json','r')as f:
 		chinaJson=json.load(f)
 	contentVO['greet']=[55, 20, 76, 10, 10, 20]
-	# chart_datas=chart_data()
-	# contentVO['x']=chart_datas['numx']
-	# contentVO['y']=chart_datas['numy']
 	contentVO['china']=chinaJson
 	print(type(chinaJson.get("features")))
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
@@ -472,33 +467,6 @@ def functionDemo(request):
 	#print(tables_info)
 	util.write_ana_2_file(tbList,tables_info)
 
-
-
-
-
-
-
-	# sqlVO={}
-	# sqlVO["sql"]="SELECT * FROM QG_IFL_USER.IF_BOF_L2L2_Scrap"
-	# sqlVO["db_name"]='l2'
-	# # sqlVO["vars"]=["procedure"]
-	# scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	# print(scrapy_records)
-	# ele={}
-	# eles=[]
-	# material_codes=["16010101",'16020101','16020102']
-	# for scrapy in scrapy_records:
-	# 	for i in range(7):
-	# 		for material_code in material_codes:
-	# 			if scrapy["SCRAP_CODE"+str(i+1)]==material_code:
-	# 				ele["scrapy_"+material_code]=scrapy["SCRAP_WGT"+str(i+1)]
-	# 	ele["heatNo"]=scrapy["HEAT_NO"]	
-	# 	eles.append(ele)
-	# 	ele={}
-	# print(eles)
-	# for ele in eles:
-	# 	sqlVO=util.create_insert_sqlVO(ele)
-	# 	print(sqlVO)
 	contentVO={
 		'title':'数据缺失度分析结果',
 		'state':'success'
@@ -530,7 +498,6 @@ def echarts(request):
 
 def num(request):
 	print("success")
-	#tableno=request.POST.get("tableno");
 	bookno=request.POST.get("bookno");
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
