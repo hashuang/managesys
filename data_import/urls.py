@@ -34,4 +34,8 @@ urlpatterns = [
 
     #echarts展示示例
     url(r'^echarts',views.echarts),
+
+    url(r'^ha',views.ha),
+    url(r'^num',views.num),
+    url(r'^lond_to',views.lond_to),
 ]

@@ -1,3 +1,7 @@
+def Wushu(x):
+    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
+    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
+    return x[(x<U)&(x>L)]
 def num_descibe(scrapy_records):
 	frame=DataFrame(scrapy_records)
 	df=frame.sort_values(by=bookno)
