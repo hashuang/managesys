@@ -1,7 +1,8 @@
 function loadOption(){
 	$.ajax({
         type: "post",
-        url:  "/load_procedure_name",
+        //url:  "/load_procedure_name",
+        url:  "/lond_to",
         data: {'greet':'hello'},
         error: function() {
             alert("404");

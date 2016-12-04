@@ -1,27 +1,3 @@
-can_pro={
-'MIRON_WGT':'铁水重量',
-'FURNACESEQ':'炉龄',
-'SPRAYGUNSEQ':'枪龄',
-'SUBLANCE_AGE':'副枪枪龄',
-'HOTMETALWGT':'铁水装入量(kg)',
-'COLDPIGWGT':'生铁装入量(kg)',
-'SCRAPWGT':'废钢装入量(kg)',
-'RETURNSTEELWEIGHT':'回炉钢液量(kg)',
-'L96053601':'钢渣',
-'HEAT_WGT':'炉重(KG)',
-'DOWNFURNACETIMES':'倒炉次数',
-'O_CONT':'定氧',
-'STEELWGT':'出钢量',
-'TIMEOFOXYGEN':'一倒供氧时间',
-'D1_TEMP_VALUE':'第一次测温值',
-'D2_TEMP_VALUE':'第二次测温值',	
-}
-
-
-
-
-
-
 PRO_BOF_HIS_ALLFIELDS={
                                 'MIRON_WGT':'铁水重量',
 								'MIRON_TEMP':'铁水温度',
@@ -99,7 +75,7 @@ PRO_BOF_HIS_ALLFIELDS={
 								'W':'W',
 								'Pb':'Pb',
 								'Sn':'Sn',
-								'AS':'AS',
+								'"AS"':'AS',
 								'Bi':'Bi',
 								'B':'B',
 								'Ca':'Ca',

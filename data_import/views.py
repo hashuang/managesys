@@ -14,6 +14,11 @@ from . import models
 from data_import.forms import UploadFileForm
 from . import util
 from . import const
+from pandas import DataFrame
+from pandas import DataFrame
+import pandas as pd
+import numpy as np
+import math
 
 
 
@@ -21,7 +26,7 @@ def home(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'hashuang.html',{'title':"青特钢大数据项目组数据管理"})
+	return render(request,'data_import/index.html',{'title':"青特钢大数据项目组数据管理"})
 
 #用户登录
 def user_login(request):
@@ -497,25 +502,59 @@ def echarts(request):
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
 
-from . import hashuang
 
+
+def Wushu(x):
+    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
+    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
+    return x[(x<U)&(x>L)]	
 def num(request):
 	print("success")
-	bookno=request.POST.get("bookno");
+	bookno=request.POST.get("bookno").upper();
+	#print(bookno)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)	
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#print(scrapy_records[:5])
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(bookno,None)
+		if value != None :
+			scrapy_records[i][bookno] = float(value)
+	frame=DataFrame(scrapy_records)
+	df=frame.sort_values(by=bookno)
+	dfr=df[df>0].dropna(how='any')
+	#print(dfr[bookno].dtype)
+	clean=Wushu(dfr[bookno])
+	if clean is not None:
+		bc=(clean.max()-clean.min())/10
+		bcq=math.ceil(bc*1000)/1000
+		try:
+			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq+1))
+			end=pd.value_counts(section,sort=False)/clean.count()
+			describe=clean.describe()
+		except ValueError as e:
+		 	print(e)
+	numx=[ele for ele in end.index]
+	numy=[ele for ele in end]
+	desx=[ele for ele in describe.index]
+	desy=[ele for ele in describe]
+	numy1=["%.2f%%"%(n*100) for n in numy]
 	contentVO={
 		'title':'测试',
 		'state':'success'
 	}
-	ana_result,ana_describe=num_descibe(scrapy_records)
+	ana_result={}
+	ana_result['scope']=numx
+	ana_result['num']=numy
 	contentVO['result']=ana_result
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy
 	contentVO['describe']=ana_describe
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-from . import zhuanlu
+from . import zhuanlu	
 def lond_to(request):
 	contentVO={
 		'title':'测试',
@@ -526,3 +565,8 @@ def lond_to(request):
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def ha(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})

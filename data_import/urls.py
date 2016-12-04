@@ -27,15 +27,14 @@ urlpatterns = [
     url(r'^success',views.success),
     #
     url(r'^ajaxtest',views.ajaxtest),
-    url(r'^json',views.loadjson),
+    #url(r'^json',views.loadjson),
     #功能测试
     url(r'^delete',views.delete_records),
     url(r'^functionDemo',views.functionDemo),
 
     #echarts展示示例
     url(r'^echarts',views.echarts),
-
-    url(r'^ha',views.ha),
+    url(r'^ha', views.ha),
     url(r'^num',views.num),
     url(r'^lond_to',views.lond_to),
 ]
