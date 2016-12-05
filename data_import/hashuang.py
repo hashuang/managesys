@@ -27,8 +27,7 @@ def num_describe(scrapy_records,bookno):
 		value = scrapy_records[i].get(bookno,None)
 		if value != None :
 			scrapy_records[i][bookno] = float(value)
-	frame=DataFrame(scrapy_records)
-	print(frame)	
+	frame=DataFrame(scrapy_records)	
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr[bookno].dtype)
