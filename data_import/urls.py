@@ -37,4 +37,5 @@ urlpatterns = [
     url(r'^ha', views.ha),
     url(r'^num',views.num),
     url(r'^lond_to',views.lond_to),
+    url(r'^lond_to_B',views.lond_to_B)
 ]

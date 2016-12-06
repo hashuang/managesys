@@ -1,8 +1,7 @@
 function loadOption(){
 	$.ajax({
         type: "post",
-        //url:  "/load_procedure_name",
-        url:  "/lond_to",
+        url:  "/load_procedure_name",
         data: {'greet':'hello'},
         error: function() {
             alert("404");
@@ -23,13 +22,13 @@ function loadOption(){
 function loadOption_ha(){
     $.ajax({
         type: "post",
-        url:  "/load_to",
+        url:  "/lond_to",
         data: {'greet':'hello'},
         error: function() {
             alert("404");
         },
         success: function(data) {
-            console.log(data.procedure_names);
+            //console.log(data.procedure_names);
             pnames=data.procedure_names;
             for(var pname in pnames){
                 console.log(pnames[pname])
@@ -44,8 +43,7 @@ function loadOption_ha(){
 function loadOption_hs(){
     $.ajax({
         type: "post",
-        //url:  "/load_procedure_name",
-        url:  "/lond_to",
+        url:  "/lond_to_B",
         data: {'greet':'hello'},
         error: function() {
             alert("404");
@@ -55,7 +53,7 @@ function loadOption_hs(){
             pnames=data.procedure_names;
             for(var pname in pnames){
                 console.log(pnames[pname])
-                $(".procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
+                $("#fildno").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
             }
             //var filepath= 'http://127.0.0.1:8000'+data.filepath; 
             //console.log("<a href='"+filepath+"'>")

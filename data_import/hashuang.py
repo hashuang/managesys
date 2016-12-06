@@ -19,7 +19,7 @@ def num_describe(scrapy_records,bookno):
 	#value=bookno.split('"')
 	#for i in range(len(value)):
 		#value=value[i]
-		#if value!=None:
+		#if value!='"':
 			#print(value)
 			#bookno=value
 	#print(bookno)

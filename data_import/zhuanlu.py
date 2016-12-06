@@ -41,7 +41,6 @@ PRO_BOF_HIS_ALLFIELDS={
 								'FIRSTCATCHCARBONC':'一倒C%',
 								'FIRSTCATCHCARBONP':'一倒P%',
 								'SUBLANCE_AGE':'副枪枪龄',
-								'SUBLANCE_INDEPTH':'副枪插入深度',
 								'O_CONT':'定氧',
 								'LEQHEIGH':'液面高度',
 								'FIRSTCATCHOXYGENCONSUME':'一倒氧气耗量',
@@ -88,3 +87,8 @@ PRO_BOF_HIS_ALLFIELDS={
 
 	
                         }
+
+PRO_BOF_HIS_ALLFIELDS_B={
+								'SUBLANCE_INDEPTH':'副枪插入深度',
+						}                        
+

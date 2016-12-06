@@ -516,8 +516,8 @@ def num(request):
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	print(bookno)
-	print(scrapy_records[:5])
+	#print(bookno)
+	#print(scrapy_records[:5])
 	contentVO={
 		'title':'测试',
 		'state':'success',
@@ -544,3 +544,14 @@ def ha(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
+def lond_to_B(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+
