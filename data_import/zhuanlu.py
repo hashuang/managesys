@@ -37,11 +37,10 @@ PRO_BOF_HIS_ALLFIELDS={
 								'L96053601':'钢渣',
 								'HEAT_WGT':'炉重(KG)',
 								'DOWNFURNACETIMES':'倒炉次数',
-								'CARBONTEMPERATUR':'一倒温度(℃)',
+								'CARBONTEMPERATURE':'一倒温度(℃)',
 								'FIRSTCATCHCARBONC':'一倒C%',
 								'FIRSTCATCHCARBONP':'一倒P%',
 								'SUBLANCE_AGE':'副枪枪龄',
-								'SUBLANCE_INDEPTH':'副枪插入深度',
 								'O_CONT':'定氧',
 								'LEQHEIGH':'液面高度',
 								'FIRSTCATCHOXYGENCONSUME':'一倒氧气耗量',
@@ -64,7 +63,7 @@ PRO_BOF_HIS_ALLFIELDS={
 								'P':'P',
 								'S':'S',
 								'Al_T':'Al_T',
-								'Al_S':'Al_S',
+								'"AS"':'AS',
 								'Ni':'Ni',
 								'Cr':'Cr',
 								'Cu ':'Cu',
@@ -75,7 +74,6 @@ PRO_BOF_HIS_ALLFIELDS={
 								'W':'W',
 								'Pb':'Pb',
 								'Sn':'Sn',
-								'AS':'AS',
 								'Bi':'Bi',
 								'B':'B',
 								'Ca':'Ca',
@@ -89,3 +87,8 @@ PRO_BOF_HIS_ALLFIELDS={
 
 	
                         }
+
+PRO_BOF_HIS_ALLFIELDS_B={
+								'SUBLANCE_INDEPTH':'副枪插入深度',
+						}                        
+
