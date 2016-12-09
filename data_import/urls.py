@@ -27,11 +27,12 @@ urlpatterns = [
     url(r'^success',views.success),
     #
     url(r'^ajaxtest',views.ajaxtest),
-    url(r'^json',views.loadjson),
     #功能测试
     url(r'^delete',views.delete_records),
     url(r'^functionDemo',views.functionDemo),
 
     #echarts展示示例
     url(r'^echarts',views.echarts),
+    #钢铁价格预测
+    url(r'^steelprice',views.steelprice)
 ]
