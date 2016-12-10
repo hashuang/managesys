@@ -15,7 +15,7 @@ import platform
 
 node = platform.node()
 print(node)
-dev_machines = ('cheng-cx','cheng-cx.local' )
+dev_machines = ('cheng-cx','cheng-cx.local1' )
 
 if node in dev_machines:
     # folder My_Blog
@@ -35,6 +35,7 @@ if node in dev_machines:
             'PORT': '3306',
         }
     }
+    print(DATABASES)
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
@@ -54,10 +55,10 @@ else:
         },
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'managesys',
+            'NAME': 'qinggang',
             'USER': 'root',
-            'PASSWORD': '123',
-            'HOST': 'localhost',
+            'PASSWORD': '123456',
+            'HOST': '202.204.54.102',
             'PORT': '3306',
         },
         '1default': {
