@@ -34,4 +34,7 @@ urlpatterns = [
 
     #echarts展示示例
     url(r'^echarts',views.echarts),
+    #sinuo
+    url(r'^space',views.space),
+    #url(r'^liusinuoTest',views.liusinuoTest),
 ]

@@ -568,7 +568,7 @@ def echarts(request):
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
-	def num(request):
+def num(request):
 	print("success")
 	#tableno=request.POST.get("tableno");
 	bookno=request.POST.get("bookno");
@@ -596,3 +596,37 @@ def lond_to(request):
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+
+from data_import.liusinuo.main import main
+def space(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/space.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion = main(int(request.POST.get("module")),
+										  int(request.POST.get('aspect')),
+										  int(request.POST.get('dateChoose')),
+										  request.POST.get('sql_date1'),
+										  request.POST.get('sql_date2'),
+										  request.POST.get('sql_cust'),
+										  request.POST.get('tradeNo'),
+										  int(request.POST.get('space')))
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst}), content_type='text/json')
+		except Exception as ex:
+			print(ex)
+'''
+def liusinuoTest(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/liusinuoTest.html',{'title':"青特钢大数据项目组——echarts示例"})
+'''
+
