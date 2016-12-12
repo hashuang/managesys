@@ -16,6 +16,7 @@ from . import choose_settings
 ROW_NUM=10000
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = choose_settings.DEBUG
+
 TEMPLATE_DEBUG = DEBUG
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -23,12 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'data_import/static')
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR,'data_import/static')
  
-# upload folder
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'data_import/media')
+# # upload folder
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR,'data_import/media')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/

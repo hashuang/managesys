@@ -510,16 +510,16 @@ def Wushu(x):
     return x[(x<U)&(x>L)]
 from . import hashuang    	
 def num(request):
-	print("success")
+	print("分析结果绘图")
 	bookno=request.POST.get("bookno").upper();
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	#print(bookno)
-	#print(scrapy_records[:5])
+	# print(bookno)
+	# print(scrapy_records[:5])
 	contentVO={
-		'title':'测试',
+		'title':'分析结果绘图',
 		'state':'success',
 	}
 	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
@@ -541,7 +541,7 @@ def lond_to(request):
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 def ha(request):
-	print('请求主页')
+	print('转炉数据清洗')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
