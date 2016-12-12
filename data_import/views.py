@@ -14,6 +14,11 @@ from . import models
 from data_import.forms import UploadFileForm
 from . import util
 from . import const
+from pandas import DataFrame
+from pandas import DataFrame
+import pandas as pd
+import numpy as np
+import math
 
 
 
@@ -219,26 +224,6 @@ def ana_data_lack(request):
 def success(request):
 	return render(request,'data_import/success.html')
 
-# import xlrd
-# import pandas as pd
-# import numpy as np
-# def chart_data():
-# 	bof=pd.read_excel('E:\\qinggang\\reference\\7-21\\BOF-IT.xls')
-# 	bof1=bof.sort_values(by='MIRON_TEMP')
-# 	bof2=bof1[bof1>0].dropna(how='any').drop_duplicates()
-# 	bof3=bof2.MIRON_TEMP
-# 	L=np.percentile(bof3,25)-1.5*(np.percentile(bof3,75)-np.percentile(bof3,25))
-# 	U=np.percentile(bof3,75)+1.5*(np.percentile(bof3,75)-np.percentile(bof3,25))
-# 	bof4=bof3[(bof3<U)&(bof3>L)]
-# 	bc=(bof4.max()-bof4.min())/10
-# 	bof5=pd.cut(bof4,(bof4.max()-bof4.min())/bc)
-# 	bof6= pd.value_counts(bof5,sort=False)/bof4.count()
-# 	print(type(bof6))
-# 	numx=[ele for ele in bof6.index]
-# 	numy=[ele for ele in bof6]
-# 	return {'numx':numx,'numy':numy}
-# from django.core.mail import send_mail
-
 def ajaxtest(request):
 	filepath=BASE_DIR +"\\data_import\\static\\libs\\echarts\\map\\"
 	print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -246,38 +231,13 @@ def ajaxtest(request):
 		'title':'ajaxtest请求结果',
 		'state':'success'
 	}
-	#send_mail('Subject here', 'Here is the message.', '525794244@qq.com',
-    #['525794244@qq.com'], fail_silently=False)
 	with open(filepath+'world.json','r')as f:
 		chinaJson=json.load(f)
 	contentVO['greet']=[55, 20, 76, 10, 10, 20]
-	# chart_datas=chart_data()
-	# contentVO['x']=chart_datas['numx']
-	# contentVO['y']=chart_datas['numy']
 	contentVO['china']=chinaJson
 	print(type(chinaJson.get("features")))
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
 
-def loadjson(request):
-	#filepath = 'E:\\qinggang\\reference\\7-21\\需要迁移数据各工序模板\\销售\\空间分布7-21.xlsx'
-	#util.import_multikey_file(filepath,models.TransRelationMultikey)
-	#filepath = 'E:\\qinggang\\reference\\7-21\\需要迁移数据各工序模板\\转炉\\转炉迁移表1(1).xlsx'
-	#util.batch_import_data(filepath,models.TransRelation)
-	return HttpResponseRedirect("/index")
-
-# def insert_uid_data(uids):
-# 	for uid in uids:
-# 		sqlVO=util.insert_uid_sqlVO(uid)
-# 		models.BaseManage().direct_execute_query_sqlVO(sqlVO)
-# 	print(len(uids))
-
-# def unique_uid_datas():
-# 	sqlVO=util.unique_uids_sqlVO()
-# 	unique_uids=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-# 	print(len(unique_uids))
-# 	delete_sqlVO=util.delete_table('unique_col')
-# 	models.BaseManage().direct_execute_query_sqlVO(delete_sqlVO)
-# 	return unique_uids
 def get_all_unique_table_records(records):
 	unique_table_records=[]
 	for record in records:
@@ -512,33 +472,6 @@ def functionDemo(request):
 	#print(tables_info)
 	util.write_ana_2_file(tbList,tables_info)
 
-
-
-
-
-
-
-	# sqlVO={}
-	# sqlVO["sql"]="SELECT * FROM QG_IFL_USER.IF_BOF_L2L2_Scrap"
-	# sqlVO["db_name"]='l2'
-	# # sqlVO["vars"]=["procedure"]
-	# scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	# print(scrapy_records)
-	# ele={}
-	# eles=[]
-	# material_codes=["16010101",'16020101','16020102']
-	# for scrapy in scrapy_records:
-	# 	for i in range(7):
-	# 		for material_code in material_codes:
-	# 			if scrapy["SCRAP_CODE"+str(i+1)]==material_code:
-	# 				ele["scrapy_"+material_code]=scrapy["SCRAP_WGT"+str(i+1)]
-	# 	ele["heatNo"]=scrapy["HEAT_NO"]	
-	# 	eles.append(ele)
-	# 	ele={}
-	# print(eles)
-	# for ele in eles:
-	# 	sqlVO=util.create_insert_sqlVO(ele)
-	# 	print(sqlVO)
 	contentVO={
 		'title':'数据缺失度分析结果',
 		'state':'success'
@@ -568,24 +501,37 @@ def echarts(request):
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
+<<<<<<< HEAD
+=======
+
+
+
+def Wushu(x):
+    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
+    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
+    return x[(x<U)&(x>L)]
+from . import hashuang    	
+>>>>>>> upstream/master
 def num(request):
 	print("success")
-	#tableno=request.POST.get("tableno");
-	bookno=request.POST.get("bookno");
+	bookno=request.POST.get("bookno").upper();
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)	
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#print(bookno)
+	#print(scrapy_records[:5])
 	contentVO={
 		'title':'测试',
-		'state':'success'
+		'state':'success',
 	}
-	ana_result,ana_describe=num_descibe(scrapy_records)
+	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
 	contentVO['result']=ana_result
 	contentVO['describe']=ana_describe
+	print(ana_describe)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-from . import zhuanlu
+from . import zhuanlu	
 def lond_to(request):
 	contentVO={
 		'title':'测试',
@@ -596,6 +542,7 @@ def lond_to(request):
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 
 
 from data_import.liusinuo.main import main
@@ -623,10 +570,27 @@ def space(request):
 				                            'result': rst}), content_type='text/json')
 		except Exception as ex:
 			print(ex)
-'''
-def liusinuoTest(request):
+
+
+
+def ha(request):
+	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'data_import/liusinuoTest.html',{'title':"青特钢大数据项目组——echarts示例"})
-'''
+	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
+def lond_to_B(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+
+def steelprice(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/steelprice.html')
 

@@ -15,7 +15,7 @@ import platform
 
 node = platform.node()
 print(node)
-dev_machines = ('cheng-cx','cheng-cx.local' )
+dev_machines = ('cheng-cx','cheng-cx.local1' )
 
 if node in dev_machines:
     # folder My_Blog
@@ -35,6 +35,7 @@ if node in dev_machines:
             'PORT': '3306',
         }
     }
+    print(DATABASES)
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')

@@ -8,7 +8,8 @@
 
 ###git配置
 git有3个级别的配置，当前目录，global（用户主目录），system（系统级配置文件），优先级以版本库的配置最高，依次向下。
-1. git config --global user.name "xxxx xxx"
+
+1. git config --global user.name "xxxx xxx"  
 2. git config --global user.email ccx@gmail.com
 3. git config --system alias.st stauts //设置指令别名，简化指令
 4. git config --system alias.ci commit
@@ -16,6 +17,7 @@ git有3个级别的配置，当前目录，global（用户主目录），system�
 6. git config --system alias.br branch
 7. git config --global color.ui true
 8. git config -e [xxx] //打开相应级别的配置文件
+
 ###几个关键指令
 1.  git add filename //将文件暂存入缓存区
 2.  git commit -m '本次提交的相关说明' //此时已经把代码同步到
@@ -25,8 +27,8 @@ git有3个级别的配置，当前目录，global（用户主目录），system�
 6.  git clone remote  //完整复制所有分支  
 
 ###其他指令
-1. git grep "meg" //搜索文件内容
-2. git rev-parse --git-dir //工作区根目录
+1. git grep "meg" //搜索文件内容  
+2. git rev-parse --git-dir //工作区根目录  
 3. git rev-parse --show-prefix //当前目录相对根目录的相对路径
 4. git rev-parse --show-cdup //从当前目录会退到根目录的深度
 5. git log [--stat] //查看提交日志，--stat查看文件变更详情
@@ -54,12 +56,24 @@ git merge upstream/master
 ###网站基本框架的初始代码
 [网站基本框架的初始代码](https://github.com/ccxysfh/managesys)  
 ##操作流程，未测试
-1. 在本地新建空文件夹，并git init创建本地版本库
+1. 在本地新建空文件夹，作为本地代码库
 2. 从[网站基本框架的初始代码](https://github.com/ccxysfh/managesys)fork仓库到自己账号，获取http或ssh地址rpourl
-3. 在本地仓库目录下git clone rpourl
-4. 设置与远程仓库的同步
+3. 添加一个远程仓库qinggang,即自己github下fork的仓库
 ```
-
+git remote add qinggang rpourl
 ```
-
+4. 添加总库upstream 
+```
+git remote add upstream git@github.com:ccxysfh/managesys.git
+```
+5. 设置与远程仓库的同步
+```
+git fetch upstream   
+git checkout master  
+git merge upstream/master 
+```
+6. 提交到本地仓库
+```
+git push qinggang
+```
 
