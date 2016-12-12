@@ -37,7 +37,7 @@ if node in dev_machines:
             'NAME':'orcl',
             'USER': 'qg_user',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.102',
+            'HOST': '202.204.54.215',
             'PORT': '1521',
         },
     }
