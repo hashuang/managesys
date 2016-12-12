@@ -1,0 +1,115 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+<h1>销售分析</h1>
+
+<h2>输入</h2>
+{% csrf_token %}
+模块：
+<select name="select_module" id="select_module" class="xla_1">
+    <option value="1">空间分析</option>
+    <option value="2">时间分析</option>
+    <option value="3">钢种分析</option>
+    <option value="4">客户分析</option>
+</select><br>
+分析内容:
+<select name="select_aspect" id="select_aspect" class="xla_2">
+    <option value="1">总销量</option>
+    <option value="2">总销售额</option>
+    <option value="3">退货率</option>
+    <option value="4">质量问题个数</option>
+</select><br>
+起始时间:2016-01-01<br>
+终止时间:2016-12-31<br>
+时间选择依据:
+<select name="select_time_choose" id="select_time_choose" class="xla_3">
+    <option value="1">订单时间</option>
+    <option value="2">发货时间</option>
+    <option value="3">派车履运时间（出货销账）</option>
+    <option value="4">派车履运时间（结算）</option>
+    <option value="5">装车通知时间</option>
+    <option value="6">订单存货时间</option>
+    <option value="7">质保书时间</option>
+    <option value="8">外库接收时间</option>
+</select><br>
+地点:
+<select name="select_space" id="select_space" class="xla_4">
+    <option value="1">世界范围内</option>
+    <option value="2">中国范围内</option>
+    <option value="3">山东省内</option>
+</select><br>
+钢种:
+<!--<form  action="" method="get">
+<input type="checkbox" name="select_tradeNo" value="45">45<br>
+<input type="checkbox" name="select_tradeNo" value="50">50<br>
+<input type="checkbox" name="select_tradeNo" value="C82DA">C82DA<br>
+<input type="checkbox" name="select_tradeNo" value="60Si2Mn">60Si2Mn<br>
+<input type="checkbox" name="select_tradeNo" value="C82A">C82A<br>
+</form> 
+-->
+
+<select name="select_trade" id="select_trade" class="xla_5">
+    <option value=45>45</option>
+    <option value=50>50</option>
+    <option value=C82DA>C82DA</option>
+</select><br>
+
+<h2>输出</h2>
+
+<button id="btnDrawChart">分析结果绘图</button>
+<div id="main4" style="width: 800px;height:400px;"></div>
+<div id="main5" style="width: 60px;height:400px;">
+<textarea id="txt" style="width: 600px;height:120px;"></textarea>
+</div>
+
+<script type="text/javascript">
+  
+    $('#btnDrawChart').click(function(){
+        var module = $ ("#select_module").find("option:selected").val();
+        var aspect = $ ("#select_aspect").find("option:selected").val();
+        var dateChoose = $ ("#select_time_choose").find("option:selected").val();
+        var space = $ ("#select_space").find("option:selected").val();
+        var tradeNo = $ ("#select_trade").find("option:selected").val()
+        //console.log(tradeNo)
+        var sql_date1 = "20160101"
+        var sql_date2 = "20161231"
+        var sql_cust = ''
+
+        if (aspect == 1){
+            aspect_name = "总销量";
+        }else if (aspect == 2){
+            aspect_name = "总销售额";
+        }else if (aspect == 3){
+            aspect_name = "退货率";
+        }else{
+            aspect_name = "质量问题个数";
+        }
+        //console.log(module);
+        $.ajax({
+            type: "post",
+            url:  "/space",
+            data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
+            
+            }
+        ).done(function(data) {
+            console.log(JSON.stringify(data.result));
+            drawMapChart(data.result);
+            var txt=$("#txt");
+            var label=$("#label")
+                txt.append(data.describe); 
+             }).fail(function(){
+                console.log("wrong");
+             });
+    });
+
+ 
+</script>
+<script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
+<!-- <script type="text/javascript">
+    require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+</script> -->
+{% endblock %}
