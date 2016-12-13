@@ -14,7 +14,10 @@
 <div id="main1" style="width: 600px;height:400px;"></div>
 <div id="main2"style="width: 60px;height:400px;"><textarea id="txt" style="width: 600px;height:40px;border:0px;"></textarea></div>
 <script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
-<script type="text/javascript">    
+<script type="text/javascript">  
+    $('#bookno').change(function(){
+        num();
+    })
     function num(){
         var bookno = $("#bookno").find("option:selected").val();
         console.log(bookno)
@@ -45,7 +48,7 @@
     }
 
     $(function(){
-            loadOption_ha()
+            loadOption_ha();
         })
 </script>
 {% endblock %}
