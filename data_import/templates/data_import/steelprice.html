@@ -1,0 +1,170 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-title">
+            <h3>搜索铁矿粉</h3>
+        </div>
+
+        <div class="panel-body">
+            <div class="input-group search-group" style="margin-bottom: 20px">
+                        <span class="input-group-btn"  id="accuSearch">
+                            <button class="btn btn-primary" type="button">高级 <span class="glyphicon glyphicon-menu-down"></span>
+                            </button>
+                        </span>
+                <input type="text" class="form-control" placeholder="" id="kw">
+                <div class="input-group-btn" id="searchStyle">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="width: 105px">
+                        <label style="margin: 0">铁矿粉名称</label> <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" value="name">铁矿粉名称</a></li>
+                        <!--<li><a href="#" value="username">添加者</a></li> -->
+                        <!--<li><a href="#" value="addtime">添加时间</a></li>-->
+                    </ul>
+                </div>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" id="searchBtn">搜索</button>
+                        </span>
+
+            </div>
+
+            <div id="hiddenAccu" style="display: none">
+
+                <div class="accu-group">
+                    <div style="width: 10%;float:left"><h4>基本信息</h4></div>
+                    <div style="width: 80%;margin-left: 10%">
+                        <form class="navbar-form">
+                            <div class="search-table">
+                                <div>
+                                    <label>成本:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="cost">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="cost">
+                                </div>
+                                <div>
+                                    <label>评分:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="score">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="score">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="accu-group">
+                    <div style="width: 10%;float:left"><h4>冶金性能</h4></div>
+                    <div style="width: 80%;margin-left: 10%">
+                        <form class="navbar-form">
+                            <div class="search-table">
+                                <div>
+                                    <label>同化性:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="assimilability">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="assimilability">
+                                </div>
+                                <div>
+                                    <label>粘结相联度:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="bond_strength">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="bond_strength">
+                                </div>
+                                <div>
+                                    <label>连晶强度:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="crystal_strength">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="crystal_strength">
+                                </div>
+
+                                <div>
+                                    <label>流动性:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="fluxility">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="fluxility">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="accu-group">
+                    <div style="width: 10%;float:left"><h4>化学性能</h4></div>
+                    <div style="width: 80%;margin-left: 10%">
+                        <form class="navbar-form">
+                            <div class="search-table">
+                                <div>
+                                    <label>Al2O3:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="al2o3">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="al2o3">
+                                </div>
+                                <div>
+                                    <label>CaO:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="cao">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="cao">
+                                </div>
+                                <div>
+                                    <label>FeO:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="feo">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="feo">
+                                </div>
+
+                                <div>
+                                    <label>MgO:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="mgo">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="mgo">
+                                </div>
+                                <div>
+                                    <label>SiO2:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="sio2">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="sio2">
+                                </div>
+
+                                <div>
+                                    <label>TFe:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="tfe">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="tfe">
+                                </div>
+
+                                <div>
+                                    <label>烧损:</label>
+                                    <input type="text" class="form-control val min" min="0" style="width: 80px" name="burning_loss">至
+                                    <input type="text" class="form-control val max" min="0" style="width: 80px" name="burning_loss">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+<script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
+<script type="text/javascript" src="/static/data_import/js/steelprice.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/vintage.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/dark.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/infographic.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/roma.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/shine.js"></script>
+<script type="text/javascript" src="/static/data_import/libs/echarts/theme/macarons.js"></script>
+<script type="text/javascript">
+    $("#toggle_advance").click( function() {
+        $("#advanced").toggle(200);
+    });    
+	function ajaxtest(){
+		$.ajax({
+	        type: "post",
+	        url:  "/ajaxtest",
+	        data: {'greet':'hello'},
+	        error: function() {
+	            alert("404");
+	        },
+	        success: function(data) {
+	        	$('#result').html(data);
+	        	drawBarChart(data)
+	        	drawBrokenLineChart(data)
+	        	drawBarAndBrokenLineChart(data)
+	        	//drawMapChart(data)
+	        	drawBarAndBrokenLineBofItChart(data)
+        	}
+    	})
+	}
+
+</script>
+
+{% endblock %}
+
+

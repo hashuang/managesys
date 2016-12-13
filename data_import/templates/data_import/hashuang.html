@@ -1,0 +1,51 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+
+<h1>青钢转炉数据分析</h1>
+
+字段名:<br>
+
+<!--<input type="text" name="bookno" value="{{current_tableno}}" id="bookno">-->
+<select name="bookno" id="bookno" class="procedurename"></select>
+<br><br>
+<button onclick='num()'>分析结果绘图</button>
+<!--<a href='/direct'>无需五数概括法情况</a>-->
+<div id="main1" style="width: 600px;height:400px;"></div>
+<div id="main2"style="width: 60px;height:400px;"><textarea id="txt" style="width: 600px;height:40px;border:0px;"></textarea></div>
+<script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
+<script type="text/javascript">    
+    function num(){
+        var bookno = $("#bookno").find("option:selected").val();
+        console.log(bookno)
+        $.ajax({
+            type: "post",
+            url:  "/num",
+            data: {'bookno':bookno},
+            error: function() {
+                alert("404");
+            },
+            success: function(data) {
+                //alert(data.result);
+                drawBarChart(data.result)
+                var txt=$("#txt");
+                var label=$("#label")
+                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
+                             txt.append("  ")   
+                             s=data.describe.scopeb[i];
+                             n=data.describe.numb[i];
+                             txt.append(s);
+                             txt.append(":");
+                             txt.append(n);
+                             txt.append("   ")
+
+                         };
+            }
+        })
+    }
+
+    $(function(){
+            loadOption_ha()
+        })
+</script>
+{% endblock %}

@@ -1,23 +1,24 @@
 // 条形图
-function drawBarChart(data){
-	var myChart = echarts.init(document.getElementById('main1'));
+function drawBarChart(result){
+    var myChart = echarts.init(document.getElementById('main1'));
+        //alert(result.scope)
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: 'ECharts柱状图示例'
+                text: ''
             },
             tooltip: {},
             legend: {
-                data:['销量']
+                data:['']
             },
             xAxis: {
-                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+                data: result.scope
             },
             yAxis: {},
             series: [{
-                name: '销量',
+                name: '',
                 type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
+                data: result.num
             }]
 
         };
@@ -167,6 +168,76 @@ function drawBarAndBrokenLineChart(data){
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+
+//地图
+function drawMapChart(data){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: '空间分析 ',
+            subtext: 'QDIS',
+            x:'center'
+        },
+        tooltip: {
+            trigger: 'item'
+            // formatter: '{b}'
+        },
+        legend: {
+            orient: 'vertical',
+            x:'left',
+            data:["-"]
+        },
+        dataRange: {
+            min: 0,
+            max: 5000,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true
+        },
+        toolbox: {
+            show: true,
+            orient : 'vertical',
+            x: 'right',
+            y: 'center',
+            feature : {
+                //mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                //restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        roamController: {
+            show: true,
+            x: 'right',
+            mapTypeControl: {
+                'china': true
+            }
+        },
+        series: [
+            {
+                name: "-",
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                itemStyle:{
+                    normal:{label:{show:true}},
+                    emphasis:{label:{show:true}}
+                },
+                data: data
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+/*
 //地图
 function drawMapChart(data){
     echarts.registerMap('china', data.chinaJson);
@@ -202,6 +273,8 @@ function drawMapChart(data){
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+*/
 function loadjson(){
 	var chart = echarts.init(document.getElementById('main'),'vintage');
 		chart.setOption({
