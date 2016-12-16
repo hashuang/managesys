@@ -501,25 +501,23 @@ def echarts(request):
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
-
-
-
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
     return x[(x<U)&(x>L)]
 from . import hashuang    	
+
 def num(request):
-	print("success")
+	print("分析结果绘图")
 	bookno=request.POST.get("bookno").upper();
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	#print(bookno)
-	#print(scrapy_records[:5])
+	# print(bookno)
+	# print(scrapy_records[:5])
 	contentVO={
-		'title':'测试',
+		'title':'分析结果绘图',
 		'state':'success',
 	}
 	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
@@ -540,8 +538,38 @@ def lond_to(request):
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-def ha(request):
+
+
+from data_import.liusinuo.main import main
+def space(request):
 	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/space.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion = main(int(request.POST.get("module")),
+										  int(request.POST.get('aspect')),
+										  int(request.POST.get('dateChoose')),
+										  request.POST.get('sql_date1'),
+										  request.POST.get('sql_date2'),
+										  request.POST.get('sql_cust'),
+										  request.POST.get('tradeNo'),
+										  int(request.POST.get('space')))
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst}), content_type='text/json')
+		except Exception as ex:
+			print(ex)
+
+
+
+def ha(request):
+	print('转炉数据清洗')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
@@ -560,3 +588,4 @@ def steelprice(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/steelprice.html')
+

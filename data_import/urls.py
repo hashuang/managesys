@@ -34,13 +34,14 @@ urlpatterns = [
 
     #echarts展示示例
     url(r'^echarts',views.echarts),
-
+    #sinuo
+    url(r'^space',views.space),
     url(r'^ha', views.ha),
     url(r'^num',views.num),
     url(r'^lond_to',views.lond_to),
     url(r'^lond_to_B',views.lond_to_B),
-
     #钢铁价格预测
+<<<<<<< HEAD
     url(r'^steelprice',views.steelprice),
 
     #chen
@@ -56,4 +57,7 @@ urlpatterns = [
     #比较时间
     url(r'^time',chyulia.time),
 
+=======
+    url(r'^steelprice',views.steelprice)
+>>>>>>> upstream/master
 ]

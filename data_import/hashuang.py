@@ -1,11 +1,9 @@
 from pandas import DataFrame
-from pandas import DataFrame
+
 import pandas as pd
 import numpy as np
 import math
-from . import views
-from django.shortcuts import render
-from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
+
 import os
 
 def Wushu(x):

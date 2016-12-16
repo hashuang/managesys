@@ -168,6 +168,76 @@ function drawBarAndBrokenLineChart(data){
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+
+//地图
+function drawMapChart(data){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: '空间分析 ',
+            subtext: 'QDIS',
+            x:'center'
+        },
+        tooltip: {
+            trigger: 'item'
+            // formatter: '{b}'
+        },
+        legend: {
+            orient: 'vertical',
+            x:'left',
+            data:["-"]
+        },
+        dataRange: {
+            min: 0,
+            max: 5000,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true
+        },
+        toolbox: {
+            show: true,
+            orient : 'vertical',
+            x: 'right',
+            y: 'center',
+            feature : {
+                //mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                //restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        roamController: {
+            show: true,
+            x: 'right',
+            mapTypeControl: {
+                'china': true
+            }
+        },
+        series: [
+            {
+                name: "-",
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                itemStyle:{
+                    normal:{label:{show:true}},
+                    emphasis:{label:{show:true}}
+                },
+                data: data
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+/*
 //地图
 function drawMapChart(data){
     echarts.registerMap('china', data.chinaJson);
@@ -203,6 +273,8 @@ function drawMapChart(data){
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+*/
 function loadjson(){
 	var chart = echarts.init(document.getElementById('main'),'vintage');
 		chart.setOption({
