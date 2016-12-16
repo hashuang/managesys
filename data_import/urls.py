@@ -41,9 +41,7 @@ urlpatterns = [
     url(r'^lond_to',views.lond_to),
     url(r'^lond_to_B',views.lond_to_B),
     #钢铁价格预测
-<<<<<<< HEAD
     url(r'^steelprice',views.steelprice),
-
     #chen
     url(r'^chen', chyulia.chen),
     url(r'^ch_num1',chyulia.ch_num1),
@@ -56,8 +54,5 @@ urlpatterns = [
     url(r'^fluctuation',chyulia.fluctuation),
     #比较时间
     url(r'^time',chyulia.time),
-
-=======
     url(r'^steelprice',views.steelprice)
->>>>>>> upstream/master
 ]
