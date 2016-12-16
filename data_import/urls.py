@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from . import views
+from . import chyulia
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -40,5 +41,18 @@ urlpatterns = [
     url(r'^lond_to',views.lond_to),
     url(r'^lond_to_B',views.lond_to_B),
     #钢铁价格预测
+    url(r'^steelprice',views.steelprice),
+    #chen
+    url(r'^chen', chyulia.chen),
+    url(r'^ch_num1',chyulia.ch_num1),
+    url(r'^ch_num2',chyulia.ch_num2),
+    url(r'^cost',chyulia.cost),
+    url(r'^produce',chyulia.produce),
+    #自动加载钢种
+    url(r'^getGrape',chyulia.getGrape),
+    #波动率
+    url(r'^fluctuation',chyulia.fluctuation),
+    #比较时间
+    url(r'^time',chyulia.time),
     url(r'^steelprice',views.steelprice)
 ]

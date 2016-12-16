@@ -1,0 +1,191 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+
+<h2>青钢转炉数据分析</h2>
+<h5><a href='/fluctuation'>波动率相关分析</a></h5>
+
+<div>
+    <!--<input type="text" name="bookno" value="{{current_tableno}}" id="bookno">-->
+    <p><strong>1.进行单字段的数据统计情况展示</strong></p>
+    钢种：<select name="gk_no" id="gk_no" class="gangzhong_name"></select>
+    字段名<select name="bookno" id="bookno" class="procedurename"></select>
+    <button onclick='num()' id='click0'>单字段分析(不带钢种)</button>
+    <button onclick='ch_num1()' id='click1'>单字段分析(带钢种)</button>
+    <br>注：还有些问题，因为有些字段是和钢种无关的，或者因为分钢种情况下数据就少了，图形就失真严重。
+    <!--<a href='/direct'>无需五数概括法情况</a>-->
+    <br>
+</div>
+------------------------------------------------------------------------------
+<div>
+    <p><strong>2.单炉次投入成本及产品产出统计情况：</strong></p>
+    <p>请输入要选择的炉次号，例如：1634230</p>
+    炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
+    <button onclick='cost()' id='click2'>投入成本分析结果</button>
+    <button onclick='produce()' id='click3'>产出产品分析结果</button>
+</div>
+-------------------------------------------------------------------------------
+<div>
+    <p><strong>3.单炉次因素偏高偏低展示:</strong></p>
+    炉次号：<input type="text" name="field1" value="{{current_tableno}}" id="field1">
+    字段名：<select name="bookno1" id="bookno1" class="procedurename1"></select>
+    <button onclick='ch_num2()' id='click4'>因素分析结果</button>
+</div>
+
+<div id="main1" style="width: 800px;height:500px;"></div>
+<br>
+<div id="main2" style="width: 60px;height:400px;"><textarea id="txt" style="width: 800px;height:100px;"></textarea></div>
+<script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
+<script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
+<script type="text/javascript"> 
+    //成本消耗
+    function cost(){
+         var prime_analyse = $("#prime_analyse").val();
+        console.log(prime_analyse)
+        $.ajax({
+            type: "post",
+            url:  "/cost",
+            data: {'prime_cost':prime_analyse},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result);
+                //alert(data.result.xname)
+                //alert(data.result.yvalue)
+                drawBarChart(data.result)
+            }
+        })
+    };   
+    //产品产出
+    function produce(){
+         var prime_analyse = $("#prime_analyse").val();
+        console.log(prime_analyse)
+        $.ajax({
+            type: "post",
+            url:  "/produce",
+            data: {'prime_produce':prime_analyse},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result)
+                //alert(data.result.xname)
+                //alert(data.result.yvalue)
+                drawBarChart(data.result)
+            }
+        })
+    };  
+    //不带钢种的单字段分析
+    function num(){
+        var bookno = $("#bookno").val();
+        console.log(bookno)
+        $.ajax({
+            type: "post",
+            url:  "/num",
+            data: {'bookno':bookno},
+            error: function() {
+                alert("404");
+            },
+            success: function(data) {
+                //alert(data.result);
+                drawBarChart1(data.result)
+                var txt=$("#txt");
+                var label=$("#label")
+                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
+                             txt.append("  ")   
+                             s=data.describe.scopeb[i];
+                             n=data.describe.numb[i];
+                             txt.append(s);
+                             txt.append(":");
+                             txt.append(n);
+                             txt.append("   ")
+
+                         };
+            }
+        })
+    };
+    //带钢种的单字段分析
+    function ch_num1(){
+        var bookno = $("#bookno").val();
+        var gk_no = $("#gk_no").find("option:selected").val();
+        console.log(bookno)
+        $.ajax({
+            type: "post",
+            url:  "/ch_num1",
+            data: {'bookno':bookno,'gk_no':gk_no},
+            error: function() {
+                alert("404");
+            },
+            success: function(data) {
+                //alert(data.result);
+                drawBarChart1(data.result)
+                var txt=$("#txt");
+                var label=$("#label")
+                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
+                             txt.append("  ")   
+                             s=data.describe.scopeb[i];
+                             n=data.describe.numb[i];
+                             txt.append(s);
+                             txt.append(":");
+                             txt.append(n);
+                             txt.append("   ")
+
+                         };
+            }
+        })
+    };
+
+    //带因素偏高偏低不带钢种的单字段统计
+    function ch_num2(){
+        var field1 = $("#field1").val();//炉次号
+        //var field2 = $("#field2").val();//字段
+        var field2 = $("#bookno1").find("option:selected").val();
+        var typee=1;
+        console.log(field1,field2)
+            $.ajax({
+            type: "post",
+            url:  "/ch_num2",
+            data: {'heat':field1,'bookno':field2,'typee':typee},
+            error: function() {
+                alert("404");
+            },
+            success: function(data) {
+                //alert(data.result);
+                alert(data.result.vvalue_x);
+                alert(data.result.vvalue_y);
+                drawBarChart1(data.result);
+            }
+        })
+
+    }; 
+    //自动加载钢种
+    function loadGrape_chen(){ 
+          $.ajax({
+         type: "POST",
+         dataType:"json",
+         url: "/getGrape" ,
+         data: {'greet':'hello'},
+         success: function(data){
+            //alert(data.result);
+            //alert(data.result.length);
+            pnames=data.result;
+            for(var pname in pnames){
+                console.log(pnames[pname])
+                $(".gangzhong_name").append("<option value='"+pnames[pname]+"'>"+pnames[pname]+"</option>");
+            }
+        },
+        error: function () {
+            alert("error");
+            }
+         });
+        };
+        
+    //初始化
+    $(function(){
+            loadOption_chen();
+            loadGrape_chen();
+
+        })
+</script>
+{% endblock %}
