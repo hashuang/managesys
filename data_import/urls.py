@@ -44,7 +44,6 @@ urlpatterns = [
     url(r'^steelprice',views.steelprice),
     #chen
     url(r'^chen', chyulia.chen),
-    url(r'^ch_num1',chyulia.ch_num1),
     url(r'^ch_num2',chyulia.ch_num2),
     url(r'^cost',chyulia.cost),
     url(r'^produce',chyulia.produce),
@@ -54,5 +53,9 @@ urlpatterns = [
     url(r'^fluctuation',chyulia.fluctuation),
     #比较时间
     url(r'^time',chyulia.time),
-    url(r'^steelprice',views.steelprice)
+    #多条件综合筛选
+    url(r'^multi_analy',chyulia.multi_analy),
+    url(r'^steelprice',views.steelprice),
+
+    
 ]

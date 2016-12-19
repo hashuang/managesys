@@ -9,30 +9,7 @@ from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
 import os
 import json
 import datetime
-from . import hashuang
-
-
-#按钢种进行字段统计
-def ch_num1(request):
-	print("success_ch_num1")
-	bookno=request.POST.get("bookno").upper();
-	gk_no=request.POST.get("gk_no");
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE GK_NO='"+gk_no+"'"
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	#print(bookno)
-	#print(scrapy_records[:5])
-	contentVO={
-		'title':'测试',
-		'state':'success',
-	}
-	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
-	contentVO['result']=ana_result
-	contentVO['describe']=ana_describe
-	print(ana_describe)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+#from . import hashuang
 
 #带单炉次因素偏高偏低的不分钢种字段分析
 def ch_num2(request):
@@ -52,7 +29,7 @@ def ch_num2(request):
 		'title':'测试',
 		'state':'success',
 	}
-	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
+	ana_result,ana_describe=num_describe(scrapy_records,bookno)
 	#print("ana_result1",ana_result)
 	vvalue=0
 	print("vvalue1:",vvalue)
@@ -78,6 +55,46 @@ def ch_num2(request):
 	print("ana_result",ana_result)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
+#可自由选择要进行筛选的条件
+def multi_analy(request):
+	print("multi_analy")
+	bookno=request.POST.get("bookno").upper();
+	gk_no=request.POST.get("gk_no");
+	OPERATESHIFT=request.POST.get("OPERATESHIFT");
+	OPERATECREW=request.POST.get("OPERATECREW");
+	station=request.POST.get("station");
+	if gk_no !='blank':
+		sentence_gk_no= " and gk_no='"+gk_no+"'"
+	else:
+		sentence_gk_no=''
+	if OPERATESHIFT !='blank':
+		sentence_OPERATESHIFT=" and OPERATESHIFT='"+OPERATESHIFT+"'"
+	else:
+		sentence_OPERATESHIFT=''
+	if OPERATECREW !='blank':
+		sentence_OPERATECREW=" and OPERATECREW='"+OPERATECREW+"'"
+	else:
+		sentence_OPERATECREW=''
+	if station !='blank':
+		sentence_station=" and station='"+station+"'"
+	else:
+		sentence_station=''
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_gk_no+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	#print(sentence)
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]=sentence
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	print(scrapy_records[:5])
+	contentVO={
+		'title':'测试',
+		'state':'success',
+	}
+	ana_result,ana_describe=num_describe(scrapy_records,bookno)
+	contentVO['result']=ana_result
+	contentVO['describe']=ana_describe
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 #计算投入料分布
 def cost(request):
@@ -181,7 +198,7 @@ def time(request):
 	print("success")
 	time1=request.POST.get("time1");
 	time2=request.POST.get("time2");
-	fieldname=request.POST.get("field");
+	fieldname=request.POST.get("field").upper();
 	print(time1)
 	print(time2)
 	sqlVO1={}
@@ -232,7 +249,7 @@ def fluctuation(request):
 def getGrape(request):
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS";
+	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	frame=DataFrame(scrapy_records)
@@ -268,6 +285,7 @@ def num_describe(scrapy_records,bookno):
 		if value != None :
 			scrapy_records[i][bookno] = float(value)
 	frame=DataFrame(scrapy_records)	
+	print(frame[bookno])
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr[bookno].dtype)
@@ -288,14 +306,21 @@ def num_describe(scrapy_records,bookno):
 	numy=[ele for ele in end]
 	desx=[ele for ele in describe.index]
 	desy=[ele for ele in describe]
+	#保留两位小数并以%形式展示
 	numy1=["%.2f%%"%(n*100) for n in numy]
+	#保留四位小数
+	numy2=["%.4f"%(n) for n in numy]
+	print("numx:",numx)
+	#print("numy:",numy)
+	#print("numy1:",numy1)
+	print("numy2:",numy2)
 	#contentVO={
 		#'title':'测试',
 		#'state':'success'
 	#}
 	ana_result={}
 	ana_result['scope']=numx
-	ana_result['num']=numy
+	ana_result['num']=numy2
 	ana_result['std_value']=std_value
 	ana_result['bookno']=bookno
 	#contentVO['result']=ana_result

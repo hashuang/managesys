@@ -6,17 +6,31 @@
 <h5><a href='/fluctuation'>波动率相关分析</a></h5>
 
 <div>
-    <!--<input type="text" name="bookno" value="{{current_tableno}}" id="bookno">-->
-    <p><strong>1.进行单字段的数据统计情况展示</strong></p>
-    钢种：<select name="gk_no" id="gk_no" class="gangzhong_name"></select>
-    字段名<select name="bookno" id="bookno" class="procedurename"></select>
-    <button onclick='num()' id='click0'>单字段分析(不带钢种)</button>
-    <button onclick='ch_num1()' id='click1'>单字段分析(带钢种)</button>
-    <br>注：还有些问题，因为有些字段是和钢种无关的，或者因为分钢种情况下数据就少了，图形就失真严重。
-    <!--<a href='/direct'>无需五数概括法情况</a>-->
-    <br>
+    <p><strong>1.钢种、班次、班别、工位筛选条件下的字段统计情况：</strong></p>
+    钢种：<select name="gk_no1" id="gk_no1" class="gangzhong_name"></select>
+    班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
+        <option value='blank' selected = "selected"></option>
+        <option value=1>白班</option>
+        <option value=2>中班</option>
+        <option value=3>夜班</option>
+    </select>
+    班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name">
+        <option value='blank' selected = "selected"></option>
+        <option value='A'>甲班</option>
+        <option value='B'>乙班</option>
+        <option value='C'>丙班</option>
+    </select>
+    工位：<select name="station" id="station" class="station_name">
+        <option value='blank' selected = "selected"></option>
+        <option value='BOF1'>BOF1</option>
+        <option value='BOF2'>BOF2</option>
+        <option value='BOF3'>BOF3</option>
+    </select>
+    字段名<select name="bookno2" id="bookno2" class="procedurename1"></select>
+    <button onclick='multi_analy()' id='multi_analy'>综合统计分析</button>
 </div>
-------------------------------------------------------------------------------
+    <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。</p>
+-------------------------------------------------------------------------------
 <div>
     <p><strong>2.单炉次投入成本及产品产出统计情况：</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
@@ -38,9 +52,35 @@
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
 <script type="text/javascript"> 
+    //多条件综合筛选
+    function multi_analy(){
+        var bookno = $("#bookno2").val();//字段，需要转化为大写
+        var gk_no = $("#gk_no1").val();//钢种,不用转化为大写
+        var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
+        var OPERATECREW = $("#OPERATECREW").val();//班别
+        var station = $("#station").val();//工位
+        alert("gk_no:"+gk_no+"\nOPERATESHIFT:"+OPERATESHIFT+"\nOPERATECREW:"+OPERATECREW+"\nstation:"+station+"\nbookno:"+bookno);
+        $.ajax({
+            type: "post",
+            url:  "/multi_analy",
+            data: {'bookno':bookno,'gk_no':gk_no,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
+            error: function() {
+                alert("发生错误，可能是无该筛选条件下的数据！");
+            },
+            success: function(data) {
+                //alert("multi_analy");
+                alert(data.state);
+                //alert(data.result);
+                //alert(data.result.xname)
+                //alert(data.result.yvalue)
+                drawBarChart2(data.result)
+            }
+         })
+    }
+
     //成本消耗
     function cost(){
-         var prime_analyse = $("#prime_analyse").val();
+        var prime_analyse = $("#prime_analyse").val();
         console.log(prime_analyse)
         $.ajax({
             type: "post",
@@ -53,7 +93,7 @@
                 //alert(data.result);
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart(data.result)
+                drawBarChart(data.result);
             }
         })
     };   
@@ -76,65 +116,6 @@
             }
         })
     };  
-    //不带钢种的单字段分析
-    function num(){
-        var bookno = $("#bookno").val();
-        console.log(bookno)
-        $.ajax({
-            type: "post",
-            url:  "/num",
-            data: {'bookno':bookno},
-            error: function() {
-                alert("404");
-            },
-            success: function(data) {
-                //alert(data.result);
-                drawBarChart1(data.result)
-                var txt=$("#txt");
-                var label=$("#label")
-                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
-                             txt.append("  ")   
-                             s=data.describe.scopeb[i];
-                             n=data.describe.numb[i];
-                             txt.append(s);
-                             txt.append(":");
-                             txt.append(n);
-                             txt.append("   ")
-
-                         };
-            }
-        })
-    };
-    //带钢种的单字段分析
-    function ch_num1(){
-        var bookno = $("#bookno").val();
-        var gk_no = $("#gk_no").find("option:selected").val();
-        console.log(bookno)
-        $.ajax({
-            type: "post",
-            url:  "/ch_num1",
-            data: {'bookno':bookno,'gk_no':gk_no},
-            error: function() {
-                alert("404");
-            },
-            success: function(data) {
-                //alert(data.result);
-                drawBarChart1(data.result)
-                var txt=$("#txt");
-                var label=$("#label")
-                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
-                             txt.append("  ")   
-                             s=data.describe.scopeb[i];
-                             n=data.describe.numb[i];
-                             txt.append(s);
-                             txt.append(":");
-                             txt.append(n);
-                             txt.append("   ")
-
-                         };
-            }
-        })
-    };
 
     //带因素偏高偏低不带钢种的单字段统计
     function ch_num2(){
@@ -170,8 +151,9 @@
             //alert(data.result);
             //alert(data.result.length);
             pnames=data.result;
+            $(".gangzhong_name").append("<option value='blank' selected =\"selected\"></option>");
             for(var pname in pnames){
-                console.log(pnames[pname])
+                console.log(pnames[pname]) 
                 $(".gangzhong_name").append("<option value='"+pnames[pname]+"'>"+pnames[pname]+"</option>");
             }
         },
