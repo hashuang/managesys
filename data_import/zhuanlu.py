@@ -21,7 +21,7 @@ PRO_BOF_HIS_ALLFIELDS={
 								'SCRAPWGT':'废钢装入量(kg)',
 								'SLAGWGT':'渣钢(kg)',
 								'RETURNSTEELWEIGHT':'回炉钢液量(kg)',
-								'IS_TEMP':'铁水入炉温度',
+								#'IS_TEMP':'铁水入炉温度',
 								'L12010302':'石灰石_40-70mm',
 								'L12010601':'萤石_FL80',
 								'L12020201':'增碳剂',
