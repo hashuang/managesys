@@ -92,7 +92,6 @@ function loadOption_chen(){
             pnames=data.procedure_names;
             for(var pname in pnames){
                 console.log(pnames[pname])
-                $(".procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>");
                 $(".procedurename1").append("<option value='"+pname+"'>"+pnames[pname]+"</option>");
                 $(".fluctution_time").append("<option value='"+pname+"'>"+pnames[pname]+"</option>");
             }
