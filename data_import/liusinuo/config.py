@@ -8,7 +8,7 @@ db_port = 3306
 '''
 
 #我的电脑
-db_host = 'localhost'
+db_host = '202.204.54.215'
 db_user = 'root'
 db_password = '123456'
 db_name = 'qinggang'
