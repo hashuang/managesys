@@ -26,6 +26,7 @@ class BaseManage(models.Manager):
 	#将结果返回为dict
 	def dictfetchall(self,cursor):
 		columns = [col[0] for col in cursor.description]
+		print(columns)
 		return [
 	        dict(zip(columns, row))
 	        for row in cursor.fetchall()
@@ -35,11 +36,13 @@ class BaseManage(models.Manager):
 		#如果是多数据库
 		#cursor = connections['my_db_alias'].cursor()
 		db_name=sqlVO.get('db_name')
+		print(db_name)
 		if sqlVO.get('db_name')!=None:
 			cursor = connections[db_name].cursor()
 		else:
 			cursor = connection.cursor()
 		cursor.execute(sqlVO.get('sql'),sqlVO.get('vars',None))
+		print(cursor)
 		return self.dictfetchall(cursor)
 
 	def direct_execute_query_sqlVO(self,sqlVO):

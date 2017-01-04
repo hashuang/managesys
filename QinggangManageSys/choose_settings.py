@@ -15,32 +15,41 @@ import platform
 
 node = platform.node()
 print(node)
-dev_machines = ('cheng-cx','cheng-cx.local1' )
+dev_machines = ('cheng-cx','cheng-cx.local' )
 
 if node in dev_machines:
-    # folder My_Blog
-    MyBlog = os.path.dirname(os.path.dirname(__file__))
+    # folder QinggangManageSys
+    QinggangManageSys = os.path.dirname(os.path.dirname(__file__))
     # project dir, contains static and media folder under DEV environment
-    PROJECT_DIR = os.path.dirname(MyBlog)
+    PROJECT_DIR = os.path.dirname(QinggangManageSys)
     DEBUG = True
     DATABASES = {
         'default': {
-            # 'ENGINE': 'django.db.backends.sqlite3',
-            # 'NAME': os.path.join(My_Blog, 'db.sqlite3'),
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
             'HOST': 'localhost',
             'PORT': '3306',
-        }
+        },
+        'l2own': {
+            'ENGINE': 'django.db.backends.oracle',
+            'NAME':'orcl',
+            'USER': 'qg_user',
+            'PASSWORD': '123456',
+            'HOST': '202.204.54.215',
+            'PORT': '1521',
+        },
     }
-    print(DATABASES)
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+    print(STATIC_ROOT)
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
     MEDIA_URL = '/media/'
-    TEMPLATE_DIRS = [os.path.join(MyBlog, 'templates')]
+    STATICFILES_DIRS = (
+        os.path.join(PROJECT_DIR, 'static'),
+    )
+    TEMPLATE_DIRS = [os.path.join(QinggangManageSys, 'templates')]
     ALLOWED_HOSTS = ['*']
 else:
     DEBUG = True
@@ -60,24 +69,6 @@ else:
             'PASSWORD': '123456',
             'HOST': '202.204.54.215',
             'PORT': '3306',
-        },
-        '1default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'qinggang',
-        'USER': 'qinggang',
-        'PASSWORD': 'qinggang',
-        'HOST': '10.30.0.152',
-        'PORT': '1521',
-        },
-        'qg': {
-            'ENGINE': 'django.db.backends.oracle',
-            'NAME': 'maksim',
-            'USER': 'changxin',
-            'PASSWORD': '123456',
-            'HOST': 'localhost',
-            'PORT': '1521',
         },
         'mes': {
             'ENGINE': 'django.db.backends.oracle',

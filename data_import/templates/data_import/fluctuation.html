@@ -1,0 +1,85 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+
+<!--
+<link rel="stylesheet" href="/static/public/css/reset.css" type="text/css">
+<link rel="stylesheet" href="/static/public/css/default.css" type="text/css">
+<link rel="stylesheet" href="/static/public/css/style.css" type="text/css">
+
+<link type="text/css" rel="stylesheet" href="/static/libraries/syntaxhighlighter/public/css/shCoreDefault.css">
+<script type="text/javascript" src="/static/libraries/syntaxhighlighter/public/javascript/XRegExp.js"></script>
+<script type="text/javascript" src="/static/libraries/syntaxhighlighter/public/javascript/shCore.js"></script>
+<script type="text/javascript" src="/static/libraries/syntaxhighlighter/public/javascript/shLegacy.js"></script>
+<script type="text/javascript" src="/static/libraries/syntaxhighlighter/public/javascript/shBrushJScript.js"></script>
+<script type="text/javascript" src="/static/libraries/syntaxhighlighter/public/javascript/shBrushXML.js"></script>
+-->
+<script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
+<script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
+<script type="text/javascript" src="/static/data_import/js/zebra_datepicker.js"></script>
+<link rel="stylesheet" href="/static/data_import/css/default.css" type="text/css">
+<script type="text/javascript"> 
+	$(document).ready(function() {
+    	//$('#datepicker-example5').Zebra_DatePicker({
+    		//direction: ['2012-08-01', '2012-08-12']
+			//});
+            $('#datepicker-example7-start').Zebra_DatePicker({
+                direction: ['2016-01-01', '2016-07-12'],
+                pair: $('#datepicker-example7-end')
+            });
+            $('#datepicker-example7-end').Zebra_DatePicker({
+                direction: 1
+            });
+ 		});
+	function test(){
+		var time1 = $('#datepicker-example7-start').val();
+		var time2 = $('#datepicker-example7-end').val();
+		var field = $("#flu_field").find("option:selected").val();
+		//alert(time1);
+		//var time1 = new Date(document.getElementById('datepicker-example7-start').value);
+		//var time2 = new Date(document.getElementById('datepicker-example7-end').value);
+		console.log(time1,time2)
+            $.ajax({
+            type: "post",
+            url:  "/time",
+            data: {'time1':time1,'time2':time2,'field':field},
+            error: function() {
+                alert("404");
+            },
+            success: function(data) {
+            	alert("success!");
+            	//alert(data.result.scope);
+            	//alert(data.result.num);
+                //alert(data.compare);
+                $("#biaozhuncha").html(">>计算得，在该时间段内，字段"+data.result.bookno+"的标准差（波动率）为："+data.result.std_value); 
+                drawBarChart2(data.result);
+            }
+        })
+    }; 
+    //初始化
+    $(function(){
+            loadOption_chen();
+        })
+</script>
+
+<h2>波动率相关分析</h2>
+<h5><a href='/chen'>返回转炉数据分析</a></h5>
+<p><strong>1.请选择要进行波动率计算的时间范围</strong></p>
+<form action="javascript:void(0)" method="post">
+	<div>
+		<!--<input id="datepicker-example5" type="text">-->
+		<b>起始时间：</b><input id="datepicker-example7-start" type="text">
+		<b>终止时间：</b><input id="datepicker-example7-end" type="text">
+		<b>字段名：</b><select name="flu_field" id="flu_field" class="fluctution_time"></select>
+		<button onclick='test()' id='click1'>ACTION</button>
+		<p></p>
+	</div>
+	<div>
+		<label name='biaozhuncha' id='biaozhuncha'></label>
+	</div>
+	<div id="main1" style="width: 700px;height:400px;"></div>
+</form>
+
+
+
+{% endblock %}
