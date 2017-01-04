@@ -25,7 +25,7 @@
     </select><br><br>
     字段名:<select name="bookno" id="bookno" class="procedurename"></select><br><br>
 <!--<button onclick='num()'>分析结果绘图</button>-->
-<button onclick='multi_analy()' id='multi_analy'>统计分析</button>
+<button onclick='zong_analy()' id='zong_analy'>统计分析</button>
 </div>
 <!--<a href='/direct'>无需五数概括法情况</a>-->
 <div id="main1" style="width: 660px;height:400px;"></div>
@@ -70,7 +70,7 @@
              loadGrape_ha();
         })
     //多条件综合筛选
-    function multi_analy(){
+    function zong_analy(){
         var bookno = $("#bookno").val();//字段，需要转化为大写
         var gk_no = $("#gk_no").val();//钢种,不用转化为大写
         var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
@@ -79,7 +79,7 @@
         //alert("gk_no:"+gk_no+"\nOPERATESHIFT:"+OPERATESHIFT+"\nOPERATECREW:"+OPERATECREW+"\nstation:"+station+"\nbookno:"+bookno);
         $.ajax({
             type: "post",
-            url:  "/multi_analy_ha",
+            url:  "/zong_analy_ha",
             data: {'bookno':bookno,'gk_no':gk_no,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
             error: function() {
                 alert("发生错误，可能是无该筛选条件下的数据！");

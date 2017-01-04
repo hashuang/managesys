@@ -57,7 +57,7 @@ urlpatterns = [
     #多条件综合筛选
     url(r'^multi_analy',chyulia.multi_analy),
     url(r'^steelprice',views.steelprice),
-    url(r'^multi_analy_ha',hashuang.multi_analy)
+    url(r'^zong_analy_ha',hashuang.multi_analy)
 
     
 ]
