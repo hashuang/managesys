@@ -57,3 +57,44 @@ def num_describe(scrapy_records,bookno):
 	ana_describe['numb']=desy
 	#contentVO['describe']=ana_describe
 	return ana_result,ana_describe
+
+#可自由选择要进行筛选的条件
+def multi_analy(request):
+	#print("multi_analy")
+	bookno=request.POST.get("bookno").upper();
+	gk_no=request.POST.get("gk_no");
+	OPERATESHIFT=request.POST.get("OPERATESHIFT");
+	OPERATECREW=request.POST.get("OPERATECREW");
+	station=request.POST.get("station");
+	if gk_no !='blank':
+		sentence_gk_no= " and gk_no='"+gk_no+"'"
+	else:
+		sentence_gk_no=''
+	if OPERATESHIFT !='blank':
+		sentence_OPERATESHIFT=" and OPERATESHIFT='"+OPERATESHIFT+"'"
+	else:
+		sentence_OPERATESHIFT=''
+	if OPERATECREW !='blank':
+		sentence_OPERATECREW=" and OPERATECREW='"+OPERATECREW+"'"
+	else:
+		sentence_OPERATECREW=''
+	if station !='blank':
+		sentence_station=" and station='"+station+"'"
+	else:
+		sentence_station=''
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_gk_no+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	#print(sentence)
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]=sentence
+	#print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#print(scrapy_records[:5])
+	contentVO={
+		'title':'测试',
+		'state':'success',
+	}
+	ana_result,ana_describe=num_describe(scrapy_records,bookno)
+	contentVO['result']=ana_result
+	contentVO['describe']=ana_describe
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	

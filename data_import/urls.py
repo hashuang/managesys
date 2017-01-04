@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from . import views
 from . import chyulia
+from . import hashuang
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -56,6 +57,7 @@ urlpatterns = [
     #多条件综合筛选
     url(r'^multi_analy',chyulia.multi_analy),
     url(r'^steelprice',views.steelprice),
+    url(r'^multi_analy_ha',hashuang.multi_analy)
 
     
 ]
