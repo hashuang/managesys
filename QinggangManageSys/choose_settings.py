@@ -29,7 +29,7 @@ if node in dev_machines:
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': 'localhost',
+            'HOST': '202.204.54.75',
             'PORT': '3306',
         },
         'l2own': {
@@ -37,7 +37,7 @@ if node in dev_machines:
             'NAME':'orcl',
             'USER': 'qg_user',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.215',
+            'HOST': '202.204.54.75',
             'PORT': '1521',
         },
     }
@@ -59,7 +59,7 @@ else:
             'NAME':'orcl',
             'USER': 'qg_user',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.215',
+            'HOST': '202.204.54.75',
             'PORT': '1521',
         },
         'default': {
@@ -67,7 +67,7 @@ else:
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.215',
+            'HOST': '202.204.54.75',
             'PORT': '3306',
         },
         'mes': {
