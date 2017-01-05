@@ -83,9 +83,8 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('Zr','Zr'),
 								('Ce','Ce'),
 								('Fe','Fe'),
-								('TEMPOFARRIVE','进站温度(℃)'),
-								('TEMPOFDEPARTURE','出站温度(℃)'),
-
+								#('TEMPOFARRIVE','进站温度(℃)'), 基本为0清洗完只有3个数
+								#('TEMPOFDEPARTURE','出站温度(℃)'),
 	
                        ])
 PRO_BOF_HIS_ALLFIELDS={
@@ -181,5 +180,6 @@ PRO_BOF_HIS_ALLFIELDS={
 
 PRO_BOF_HIS_ALLFIELDS_B={
 								'SUBLANCE_INDEPTH':'副枪插入深度',
+
 						}                        
 
