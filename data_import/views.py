@@ -533,7 +533,8 @@ def lond_to(request):
 		'state':'success'
 	}
 	ana_result={}
-	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
+	#print("result:")
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
