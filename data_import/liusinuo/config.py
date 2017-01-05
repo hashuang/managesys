@@ -15,17 +15,17 @@ db_name = 'qinggang'
 db_port = 3306
 '''
 #MES
-oralce_db_host = '10.30.0.17' #改为相关主机的ip地址
-oralce_db_user = 'BD_query'
-oralce_db_password = 'BD_query'
-oralce_listener_name = 'mesdb'#询问监听器的名字
+oralce_db_host = '10.xxx.17' #改为相关主机的ip地址
+oralce_db_user = 'BD_xxy'
+oralce_db_password = 'BDxxxery'
+oralce_listener_name = 'mexx'#询问监听器的名字
 oralce_db_port = 1521
 
 #二级
-# oralce_db_host = '10.20.0.22' #改为相关主机的ip地址
-# oralce_db_user = 'BD_query'
-# oralce_db_password = 'BD_query'
-# oralce_listener_name = 'qgil2db'#询问监听器的名字
+# oralce_db_host = '10.20.xx.22' #改为相关主机的ip地址
+# oralce_db_user = 'xxxxx'
+# oralce_db_password = 'xxxx'
+# oralce_listener_name = 'qgxxdb'#询问监听器的名字
 # oralce_db_port = 1521
 
 row_num=2000
