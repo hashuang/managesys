@@ -170,15 +170,15 @@ function drawBarAndBrokenLineChart(data){
 }
 
 
-//地图
-function drawMapChart(data){
+//地图----中国地图
+function drawMapChartChina(data,tradeNo,aspect_name,maxValue){
     // echarts.registerMap('china', data.chinaJson);
     var myChart = echarts.init(document.getElementById('main4'));
     
         // 指定图表的配置项和数据
     option = {
         title : {
-            text: '空间分析 ',
+            text: aspect_name,
             subtext: 'QDIS',
             x:'center'
         },
@@ -189,15 +189,17 @@ function drawMapChart(data){
         legend: {
             orient: 'vertical',
             x:'left',
-            data:["-"]
+            data:[tradeNo]
         },
         dataRange: {
-            min: 0,
-            max: 5000,
+            min: 1,
+            max: maxValue,
             x: 'left',
             y: 'bottom',
             text:['高','低'],           // 文本，默认为数值文本
-            calculable : true
+            calculable : true,
+            color: ['orangered','yellow','lightskyblue']
+            //color: ['red','lightgray']
         },
         toolbox: {
             show: true,
@@ -220,10 +222,135 @@ function drawMapChart(data){
         },
         series: [
             {
-                name: "-",
+                name: tradeNo,
                 type: 'map',
                 mapType: 'china',
                 roam: false,
+                itemStyle:{
+                    normal:{
+                        label:{show:true},
+                    },
+                    emphasis:{label:{show:true}}
+
+                },
+                data: data
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+//地图 --- 世界地图
+function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: aspect_name,
+            subtext: 'QDIS',
+            x:'center',
+            y:'top'
+        },
+       
+        tooltip : {
+            trigger: 'item',
+            formatter : function (params) {
+                var value = (params.value + '').split('.');
+                value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
+                return  aspect_name + '<br/>' + params.name + ' : ' + value + unite;
+            }
+        },
+        toolbox: {
+            show : true,
+            orient : 'vertical',
+            x: 'right',
+            y: 'center',
+            feature : {
+                //mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                //restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        dataRange: {
+            min: 0,
+            max: maxValue,
+            text:['High','Low'],
+            realtime: false,
+            calculable : true,
+            color: ['orangered','yellow','lightskyblue']
+        },
+        series : [
+            {
+                name: aspect_name,
+                type: 'map',
+                mapType: 'world',
+                roam: true,
+                mapLocation: {
+                    y : 60
+                },
+                itemStyle:{
+                    emphasis:{label:{show:true}}
+                },
+
+
+                data:data
+            }
+        ]
+    };
+                    
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+
+//地图----山东地图
+function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: aspect_name,
+            subtext: 'QDIS',
+            x:'center'
+        },
+        legend: {
+            orient: 'vertical',
+            x:'left',
+            data:[tradeNo]
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter : function (params) {
+                var value = (params.value + '').split('.');
+                value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
+                return  aspect_name + '<br/>' + params.name + ' : ' + value + unite;
+            }
+            // formatter: function(a){
+            //   return a[2];
+            // }
+        },
+        dataRange: {
+            min: 0,
+            max: maxValue,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true,
+            color: ['orangered','yellow','lightskyblue']
+        },
+        series : [
+            {
+                name: tradeNo,
+                type: 'map',
+                mapType: '山东',
+                selectedMode: 'single',
                 itemStyle:{
                     normal:{label:{show:true}},
                     emphasis:{label:{show:true}}
@@ -237,44 +364,6 @@ function drawMapChart(data){
 }
 
 
-/*
-//地图
-function drawMapChart(data){
-    echarts.registerMap('china', data.chinaJson);
-    var myChart = echarts.init(document.getElementById('main4'));
-    
-        // 指定图表的配置项和数据
-    option = {
-        tooltip: {
-            trigger: 'item',
-            formatter: '{b}'
-        },
-        series: [
-            {
-                name: '中国',
-                type: 'map',
-                mapType: 'china',
-                selectedMode : 'multiple',
-                label: {
-                    normal: {
-                        show: true
-                    },
-                    emphasis: {
-                        show: true
-                    }
-                },
-                data:[
-                    {name:'广东', selected:true}
-                ]
-            }
-        ]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-}
-
-*/
 function loadjson(){
 	var chart = echarts.init(document.getElementById('main'),'vintage');
 		chart.setOption({
