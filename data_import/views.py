@@ -551,19 +551,23 @@ def space(request):
 	elif request.method == "POST":
 		print(request.POST)
 		try:
-			dictionary, conclusion = main(int(request.POST.get("module")),
-										  int(request.POST.get('aspect')),
-										  int(request.POST.get('dateChoose')),
-										  request.POST.get('sql_date1'),
-										  request.POST.get('sql_date2'),
-										  request.POST.get('sql_cust'),
-										  request.POST.get('tradeNo'),
-										  int(request.POST.get('space')))
+			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
+										  								int(request.POST.get('aspect')),
+										  								int(request.POST.get('dateChoose')),
+										 						 		request.POST.get('sql_date1'),
+										 						 		request.POST.get('sql_date2'),
+										  								request.POST.get('sql_cust'),
+										  								request.POST.get('tradeNo'),
+										  								int(request.POST.get('space')))
 			rst = []
 			for key in dictionary.keys():
 				rst.append({'name': key, 'value': dictionary.get(key)})
 			return HttpResponse(json.dumps({'describe': conclusion,
-				                            'result': rst}), content_type='text/json')
+				                            'result': rst,
+				                            'module_name': module_name,
+				                            'aspect_name': aspect_name,
+				                            'unite': unite,
+				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
 		except Exception as ex:
 			print(ex)
 

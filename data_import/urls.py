@@ -37,6 +37,8 @@ urlpatterns = [
     url(r'^echarts',views.echarts),
     #sinuo
     url(r'^space',views.space),
+    url(r'^liusinuo',views.space),
+    #ha
     url(r'^ha', views.ha),
     url(r'^num',views.num),
     url(r'^lond_to',views.lond_to),
