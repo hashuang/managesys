@@ -70,7 +70,7 @@ def num_describe(scrapy_records,bookno):
 	d2=getB(s1)
 	d1_data=[]
 	d2_data=[]
-	d3_data=[]
+	#d3_data=[]
 	d4_data=[]
 	d1_valid=vaild(d1,ivalue_valid,d1_data)
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
@@ -78,14 +78,13 @@ def num_describe(scrapy_records,bookno):
 	numx2=sorted(numx1)
 	sections=[]
 	numx3=union_section(numx2,sections)
-	numy1=vaild(numy,ivalue_valid,d3_data)
+	#numy1=vaild(numy,ivalue_valid,d3_data)
+	numy1=["%.6f"%(n) for n in numy]
 	desy1=vaild(desy,ivalue_valid,d4_data)
 	ana_result={}
 	ana_result['scope']=numx3
 	#print(ana_result['scope'])
 	ana_result['num']=numy1
-	#print("numy:")
-	#print(numy)
 	#contentVO['result']=ana_result
 	ana_describe={}
 	ana_describe['scopeb']=desx
