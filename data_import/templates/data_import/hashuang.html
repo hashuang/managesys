@@ -3,6 +3,7 @@
 {% block content %}
 
 <h1>青钢转炉数据分析</h1>
+注：存在多条件筛选无数据的情况或数据极少清洗后数据为空<br><br>
 <div>
     钢种：<select name="gk_no" id="gk_no" class="gangzhong_name"></select><br><br>
     班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
@@ -82,7 +83,7 @@
             url:  "/zong_analy_ha",
             data: {'bookno':bookno,'gk_no':gk_no,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
             error: function() {
-                alert("发生错误，可能是无该筛选条件下的数据！");
+                alert("该筛选条件下无数据！");
             },
             success: function(data) {
                 //alert("multi_analy");
