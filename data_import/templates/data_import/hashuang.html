@@ -3,8 +3,11 @@
 {% block content %}
 
 <h1>青钢转炉数据分析</h1>
+注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空<br>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+2,钢种为计划牌号。钢种中选项null，在数据库中SPECIFICATION='',但依然存在676条数据<br><br> 
 <div>
-    钢种：<select name="gk_no" id="gk_no" class="gangzhong_name"></select><br><br>
+    钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
     班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
         <option value='blank' selected = "selected"></option>
         <option value=1>白班</option>
@@ -67,12 +70,12 @@
 
     $(function(){
              loadOption_ha();
-             loadGrape_ha();
+             p_loadGrape_ha();
         })
     //多条件综合筛选
     function zong_analy(){
         var bookno = $("#bookno").val();//字段，需要转化为大写
-        var gk_no = $("#gk_no").val();//钢种,不用转化为大写
+        var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
         var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
         var OPERATECREW = $("#OPERATECREW").val();//班别
         var station = $("#station").val();//工位
@@ -80,9 +83,9 @@
         $.ajax({
             type: "post",
             url:  "/zong_analy_ha",
-            data: {'bookno':bookno,'gk_no':gk_no,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
+            data: {'bookno':bookno,'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
             error: function() {
-                alert("发生错误，可能是无该筛选条件下的数据！");
+                alert("该筛选条件下无数据！");
             },
             success: function(data) {
                 //alert("multi_analy");

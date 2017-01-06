@@ -103,11 +103,11 @@ function loadOption_chen(){
         }
     })
 }
-function loadGrape_ha(){ 
+function p_loadGrape_ha(){ 
     $.ajax({
         type: "POST",
         dataType:"json",
-        url: "/getGrape" ,
+        url: "/paihao_getGrape" ,
         data: {'greet':'hello'},
         success: function(data){
             pnames=data.result;

@@ -26,10 +26,7 @@ def num_describe(scrapy_records,bookno):
 			#print(value)
 			#bookno=value
 	#print(bookno)
-	for i in range(len(scrapy_records)):
-		value = scrapy_records[i].get(bookno,None)
-		if value != None :
-			scrapy_records[i][bookno] = float(value)		
+	print(scrapy_records[1:5])
 	for n in range(len(scrapy_records)):
 		ivalue = scrapy_records[n].get(bookno,None)
 		if ivalue !=None and ivalue !=0:
@@ -37,8 +34,12 @@ def num_describe(scrapy_records,bookno):
 			print(ivalue)
 			break;
 	ivalue_b=str(ivalue)
-	ivalue_valid=len(ivalue_b.split('.')[1])#小数位数
-	print(ivalue_valid)
+	ivalue_valid=ivalue_num(ivalue_b)#小数位数
+	print(ivalue_valid)		
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(bookno,None)
+		if value != None :
+			scrapy_records[i][bookno] = float(value)			
 	frame=DataFrame(scrapy_records)	
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
@@ -96,14 +97,17 @@ def num_describe(scrapy_records,bookno):
 def multi_analy(request):
 	#print("multi_analy")
 	bookno=request.POST.get("bookno").upper();
-	gk_no=request.POST.get("gk_no");
+	SPECIFICATION=request.POST.get("SPECIFICATION");
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");
 	OPERATECREW=request.POST.get("OPERATECREW");
 	station=request.POST.get("station");
-	if gk_no !='blank':
-		sentence_gk_no= " and gk_no='"+gk_no+"'"
+	if SPECIFICATION !='blank':
+		if SPECIFICATION =='null':
+			sentence_SPECIFICATION="and SPECIFICATION is null"
+		else:	
+			sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
 	else:
-		sentence_gk_no=''
+		sentence_SPECIFICATION=''
 	if OPERATESHIFT !='blank':
 		sentence_OPERATESHIFT=" and OPERATESHIFT='"+OPERATESHIFT+"'"
 	else:
@@ -116,7 +120,7 @@ def multi_analy(request):
 		sentence_station=" and station='"+station+"'"
 	else:
 		sentence_station=''
-	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_gk_no+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
 	#print(sentence)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
@@ -154,17 +158,54 @@ def getB(s):
         else:
             data.append(a1[1][:-1])
     return data	
-def vaild(lis,ivalue_valid,data):
-    for i in range(len(lis)):
-        shu=lis[i]
-        shua=float(shu)
-        shub=round(shua,ivalue_valid)
-        data.append(shub)
-    return data 
-def union_section(section_point,sections):
+#def vaild(lis,ivalue_valid,data):
+    #for i in range(len(lis)):
+        #shu=lis[i]
+        #shua=float(shu)
+        #shub=round(shua,ivalue_valid)
+        #data.append(shub)
+    #return data 
+def union_section(section_point,sections):#拼接区间
     for i in range(len(section_point)):
         section=None
         if i<len(section_point)-1:
             section='('+str(section_point[i])+','+str(section_point[i+1])+']'
             sections.append(section)
-    return sections       	
+    return sections 
+def ivalue_num(num):#判断有效位数
+    a=str(num)
+    if(a.isdigit()):
+        ivalue_valid=0
+    else:
+        ivalue_valid=len(a.split('.')[1])
+    return  ivalue_valid   
+def vaild(lis,ivalue_valid,data):#取有效位数
+    for i in range(len(lis)):
+        shu=lis[i]
+        if ivalue_valid==0:
+            shua=int(float(shu))
+            data.append(shua)
+        else:    
+            shua=float(shu)
+            shub=round(shua,ivalue_valid)
+            data.append(shub)
+    return data 
+#从数据库动态加载钢种
+def paihao_getGrape(request):
+	print("计划牌号")
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	#sqlVO["sql"]="select distinct SPECIFICATION from qg_user.PRO_BOF_HIS_ALLFIELDS order by SPECIFICATION";
+	sqlVO["sql"]="select SPECIFICATION  from pro_bof_his_allfields group by SPECIFICATION order by count(*) DESC"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	frame=DataFrame(scrapy_records)
+	#print(frame['SPECIFICATION'])
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	grape=[ele for ele in frame['SPECIFICATION']]
+	#print(grape)
+	contentVO['result']=grape
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')             	
