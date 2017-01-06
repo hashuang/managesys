@@ -26,10 +26,7 @@ def num_describe(scrapy_records,bookno):
 			#print(value)
 			#bookno=value
 	#print(bookno)
-	for i in range(len(scrapy_records)):
-		value = scrapy_records[i].get(bookno,None)
-		if value != None :
-			scrapy_records[i][bookno] = float(value)		
+	print(scrapy_records[1:5])
 	for n in range(len(scrapy_records)):
 		ivalue = scrapy_records[n].get(bookno,None)
 		if ivalue !=None and ivalue !=0:
@@ -37,8 +34,12 @@ def num_describe(scrapy_records,bookno):
 			print(ivalue)
 			break;
 	ivalue_b=str(ivalue)
-	ivalue_valid=len(ivalue_b.split('.')[1])#小数位数
-	print(ivalue_valid)
+	ivalue_valid=ivalue_num(ivalue_b)#小数位数
+	print(ivalue_valid)		
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(bookno,None)
+		if value != None :
+			scrapy_records[i][bookno] = float(value)			
 	frame=DataFrame(scrapy_records)	
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
@@ -154,17 +155,35 @@ def getB(s):
         else:
             data.append(a1[1][:-1])
     return data	
-def vaild(lis,ivalue_valid,data):
-    for i in range(len(lis)):
-        shu=lis[i]
-        shua=float(shu)
-        shub=round(shua,ivalue_valid)
-        data.append(shub)
-    return data 
-def union_section(section_point,sections):
+#def vaild(lis,ivalue_valid,data):
+    #for i in range(len(lis)):
+        #shu=lis[i]
+        #shua=float(shu)
+        #shub=round(shua,ivalue_valid)
+        #data.append(shub)
+    #return data 
+def union_section(section_point,sections):#拼接区间
     for i in range(len(section_point)):
         section=None
         if i<len(section_point)-1:
             section='('+str(section_point[i])+','+str(section_point[i+1])+']'
             sections.append(section)
-    return sections       	
+    return sections 
+def ivalue_num(num):#判断有效位数
+    a=str(num)
+    if(a.isdigit()):
+        ivalue_valid=0
+    else:
+        ivalue_valid=len(a.split('.')[1])
+    return  ivalue_valid   
+def vaild(lis,ivalue_valid,data):#取有效位数
+    for i in range(len(lis)):
+        shu=lis[i]
+        if ivalue_valid==0:
+            shua=int(float(shu))
+            data.append(shua)
+        else:    
+            shua=float(shu)
+            shub=round(shua,ivalue_valid)
+            data.append(shub)
+    return data          	
