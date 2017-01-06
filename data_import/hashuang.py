@@ -97,14 +97,17 @@ def num_describe(scrapy_records,bookno):
 def multi_analy(request):
 	#print("multi_analy")
 	bookno=request.POST.get("bookno").upper();
-	gk_no=request.POST.get("gk_no");
+	SPECIFICATION=request.POST.get("SPECIFICATION");
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");
 	OPERATECREW=request.POST.get("OPERATECREW");
 	station=request.POST.get("station");
-	if gk_no !='blank':
-		sentence_gk_no= " and gk_no='"+gk_no+"'"
+	if SPECIFICATION !='blank':
+		if SPECIFICATION =='null':
+			sentence_SPECIFICATION="and SPECIFICATION is null"
+		else:	
+			sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
 	else:
-		sentence_gk_no=''
+		sentence_SPECIFICATION=''
 	if OPERATESHIFT !='blank':
 		sentence_OPERATESHIFT=" and OPERATESHIFT='"+OPERATESHIFT+"'"
 	else:
@@ -117,7 +120,7 @@ def multi_analy(request):
 		sentence_station=" and station='"+station+"'"
 	else:
 		sentence_station=''
-	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_gk_no+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
 	#print(sentence)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
@@ -186,4 +189,23 @@ def vaild(lis,ivalue_valid,data):#取有效位数
             shua=float(shu)
             shub=round(shua,ivalue_valid)
             data.append(shub)
-    return data          	
+    return data 
+#从数据库动态加载钢种
+def paihao_getGrape(request):
+	print("计划牌号")
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	#sqlVO["sql"]="select distinct SPECIFICATION from qg_user.PRO_BOF_HIS_ALLFIELDS order by SPECIFICATION";
+	sqlVO["sql"]="select SPECIFICATION  from pro_bof_his_allfields group by SPECIFICATION order by count(*) DESC"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	frame=DataFrame(scrapy_records)
+	#print(frame['SPECIFICATION'])
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	grape=[ele for ele in frame['SPECIFICATION']]
+	#print(grape)
+	contentVO['result']=grape
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')             	
