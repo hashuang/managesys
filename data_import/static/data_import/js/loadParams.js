@@ -7,6 +7,7 @@ function loadOption(){
             alert("404");
         },
         success: function(data) {
+
             console.log(data.procedure_names);
             pnames=data.procedure_names;
             for(var pname in pnames){
@@ -28,7 +29,8 @@ function loadOption_ha(){
             alert("404");
         },
         success: function(data) {
-            //console.log(data.procedure_names);
+            //console.log(data.procedure_names)
+            console.log(data.procedure_names);
             pnames=data.procedure_names;
             for(var pname in pnames){
                 console.log(pnames[pname])
@@ -101,4 +103,22 @@ function loadOption_chen(){
         }
     })
 }
-
+function p_loadGrape_ha(){ 
+    $.ajax({
+        type: "POST",
+        dataType:"json",
+        url: "/paihao_getGrape" ,
+        data: {'greet':'hello'},
+        success: function(data){
+            pnames=data.result;
+            $(".gangzhong_name").append("<option value='blank' selected =\"selected\"></option>");
+            for(var pname in pnames){
+                 console.log(pnames[pname]) 
+                 $(".gangzhong_name").append("<option value='"+pnames[pname]+"'>"+pnames[pname]+"</option>");
+            }
+        },
+        error: function () {
+            alert("error");
+            }
+        });
+        };

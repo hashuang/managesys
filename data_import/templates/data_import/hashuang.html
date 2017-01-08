@@ -3,20 +3,40 @@
 {% block content %}
 
 <h1>青钢转炉数据分析</h1>
-
-字段名:<br>
-
-<!--<input type="text" name="bookno" value="{{current_tableno}}" id="bookno">-->
-<select name="bookno" id="bookno" class="procedurename"></select>
-<br><br>
-<button onclick='num()'>分析结果绘图</button>
+注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空<br>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+2,钢种为计划牌号。钢种中选项null，在数据库中SPECIFICATION='',但依然存在676条数据<br><br> 
+<div>
+    钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
+    班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
+        <option value='blank' selected = "selected"></option>
+        <option value=1>白班</option>
+        <option value=2>中班</option>
+        <option value=3>夜班</option>
+    </select><br><br>
+    班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name">
+        <option value='blank' selected = "selected"></option>
+        <option value='A'>甲班</option>
+        <option value='B'>乙班</option>
+        <option value='C'>丙班</option>
+    </select><br><br>
+    工位：<select name="station" id="station" class="station_name">
+        <option value='blank' selected = "selected"></option>
+        <option value='BOF1'>BOF1</option>
+        <option value='BOF2'>BOF2</option>
+        <option value='BOF3'>BOF3</option>
+    </select><br><br>
+    字段名:<select name="bookno" id="bookno" class="procedurename"></select><br><br>
+<!--<button onclick='num()'>分析结果绘图</button>-->
+<button onclick='zong_analy()' id='zong_analy'>统计分析</button>
+</div>
 <!--<a href='/direct'>无需五数概括法情况</a>-->
-<div id="main1" style="width: 600px;height:400px;"></div>
+<div id="main1" style="width: 660px;height:400px;"></div>
 <div id="main2"style="width: 60px;height:400px;"><textarea id="txt" style="width: 600px;height:40px;border:0px;"></textarea></div>
 <script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
 <script type="text/javascript">  
     $('#bookno').change(function(){
-        num();
+        zong_analy();
     })
     function num(){
         var bookno = $("#bookno").find("option:selected").val();
@@ -33,22 +53,58 @@
                 drawBarChart(data.result)
                 var txt=$("#txt");
                 var label=$("#label")
+                txt.text(" ")
                 for (var i = data.describe.numb.length - 1; i >= 0; i--) {
-                             txt.append("  ")   
-                             s=data.describe.scopeb[i];
-                             n=data.describe.numb[i];
-                             txt.append(s);
-                             txt.append(":");
-                             txt.append(n);
-                             txt.append("   ")
-
-                         };
+                    txt.append("  ")   
+                    s=data.describe.scopeb[i];
+                    n=data.describe.numb[i];
+                    txt.append(s);
+                    txt.append(":");
+                    txt.append(n);
+                    txt.append("   ")
+                };
+                
             }
         })
     }
 
     $(function(){
-            loadOption_ha();
+             loadOption_ha();
+             p_loadGrape_ha();
         })
+    //多条件综合筛选
+    function zong_analy(){
+        var bookno = $("#bookno").val();//字段，需要转化为大写
+        var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
+        var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
+        var OPERATECREW = $("#OPERATECREW").val();//班别
+        var station = $("#station").val();//工位
+        //alert("gk_no:"+gk_no+"\nOPERATESHIFT:"+OPERATESHIFT+"\nOPERATECREW:"+OPERATECREW+"\nstation:"+station+"\nbookno:"+bookno);
+        $.ajax({
+            type: "post",
+            url:  "/zong_analy_ha",
+            data: {'bookno':bookno,'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
+            error: function() {
+                alert("该筛选条件下无数据！");
+            },
+            success: function(data) {
+                //alert("multi_analy");
+                //alert(data.state);
+                drawBarChart(data.result)
+                var txt=$("#txt");
+                var label=$("#label")
+                txt.text(" ")
+                for (var i = data.describe.numb.length - 1; i >= 0; i--) {
+                    txt.append("  ")   
+                    s=data.describe.scopeb[i];
+                    n=data.describe.numb[i];
+                    txt.append(s);
+                    txt.append(":");
+                    txt.append(n);
+                    txt.append("   ")
+                };
+            }
+         })
+    }
 </script>
 {% endblock %}
