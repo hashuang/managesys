@@ -32,23 +32,23 @@
     <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。</p>
 -------------------------------------------------------------------------------
 <div>
-    <p><strong>2.单炉次投入成本及产品产出统计情况：</strong></p>
+    <p><strong>2.单炉次投入成本及产品产出统计情况 and 3.单炉次因素偏高偏低展示</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>投入成本分析结果</button>
     <button onclick='produce()' id='click3'>产出产品分析结果</button>
 </div>
--------------------------------------------------------------------------------
-<div>
-    <p><strong>3.单炉次因素偏高偏低展示:</strong></p>
-    炉次号：<input type="text" name="field1" value="{{current_tableno}}" id="field1">
-    字段名：<select name="bookno1" id="bookno1" class="procedurename1"></select>
-    <button onclick='ch_num2()' id='click4'>因素分析结果</button>
-</div>
 
-<div id="main1" style="width: 800px;height:500px;"></div>
-<br>
-<div id="main2" style="width: 60px;height:400px;"><textarea id="txt" style="width: 800px;height:100px;"></textarea></div>
+<div style="width:1600px">
+<div id="main1" style="float:left;width:800px;height:500px">左</div>
+<div id="main2" style="float:left;width:800px;height:500px">右</div>
+<!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
+</div>
+<!--
+<span id='wrong-message' style="color:red"></span>
+<span id='hover-console' style="color:#1e90ff"></span>
+<span id='console' style="color:#1e90ff">Event Console</span>
+-->
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
 <script type="text/javascript"> 
@@ -93,7 +93,7 @@
                 //alert(data.result);
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart(data.result);
+                drawBarChart_test(data.result);
             }
         })
     };   
@@ -112,16 +112,192 @@
                 //alert(data.result)
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart(data.result)
+                drawBarChart_test(data.result)
             }
         })
     };  
 
+    // 条形图（投入和产出）与loadChart_chen.js中的drawBarChart相同
+    //xasis_fieldname
+    function drawBarChart_test(result){
+        var myChart = echarts.init(document.getElementById('main1'));
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
+                    x:'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                     }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: {
+                    data: result.xname,
+                    axisLabel :{  
+                            interval:0,//横轴信息全部显示
+                            //rotate: 60//60度角倾斜显示  
+                        } 
+                },
+                yAxis: {
+                    name:'Kg'
+                },
+                series: [{
+                    name: '投入量(Kg)',
+                    type: 'bar',
+                    data: result.yvalue,
+                    markPoint: {
+                        data:[
+                                //{type : 'max', name: '最大值'},
+                                //{type : 'min', name: '最小值'}
+                                //{name : '标记点测试', value : 100, xAxis: result.scope[1], yAxis: 0.2}  
+                        ]
+                    },
+                    itemStyle: {
+                        normal: {
+                            //color: 'tomato',
+                            //barBorderColor: 'tomato',
+                            barBorderWidth: 6,
+                            barBorderRadius:0,
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+
+                }
+                ]
+            };
+    //--------------------------------------------------
+       var ecConfig = echarts.config;  
+        function eConsole(param) {
+            //var mes = '【' + param.type + '】';
+            if (typeof param.seriesIndex != 'undefined') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                fieldname_chinese=param.name;
+                fieldname_english=result.xEnglishname[param.dataIndex];
+                ch_num2(fieldname_chinese,fieldname_english);
+            }
+            // if (param.type == 'hover') {
+            //     document.getElementById('hover-console').innerHTML = 'Event Console : ' + mes;
+            // }
+            // else {
+            //     document.getElementById('console').innerHTML = mes;
+            // }
+            console.log(param);
+        }
+
+        myChart.on(ecConfig.EVENT.CLICK, eConsole);
+        myChart.on(ecConfig.EVENT.DBLCLICK, eConsole);
+        //myChart.on(ecConfig.EVENT.HOVER, eConsole);
+        myChart.on(ecConfig.EVENT.DATA_ZOOM, eConsole);
+        myChart.on(ecConfig.EVENT.LEGEND_SELECTED, eConsole);
+        myChart.on(ecConfig.EVENT.MAGIC_TYPE_CHANGED, eConsole);
+        myChart.on(ecConfig.EVENT.DATA_VIEW_CHANGED, eConsole);
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    //------------------------------------------------------------
+    }
+
+    // 正态分布与loadChart_chen.js中的drawBarChart_norm相同
+    function drawBarChart_norm(result){
+        var myChart = echarts.init(document.getElementById('main2'));
+        //var bookname=document.getElementById('bookno1')
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    //text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                    text: bookno = result.fieldname_chinese+result.fieldname+'的正态分布',//+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                    x:'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                     }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: {
+                    data: result.normx,
+                    axisLabel :{  
+                            //interval:0,//横轴信息全部显示
+                            //rotate: 60//60度角倾斜显示  
+                        } 
+                },
+                yAxis: {
+                    name:'Y'
+                },
+                series: [{
+                    name: '',
+                    type: 'bar',
+                    data: result.normy,
+                    markPoint: {
+                        itemStyle : {
+                             normal: {
+                                 color:'#1e90ff'
+                             }
+                         },
+                        data:[
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'},
+                                {name : '测试点', value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
+                                //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
+                        ]
+                    },
+                    // markLine: {
+                    //     name:'炉次号'+result.fieldname+'的标线'
+                    //     itemStyle : {
+                    //         normal: {
+                    //             color:'#1e90ff'
+                    //         }
+                    //     },
+                    //     data:[
+                    //             [
+                    //             {name: '标线1起点', value: result.singleheat, xAxis: result.singleheat, yAxis: 0},
+                    //             {name: '标线1终点', xAxis: result.singleheat, yAxis: 0.3}
+                    //             ]
+                    //            ] 
+                        
+                    // }
+                    // itemStyle: {
+                    //         normal: {
+                    //         //color: 'tomato',
+                    //         //barBorderColor: 'tomato',
+                    //         barBorderWidth: 6,
+                    //         barBorderRadius:0,
+                    //         label : {
+                    //             show: true, position: 'top'
+                    //         }
+                    //     }
+                    // }
+
+                },
+                  {
+                    name: '',
+                    type: 'line',
+                    data: result.normy
+                }
+                ]
+
+            };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
     //带因素偏高偏低不带钢种的单字段统计
-    function ch_num2(){
-        var field1 = $("#field1").val();//炉次号
+    function ch_num2(fieldname_chinese,fieldname_english){
+        var field1 = $("#prime_analyse").val();//炉次号
         //var field2 = $("#field2").val();//字段
-        var field2 = $("#bookno1").find("option:selected").val();
+        //var field2 = $("#bookno1").find("option:selected").val();
+        var field2=fieldname_english;
         var typee=1;
         console.log(field1,field2)
             $.ajax({
@@ -133,9 +309,14 @@
             },
             success: function(data) {
                 //alert(data.result);
-                alert(data.result.vvalue_x);
-                alert(data.result.vvalue_y);
-                drawBarChart1(data.result);
+                //alert(data.result.normx);
+                //alert(data.result.normy);
+                //alert(data.result['singleheat']);
+                //alert(data.result['singleheat_value']);
+                //alert(data.result.normx[result.singleheat_index]);
+                data.result['fieldname_chinese']=fieldname_chinese;
+                alert(data.result['fieldname_chinese']);
+                drawBarChart_norm(data.result);
             }
         })
 
