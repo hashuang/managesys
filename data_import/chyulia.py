@@ -383,7 +383,7 @@ def data_clean(scrapy_records,bookno):
 
 #计算正态分布
 from scipy.stats import norm
-import matplotlib.pyplot as plt 
+
 def Norm_dist(mu,sigma):
 	''''' 
 	正态分布是一种连续分布，其函数可以在实线上的任何地方取值。 
