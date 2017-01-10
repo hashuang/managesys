@@ -14,7 +14,9 @@ import datetime
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    return x[(x<U)&(x>L)]	
+    print(L)
+    print(U)
+    return x[(x<U)&(x>L)]
 def num_describe(scrapy_records,bookno):
 	print("hellohaha");
 	if bookno=='"AS"':
@@ -76,6 +78,9 @@ def num_describe(scrapy_records,bookno):
 	#d3_data=[]
 	d4_data=[]
 	d1_valid=vaild(d1,ivalue_valid,d1_data)
+	for i in range(len(d1_valid)):
+		if d1_valid[i]<0:
+			d1_valid[i]=0
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
 	numx1=list(set(d1_valid).union(set(d2_valid)))
 	numx2=sorted(numx1)
