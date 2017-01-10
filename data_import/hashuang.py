@@ -27,14 +27,16 @@ def num_describe(scrapy_records,bookno):
 			#bookno=value
 	#print(bookno)
 	print(scrapy_records[1:5])
+	ivalue_i=[]
 	for n in range(len(scrapy_records)):
 		ivalue = scrapy_records[n].get(bookno,None)
 		if ivalue !=None and ivalue !=0:
-			ivalue=ivalue
-			print(ivalue)
-			break;
-	ivalue_b=str(ivalue)
-	ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue=ivalue
+			 ivalue_b=str(ivalue)
+			 ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue_i.append(ivalue_valid)
+			 ivalue_i.sort(reverse=True)
+	ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
 	print(ivalue_valid)		
 	for i in range(len(scrapy_records)):
 		value = scrapy_records[i].get(bookno,None)
@@ -48,20 +50,20 @@ def num_describe(scrapy_records,bookno):
 	clean=Wushu(dfr[bookno])
 	print(type(clean))
 	if clean is not None:
-		bc=(clean.max()-clean.min())/10
+		bc=(clean.max()-clean.min())/7
 		bcq=math.ceil(bc*1000)/1000
 		try:
-			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq+1))
+			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
 			end=pd.value_counts(section,sort=False)/clean.count()
 			describe=clean.describe()
 		except ValueError as e:
 		 	print(e)
 	numx=[ele for ele in end.index]
-	numy=[ele for ele in end]
+	#numy=[ele for ele in end]
 	desx=[ele for ele in describe.index]
 	desy=[ele for ele in describe]
 	print(numx)
-
+	print(describe)
 	#contentVO={
 		#'title':'测试',
 		#'state':'success'
@@ -77,8 +79,15 @@ def num_describe(scrapy_records,bookno):
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
 	numx1=list(set(d1_valid).union(set(d2_valid)))
 	numx2=sorted(numx1)
+	print("numx2:")
+	print(numx2)
 	sections=[]
 	numx3=union_section(numx2,sections)
+	cut1=pd.cut(clean,numx2)
+	end1=pd.value_counts(cut1,sort=False)/clean.count()
+	numy=[ele for ele in end1]
+	print("end1:")
+	print(end1)
 	#numy1=vaild(numy,ivalue_valid,d3_data)
 	numy1=["%.6f"%(n) for n in numy]
 	desy1=vaild(desy,ivalue_valid,d4_data)
