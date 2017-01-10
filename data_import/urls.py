@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url, include
 from . import views
 from . import chyulia
 from . import hashuang
+from . import steelprice
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -50,7 +51,8 @@ urlpatterns = [
     url(r'^lond_to',views.lond_to),
     url(r'^lond_to_B',views.lond_to_B),
     #钢铁价格预测
-    url(r'^steelprice',views.steelprice),
+    url(r'^steelprice',steelprice.steelprice),
+    url(r'^price_history', steelprice.price_history),
     #chen
     url(r'^chen', chyulia.chen),
     url(r'^ch_num2',chyulia.ch_num2),
