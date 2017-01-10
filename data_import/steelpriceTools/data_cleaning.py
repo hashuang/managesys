@@ -3,7 +3,6 @@ import datetime, time
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.cross_validation import train_test_split
 
 def get_history_price(path):
@@ -19,7 +18,7 @@ def get_history_price(path):
 	'''
 	dfori[cols[0]] = dfori[cols[0]].map(lambda x : str(x))
 	# dfori[cols[0]] = pd.to_datetime(dfori[cols[0]])
-	
+
 	history_price = pd.DataFrame()
 	history_price = dfori[cols[0:2]]
 

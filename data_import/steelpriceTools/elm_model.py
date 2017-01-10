@@ -3,7 +3,6 @@ import csv
 from sklearn.cluster import k_means
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
