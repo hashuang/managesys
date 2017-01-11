@@ -122,3 +122,25 @@ function p_loadGrape_ha(){
             }
         });
         };
+
+function little_loadOption_ha(){
+    $.ajax({
+        type: "post",
+        url:  "/little_lond_to",
+        data: {'greet':'hello'},
+        error: function() {
+            alert("404");
+        },
+        success: function(data) {
+            pnames=data.little_procedure_names;
+            for(var pname in pnames){
+                //console.log(pnames[pname])
+                //console.log(pname)
+                $(".little_procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
+            }
+            //var filepath= 'http://127.0.0.1:8000'+data.filepath; 
+            //console.log("<a href='"+filepath+"'>")
+            //$("#filedownload").html("<a href='"+filepath+"'>下载文件</a>")
+        }
+    })
+}

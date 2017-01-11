@@ -243,4 +243,45 @@ def no_lond_to(request):
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
 	contentVO['no_procedure_names']=ana_result
 	#print(contentVO)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')	             	
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def little_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_C
+	contentVO['little_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+def describe_ha(request):
+	littleno=request.POST.get("littleno").upper();
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT HEAT_NO,"+littleno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	# print(bookno)
+	# print(scrapy_records[:5])
+	contentVO={
+		'title':'分析结果绘图',
+		'state':'success',
+	}
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(littleno,None)
+		if value != None :
+			scrapy_records[i][littleno] = float(value)
+	frame=DataFrame(scrapy_records)	
+	df=frame.sort_values(by=littleno)
+	dfr=df[df>0].dropna(how='any')	
+	clean=Wushu(dfr[littleno])
+	describe=clean.describe()
+	desx=[ele for ele in describe.index]
+	desy=[ele for ele in describe]
+	desy1=["%.2f"%(n) for n in desy]
+	print(desx)
+	print(desy)
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy1
+
+	return HttpResponse(json.dumps(ana_describe),content_type='application/json')

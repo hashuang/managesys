@@ -16,20 +16,20 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('scrap_16010101','重型废钢'),
 								('scrap_16020101','中型废钢'),
 								('scrap_16030101','未知废钢'),
-								('scrap_16040101','破碎废钢'),
-								('scrap_96052501','小渣钢'),		
+								#('scrap_16040101','破碎废钢'),
+								#('scrap_96052501','小渣钢'),		
 								('COLDPIGWGT','生铁装入量'),
 								('SCRAPWGT','废钢装入量'),
 								('SCRAPWGT_COUNT','废钢装入计算量'),
-								('RETURNSTEELWEIGHT','回炉钢液量'),
-								('LADLESTATUS','包况'),
-								('LADLEAGE','包龄'),
+								#('RETURNSTEELWEIGHT','回炉钢液量'),
+								#('LADLESTATUS','包况'),
+								#('LADLEAGE','包龄'),
 								
 								('L96020400','1#烧结矿'),
-								('L12010301','石灰石_15-40mm'),
+								#('L12010301','石灰石_15-40mm'),
 								('L12010302','石灰石_40-70mm'),
 								('L12010601','萤石_FL80'),
-								('L12010701','硅灰石'),
+								#('L12010701','硅灰石'),
 								('L12020201','增碳剂'),
 								('L12020301','低氮增碳剂'),
 								('L96040100','石灰'),
@@ -49,7 +49,7 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('SUBLANCE_AGE','副枪枪龄'),
 								('SUBLANCE_INDEPTH','副枪插入深度'),
 								('O_CONT','定氧'),
-								('C_CONT','定碳'),
+								#('C_CONT','定碳'),
 								('LEQHEIGH','液面高度'),
 								('D1_BO_CSM','第一次吹氧消耗'),
 								('D2_BO_CSM ','第二次吹氧消耗'),
@@ -98,18 +98,34 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('L13020101','硅锰合金_Mn 65-72%、Si 17-20%'),
 								('L13020201','高硅硅锰_Mn ≥60%、Si ≥27%'),
 								('L13040400','中碳铬铁'),							
+								#('SLAGTHICK','渣层厚度'),#1,8
+								#('SCRAPSTEEL','调温废钢'),#2,7
+								#('INSULATIONAGENT','保温剂(包)'),
+								#('TEMPOFARRIVE','进站温度(℃)'),#数据量少
+								#'TEMPOFDEPARTURE','出站温度(℃)'),
+							
+	
+                       ])
+
+PRO_BOF_HIS_ALLFIELDS_C=OrderedDict([
+								('scrap_16040101','破碎废钢'),
+								('scrap_96052501','小渣钢'),
+								('RETURNSTEELWEIGHT','回炉钢液量'),
+								('LADLESTATUS','包况'),
+								('LADLEAGE','包龄'),
+								('L12010301','石灰石_15-40mm'),
+								('L12010701','硅灰石'),
+								('C_CONT','定碳'),
 								('SLAGTHICK','渣层厚度'),#1,8
 								('SCRAPSTEEL','调温废钢'),#2,7
 								('INSULATIONAGENT','保温剂(包)'),
 								('TEMPOFARRIVE','进站温度(℃)'),#数据量少
 								('TEMPOFDEPARTURE','出站温度(℃)'),
+								])
 							
-	
-                       ])
-
 
 PRO_BOF_HIS_ALLFIELDS_B=OrderedDict([
-	
+
 								('Event_3003','兑铁时间'),
 								('Event_3004','兑废钢时间'),
 								('Event_3001','处理开始时间'),
@@ -238,5 +254,4 @@ PRO_BOF_HIS_ALLFIELDS_B=OrderedDict([
 								('DEPARTUREDATE','出吹氩站日期'),
 								('DEPARTURETIME','出吹氩站时刻'),
 						])
-
 

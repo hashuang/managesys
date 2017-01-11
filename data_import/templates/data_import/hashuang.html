@@ -5,11 +5,16 @@
 <h1>青钢转炉数据分析</h1>
 注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空的情况<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-2,钢种为计划牌号,下拉框显示顺序按钢种数量由多到少。钢种中选项null，在数据库中SPECIFICATION='&nbsp',但依然存在676条数据<br>
+2,钢种为计划牌号,下拉框显示顺序按钢种数量由多到少。钢种中选项null，在数据库中SPECIFICATION='&nbsp',但依然存在676条数据。<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-3,不进行统计的字段
-    字段名:<select name="tableno" id="tableno" class="no_procedurename"></select><br><br>
-
+3,字段下拉框顺序按表结构顺序。区间有效位数与相应数据库数据有效位数相同。<br>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+4,不能统计的字段例如时间点数据
+字段名:<select name="tableno" id="tableno" class="no_procedurename"></select><br>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+5,不进行统计的字段例如清洗后数据量太少。点击字段名可查看清洗后字段数据描述
+字段名:<select name="littleno" id="littleno" class="little_procedurename"></select><br><br>
+<div id="main3"style="width: 900px;height:20px;"><textarea id="littletxt" style="width: 900px;height:20px;border:0px;"></textarea></div>
 <div>
     钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
     班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
@@ -36,7 +41,7 @@
 </div>
 <!--<a href='/direct'>无需五数概括法情况</a>-->
 <div id="main1" style="width: 660px;height:400px;"></div>
-<div id="main2"style="width: 60px;height:400px;"><textarea id="txt" style="width: 600px;height:40px;border:0px;"></textarea></div>
+<div id="main2"style="width: 900px;height:40px;"><textarea id="txt" style="width: 900px;height:40px;border:0px;"></textarea></div>
 <script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
 <script type="text/javascript">  
     $('#bookno').change(function(){
@@ -75,7 +80,8 @@
     $(function(){
              loadOption_ha();
              p_loadGrape_ha();
-             no_loadOption_ha();            
+             no_loadOption_ha();
+             little_loadOption_ha();            
         })
     //多条件综合筛选
     function zong_analy(){
@@ -111,5 +117,32 @@
             }
          })
     }
+    $("#littleno").change(function(){
+        //Salert("选中值为："+$(this).val());
+        var littleno = $("#littleno").val();
+        $.ajax({
+            type: "post",
+            url:  "/describe_ha",
+            data: {'littleno':littleno},
+            error: function() {
+                alert("数据库100%空值率！");
+            },
+            success: function(data) {
+                //alert(data.result);
+                var txt=$("#littletxt");
+                txt.text(" ")
+                for (var i = data.numb.length - 1; i >= 0; i--) {
+                    txt.append("  ")   
+                    s=data.scopeb[i];
+                    n=data.numb[i];
+                    txt.append(s);
+                    txt.append(":");
+                    txt.append(n);
+                    txt.append("   ")
+                };
+                
+            }
+         })   
+    });
 </script>
 {% endblock %}

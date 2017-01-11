@@ -44,6 +44,9 @@ urlpatterns = [
     url(r'^lond_to',views.lond_to),
     url(r'^no_lond_to',hashuang.no_lond_to),
     url(r'^zong_analy_ha',hashuang.multi_analy),
+    url(r'^paihao_getGrape',hashuang.paihao_getGrape),
+    url(r'^little_lond_to',hashuang.little_lond_to),
+    url(r'^describe_ha',hashuang.describe_ha),
     #钢铁价格预测
     url(r'^steelprice',views.steelprice),
     #chen
@@ -60,7 +63,7 @@ urlpatterns = [
     #多条件综合筛选
     url(r'^multi_analy',chyulia.multi_analy),
     url(r'^steelprice',views.steelprice),   
-    url(r'^paihao_getGrape',hashuang.paihao_getGrape),
+    
 
     
 ]
