@@ -1,10 +1,19 @@
 {% extends "data_import/base.html" %}
+{% load static %}
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block pagejs %}
+<script type="text/javascript" src="{% static  'data_import/js/steelprice.js'%}"></script>
+{% endblock pagejs %}
 
 {% block content %}
 <div class="content-title">
-            <h3>搜索铁矿粉</h3>
-        </div>
+    <h3>钢材价格历史走势</h3>
+</div>
+<div id="main" style="width: 600px;height:400px;"></div>
+<div class="content-title">
+    <h3>钢材价格趋势预测</h3>
+</div>
 
         <div class="panel-body">
             <div class="input-group search-group" style="margin-bottom: 20px">
@@ -144,24 +153,6 @@
     $("#toggle_advance").click( function() {
         $("#advanced").toggle(200);
     });    
-	function ajaxtest(){
-		$.ajax({
-	        type: "post",
-	        url:  "/ajaxtest",
-	        data: {'greet':'hello'},
-	        error: function() {
-	            alert("404");
-	        },
-	        success: function(data) {
-	        	$('#result').html(data);
-	        	drawBarChart(data)
-	        	drawBrokenLineChart(data)
-	        	drawBarAndBrokenLineChart(data)
-	        	//drawMapChart(data)
-	        	drawBarAndBrokenLineBofItChart(data)
-        	}
-    	})
-	}
 
 </script>
 

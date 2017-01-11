@@ -1,0 +1,23 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+{% block content %}
+
+  {% autoescape off %}
+    <article>
+      <header>
+        <p class="meta">
+          <time pubdate="{{ contentpost.pub_date }}" data-updated="{{ contentpost.last_edit_date }}">
+            {{ contentpost.pub_date|date:'M'|upper }}
+            {{ contentpost.pub_date|date:"dS"|upper }}, {{ contentpost.pub_date.year }}
+          </time>
+        </p>
+        <h1 class="title"><b>{{ contentpost.title }}</b></h1>
+      </header>
+      {{ contentpost.display_html }}
+    </article>
+  {% endautoescape %}
+
+{% endblock %}
+
+

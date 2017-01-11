@@ -2,8 +2,8 @@
 import os
 import json
 
-from django.shortcuts import render
-from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, Http404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -15,18 +15,32 @@ from data_import.forms import UploadFileForm
 from . import util
 from . import const
 from pandas import DataFrame
-from pandas import DataFrame
 import pandas as pd
 import numpy as np
 import math
 
+from collections import defaultdict
+from math import ceil
+from os.path import join
 
+
+
+from .models import ContentPost
+
+exclude_posts = ("shares","abstract")
 
 def home(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'data_import/index.html',{'title':"青特钢大数据项目组数据管理"})
+	contentVO={
+	'title':'主页',
+	'state':None
+	}
+	the_abstract = get_object_or_404(ContentPost, title="abstract")
+	contentVO["abstract"] = the_abstract
+	contentVO["state"] = "success"
+	return render(request,'data_import/index.html',contentVO)
 
 #用户登录
 def user_login(request):
@@ -111,7 +125,85 @@ def modify_password(request):
 def reset_password(request):
 	return HttpResponseRedirect("/index")
 
+'''
+项目进度控制，包括3个部分
+总结
+任务
+建议
+CATEGORY_CHOICES = (
+        ('c', 'Common'),
+        ('s', 'summary'),
+        ('t', 'task'),
+        ('a', 'advice'),
+        ('nc', 'No Category'),
+    )
+'''
+def contentpost(request,slug, post_id):
+	args = {'contentpost': get_object_or_404(ContentPost, pk=post_id)}
+	return render(request, 'data_import/control/content.html', args)
 
+
+def summary(request):
+	args = dict()
+	contentposts = ContentPost.objects.exclude(title__in=exclude_posts)
+
+	def get_sorted_posts(category):
+	    posts_by_year = defaultdict(list)
+	    posts_of_a_category = contentposts.filter(category=category)  # already sorted by pub_date
+	    for post in posts_of_a_category:
+	        year = post.pub_date.year
+	        posts_by_year[year].append(post)  # {'2013':post_list, '2014':post_list}
+	    posts_by_year = sorted(posts_by_year.items(), reverse=True)  # [('2014',post_list), ('2013',post_list)]
+	    return posts_by_year
+
+	args['data'] = [
+	    ('s', get_sorted_posts(category="s")),
+	]
+	return render(request, 'data_import/control/summary-tasks-advices.html', args)
+
+def tasks(request):
+	args = dict()
+	contentposts = ContentPost.objects.exclude(title__in=exclude_posts)
+
+	def get_sorted_posts(category):
+	    posts_by_year = defaultdict(list)
+	    posts_of_a_category = contentposts.filter(category=category)  # already sorted by pub_date
+	    for post in posts_of_a_category:
+	        year = post.pub_date.year
+	        posts_by_year[year].append(post)  # {'2013':post_list, '2014':post_list}
+	    posts_by_year = sorted(posts_by_year.items(), reverse=True)  # [('2014',post_list), ('2013',post_list)]
+	    return posts_by_year
+
+	args['data'] = [
+	    ('t', get_sorted_posts(category="t")),
+	]
+	return render(request, 'data_import/control/summary-tasks-advices.html', args)
+
+def advices(request):
+	args = dict()
+	contentposts = ContentPost.objects.exclude(title__in=exclude_posts)
+
+	def get_sorted_posts(category):
+	    posts_by_year = defaultdict(list)
+	    posts_of_a_category = contentposts.filter(category=category)  # already sorted by pub_date
+	    for post in posts_of_a_category:
+	        year = post.pub_date.year
+	        posts_by_year[year].append(post)  # {'2013':post_list, '2014':post_list}
+	    posts_by_year = sorted(posts_by_year.items(), reverse=True)  # [('2014',post_list), ('2013',post_list)]
+	    return posts_by_year
+
+	args['data'] = [
+	    ('a', get_sorted_posts(category="a")),
+	]
+	return render(request, 'data_import/control/summary-tasks-advices.html', args)
+
+def shares(request):
+	args = {'shares': get_object_or_404(ContentPost, title="shares")}
+	return render(request, 'data_import/control/shares.html', args)
+
+'''
+数据迁移
+'''
 def transfer():
 	tr = models.TransRelation.objects.all()
 	for each  in tr:
@@ -393,7 +485,7 @@ def data_import(request):
 			import_by_multikey(procedurename)
 		else:
 			import_by_single(procedurename)
-	return render(request,'data_import/index.html',{'title':"导入结果"})
+	return render(request,'data_import/import.html',{'title':"导入结果"})
 
 '''
 {'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)', 
