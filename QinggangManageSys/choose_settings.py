@@ -15,7 +15,7 @@ import platform
 
 node = platform.node()
 print(node)
-dev_machines = ('cheng-cx','cheng-cx.local' )
+dev_machines = ('cheng-cx','cheng-cx.local' ,'TP-PC')
 
 if node in dev_machines:
     # folder QinggangManageSys

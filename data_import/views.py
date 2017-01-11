@@ -37,9 +37,9 @@ def home(request):
 	'title':'主页',
 	'state':None
 	}
-	the_abstract = get_object_or_404(ContentPost, title="abstract")
-	contentVO["abstract"] = the_abstract
-	contentVO["state"] = "success"
+	# the_abstract = get_object_or_404(ContentPost, title="abstract")
+	# contentVO["abstract"] = the_abstract
+	# contentVO["state"] = "success"
 	return render(request,'data_import/index.html',contentVO)
 
 #用户登录
