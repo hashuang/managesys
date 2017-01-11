@@ -453,3 +453,5 @@ def data_clean(scrapy_records,bookno):
 	dataclean_result['normx']=normx#x轴取样点
 	dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
 	return dataclean_result
+
+

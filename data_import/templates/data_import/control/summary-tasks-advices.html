@@ -1,0 +1,50 @@
+{% extends "data_import/base.html" %}
+{% load static %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+
+
+{% block pagecss %}
+<link rel="stylesheet" type="text/css" href="{% static 'data_import/css/archive.css' %}">
+{% endblock pagecss %}
+
+{% block content %}
+    <div>
+    {%for category ,posts_by_year in data%}
+    	<article role="article">
+			<header id="category">
+			<h1 class="entry-title">
+			  {% if category == "s" %}
+			    Summary
+			  {% endif %}
+			</h1>
+			</header>
+			<div id="blog-archives">
+			{% for year, contentposts in posts_by_year %}
+				
+			<h2>{{year}}</h2>
+				{% for contentpost in contentposts %}
+					<article>
+						<h1>
+							<a href="{{ contentpost.get_absolute_url }}">{{ contentpost.title }}</a>
+						</h1>
+						<time datetime="{{ contentpost.pub_date }}">
+							<span class="month">{{ contentpost.pub_date|date:"M"|upper }}</span>
+							<span class="day">{{ contentpost.pub_date.day }}</span>
+						</time>
+						<footer>
+							<span class="tags">
+							关键字
+							{% for tag in contentpost.tags.all %}
+								{{ tag.name }},
+							{% endfor %}
+							</span>
+						</footer>
+					</article>
+				{% endfor %}
+			{% endfor %}
+			</div>
+	    </article>
+	{% endfor %}
+    </div>
+
+{% endblock %}

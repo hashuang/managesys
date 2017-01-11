@@ -1,7 +1,8 @@
-from django.conf.urls import url
+from django.conf.urls import patterns, url, include
 from . import views
 from . import chyulia
 from . import hashuang
+from . import steelprice
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -15,7 +16,13 @@ urlpatterns = [
     url(r'^logout',views.user_logout),
     #修改密码
     url(r'^modify_password', views.modify_password),
-  
+    #项目控制
+    url(r'^(?P<slug>[-\w\d]+),(?P<post_id>\d+)/$', views.contentpost),
+    url(r'^summary', views.summary),
+    url(r'^tasks', views.tasks),
+    url(r'^advices',views.advices),
+    url(r'^shares',views.shares),
+    #数据迁移
     url(r'^data_import', views.data_import),
     # url(r'^multikey_data_import', views.multikey_data_import),
     #文件
@@ -44,7 +51,8 @@ urlpatterns = [
     url(r'^lond_to',views.lond_to),
     url(r'^lond_to_B',views.lond_to_B),
     #钢铁价格预测
-    url(r'^steelprice',views.steelprice),
+    url(r'^steelprice',steelprice.steelprice),
+    url(r'^price_history', steelprice.price_history),
     #chen
     url(r'^chen', chyulia.chen),
     url(r'^ch_num2',chyulia.ch_num2),
@@ -61,6 +69,5 @@ urlpatterns = [
     url(r'^steelprice',views.steelprice),
     url(r'^zong_analy_ha',hashuang.multi_analy),
     url(r'^paihao_getGrape',hashuang.paihao_getGrape)
-
     
 ]
