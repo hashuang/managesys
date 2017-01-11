@@ -29,7 +29,7 @@ if node in dev_machines:
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': 'localhost',
+            'HOST': '202.204.54.75',
             'PORT': '3306',
         },
         'l2own': {

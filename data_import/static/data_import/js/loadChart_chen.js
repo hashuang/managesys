@@ -1,6 +1,93 @@
+// 正态分布
+function drawBarChart_norm(result){
+	var myChart = echarts.init(document.getElementById('main2'));
+    var bookname=document.getElementById('bookno1')
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                x:'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                 }
+            },
+            legend: {
+                data:['']
+            },
+            xAxis: {
+                data: result.normx,
+                axisLabel :{  
+                        //interval:0,//横轴信息全部显示
+                        //rotate: 60//60度角倾斜显示  
+                    } 
+            },
+            yAxis: {
+                name:'Y'
+            },
+            series: [{
+                name: '',
+                type: 'bar',
+                data: result.normy,
+                markPoint: {
+                    itemStyle : {
+                         normal: {
+                             color:'#1e90ff'
+                         }
+                     },
+                    data:[
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'},
+                            {name : '测试点', value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
+                            //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
+                    ]
+                },
+                // markLine: {
+                //     name:'炉次号'+result.fieldname+'的标线'
+                //     itemStyle : {
+                //         normal: {
+                //             color:'#1e90ff'
+                //         }
+                //     },
+                //     data:[
+                //             [
+                //             {name: '标线1起点', value: result.singleheat, xAxis: result.singleheat, yAxis: 0},
+                //             {name: '标线1终点', xAxis: result.singleheat, yAxis: 0.3}
+                //             ]
+                //            ] 
+                    
+                // }
+                // itemStyle: {
+                //         normal: {
+                //         //color: 'tomato',
+                //         //barBorderColor: 'tomato',
+                //         barBorderWidth: 6,
+                //         barBorderRadius:0,
+                //         label : {
+                //             show: true, position: 'top'
+                //         }
+                //     }
+                // }
+
+            },
+              {
+                name: '',
+                type: 'line',
+                data: result.normy
+            }
+            ]
+
+        };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
 // 条形图（投入和产出）
 function drawBarChart(result){
-	var myChart = echarts.init(document.getElementById('main1'));
+    var myChart = echarts.init(document.getElementById('main1'));
         // 指定图表的配置项和数据
         var option = {
             title: {
@@ -55,7 +142,34 @@ function drawBarChart(result){
         };
 
     // 使用刚指定的配置项和数据显示图表。
+    // myChart.setOption(option);
+//--------------------------------------------------
+   //var ecConfig = require('echarts/config');
+   var ecConfig = echarts.config;  
+    function eConsole(param) {
+        var mes = '【' + param.type + '】';
+        if (typeof param.seriesIndex != 'undefined') {
+            mes += '  seriesIndex : ' + param.seriesIndex;
+            mes += '  dataIndex : ' + param.dataIndex;
+        }
+        if (param.type == 'hover') {
+            document.getElementById('hover-console').innerHTML = 'Event Console : ' + mes;
+        }
+        else {
+            document.getElementById('console').innerHTML = mes;
+        }
+        console.log(param);
+    }
+
+    myChart.on(ecConfig.EVENT.CLICK, eConsole);
+    myChart.on(ecConfig.EVENT.DBLCLICK, eConsole);
+    //myChart.on(ecConfig.EVENT.HOVER, eConsole);
+    myChart.on(ecConfig.EVENT.DATA_ZOOM, eConsole);
+    myChart.on(ecConfig.EVENT.LEGEND_SELECTED, eConsole);
+    myChart.on(ecConfig.EVENT.MAGIC_TYPE_CHANGED, eConsole);
+    myChart.on(ecConfig.EVENT.DATA_VIEW_CHANGED, eConsole);
     myChart.setOption(option);
+//------------------------------------------------------------
 }
 
 // 字段数据统计条形图（带标线）
