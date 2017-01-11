@@ -3,9 +3,13 @@
 {% block content %}
 
 <h1>青钢转炉数据分析</h1>
-注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空<br>
+注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空的情况<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-2,钢种为计划牌号。钢种中选项null，在数据库中SPECIFICATION='',但依然存在676条数据<br><br> 
+2,钢种为计划牌号,下拉框显示顺序按钢种数量由多到少。钢种中选项null，在数据库中SPECIFICATION='&nbsp',但依然存在676条数据<br>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+3,不进行统计的字段
+    字段名:<select name="tableno" id="tableno" class="no_procedurename"></select><br><br>
+
 <div>
     钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
     班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
@@ -71,6 +75,7 @@
     $(function(){
              loadOption_ha();
              p_loadGrape_ha();
+             no_loadOption_ha();            
         })
     //多条件综合筛选
     function zong_analy(){

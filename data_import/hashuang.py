@@ -9,12 +9,21 @@ from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
 import os
 import json
 import datetime
+from django.contrib import auth
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db.models import F
+from data_import.forms import UploadFileForm
+from . import util
+from . import const
 
 
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
+    print("L")
     print(L)
+    print("U")
     print(U)
     return x[(x<U)&(x>L)]
 def num_describe(scrapy_records,bookno):
@@ -54,6 +63,7 @@ def num_describe(scrapy_records,bookno):
 	if clean is not None:
 		bc=(clean.max()-clean.min())/7
 		bcq=math.ceil(bc*1000)/1000
+		print(bcq)
 		try:
 			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
 			end=pd.value_counts(section,sort=False)/clean.count()
@@ -222,4 +232,15 @@ def paihao_getGrape(request):
 	grape=[ele for ele in frame['SPECIFICATION']]
 	#print(grape)
 	contentVO['result']=grape
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')             	
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+from . import zhuanlu
+def no_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['no_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	             	
