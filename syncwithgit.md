@@ -76,6 +76,7 @@ git merge upstream/master
 ```
 git push qinggang
 ```
+  
 ##git教程——整理by chyulia
 ###一、git的配置教程
 **1、  注册github帐户**
@@ -193,12 +194,15 @@ E:\managesys>git merge upstream/master
 -将自己的程序上传到自己的github账户
 Already up-to-date.
 ```
+**再次查看状态**
+```
 E:\managesys>git status
 --再次查看状态
 On branch master
 Your branch is ahead of 'origin/master' by 1 commit.
   (use "git push" to publish your local commits)
-nothing to commit, working tree clean
+nothing to commit, working tree clean  
+```
 **将修改上传到自己的github**
 ```
 E:\managesys>git push origin master
