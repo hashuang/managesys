@@ -413,7 +413,7 @@ def num_describe(scrapy_records,bookno):
 #与num_describe的区别是，仅进行数据清洗，而不进行概率直方图区间计算
 #计算正态分布
 from scipy.stats import norm
-import matplotlib.pyplot as plt 
+# import matplotlib.pyplot as plt 
 def data_clean(scrapy_records,bookno):
 	print("data_clean:"+bookno);
 	if bookno=='"AS"':
