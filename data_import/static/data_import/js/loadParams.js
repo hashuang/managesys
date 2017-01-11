@@ -30,10 +30,10 @@ function loadOption_ha(){
         },
         success: function(data) {
             //console.log(data.procedure_names)
-            console.log(data.procedure_names);
+            //console.log(data.procedure_names);
             pnames=data.procedure_names;
             for(var pname in pnames){
-                console.log(pnames[pname])
+                //console.log(pnames[pname])
                 $(".procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
             }
             var filepath= 'http://127.0.0.1:8000'+data.filepath; 
@@ -42,20 +42,20 @@ function loadOption_ha(){
         }
     })
 }
-function loadOption_hs(){
+function no_loadOption_ha(){
     $.ajax({
         type: "post",
-        url:  "/lond_to_B",
+        url:  "/no_lond_to",
         data: {'greet':'hello'},
         error: function() {
             alert("404");
         },
         success: function(data) {
-            console.log(data.procedure_names);
-            pnames=data.procedure_names;
+            pnames=data.no_procedure_names;
             for(var pname in pnames){
-                console.log(pnames[pname])
-                $("#fildno").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
+                //console.log(pnames[pname])
+                //console.log(pname)
+                $(".no_procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
             }
             //var filepath= 'http://127.0.0.1:8000'+data.filepath; 
             //console.log("<a href='"+filepath+"'>")
@@ -122,3 +122,25 @@ function p_loadGrape_ha(){
             }
         });
         };
+
+function little_loadOption_ha(){
+    $.ajax({
+        type: "post",
+        url:  "/little_lond_to",
+        data: {'greet':'hello'},
+        error: function() {
+            alert("404");
+        },
+        success: function(data) {
+            pnames=data.little_procedure_names;
+            for(var pname in pnames){
+                //console.log(pnames[pname])
+                //console.log(pname)
+                $(".little_procedurename").append("<option value='"+pname+"'>"+pnames[pname]+"</option>")
+            }
+            //var filepath= 'http://127.0.0.1:8000'+data.filepath; 
+            //console.log("<a href='"+filepath+"'>")
+            //$("#filedownload").html("<a href='"+filepath+"'>下载文件</a>")
+        }
+    })
+}

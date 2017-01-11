@@ -9,12 +9,23 @@ from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
 import os
 import json
 import datetime
+from django.contrib import auth
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db.models import F
+from data_import.forms import UploadFileForm
+from . import util
+from . import const
 
 
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    return x[(x<U)&(x>L)]	
+    print("L")
+    print(L)
+    print("U")
+    print(U)
+    return x[(x<U)&(x>L)]
 def num_describe(scrapy_records,bookno):
 	print("hellohaha");
 	if bookno=='"AS"':
@@ -27,14 +38,16 @@ def num_describe(scrapy_records,bookno):
 			#bookno=value
 	#print(bookno)
 	print(scrapy_records[1:5])
+	ivalue_i=[]
 	for n in range(len(scrapy_records)):
 		ivalue = scrapy_records[n].get(bookno,None)
 		if ivalue !=None and ivalue !=0:
-			ivalue=ivalue
-			print(ivalue)
-			break;
-	ivalue_b=str(ivalue)
-	ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue=ivalue
+			 ivalue_b=str(ivalue)
+			 ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue_i.append(ivalue_valid)
+			 ivalue_i.sort(reverse=True)
+	ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
 	print(ivalue_valid)		
 	for i in range(len(scrapy_records)):
 		value = scrapy_records[i].get(bookno,None)
@@ -48,20 +61,21 @@ def num_describe(scrapy_records,bookno):
 	clean=Wushu(dfr[bookno])
 	print(type(clean))
 	if clean is not None:
-		bc=(clean.max()-clean.min())/10
+		bc=(clean.max()-clean.min())/7
 		bcq=math.ceil(bc*1000)/1000
+		print(bcq)
 		try:
-			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq+1))
+			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
 			end=pd.value_counts(section,sort=False)/clean.count()
 			describe=clean.describe()
 		except ValueError as e:
 		 	print(e)
 	numx=[ele for ele in end.index]
-	numy=[ele for ele in end]
+	#numy=[ele for ele in end]
 	desx=[ele for ele in describe.index]
 	desy=[ele for ele in describe]
 	print(numx)
-
+	print(describe)
 	#contentVO={
 		#'title':'测试',
 		#'state':'success'
@@ -74,11 +88,21 @@ def num_describe(scrapy_records,bookno):
 	#d3_data=[]
 	d4_data=[]
 	d1_valid=vaild(d1,ivalue_valid,d1_data)
+	for i in range(len(d1_valid)):
+		if d1_valid[i]<0:
+			d1_valid[i]=0
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
 	numx1=list(set(d1_valid).union(set(d2_valid)))
 	numx2=sorted(numx1)
+	print("numx2:")
+	print(numx2)
 	sections=[]
 	numx3=union_section(numx2,sections)
+	cut1=pd.cut(clean,numx2)
+	end1=pd.value_counts(cut1,sort=False)/clean.count()
+	numy=[ele for ele in end1]
+	print("end1:")
+	print(end1)
 	#numy1=vaild(numy,ivalue_valid,d3_data)
 	numy1=["%.6f"%(n) for n in numy]
 	desy1=vaild(desy,ivalue_valid,d4_data)
@@ -208,4 +232,56 @@ def paihao_getGrape(request):
 	grape=[ele for ele in frame['SPECIFICATION']]
 	#print(grape)
 	contentVO['result']=grape
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')             	
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+from . import zhuanlu
+def no_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['no_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def little_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_C
+	contentVO['little_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+def describe_ha(request):
+	littleno=request.POST.get("littleno").upper();
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT HEAT_NO,"+littleno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	# print(bookno)
+	# print(scrapy_records[:5])
+	contentVO={
+		'title':'分析结果绘图',
+		'state':'success',
+	}
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(littleno,None)
+		if value != None :
+			scrapy_records[i][littleno] = float(value)
+	frame=DataFrame(scrapy_records)	
+	df=frame.sort_values(by=littleno)
+	dfr=df[df>0].dropna(how='any')	
+	clean=Wushu(dfr[littleno])
+	describe=clean.describe()
+	desx=[ele for ele in describe.index]
+	desy=[ele for ele in describe]
+	desy1=["%.2f"%(n) for n in desy]
+	print(desx)
+	print(desy)
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy1
+
+	return HttpResponse(json.dumps(ana_describe),content_type='application/json')

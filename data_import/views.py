@@ -625,6 +625,7 @@ def lond_to(request):
 		'state':'success'
 	}
 	ana_result={}
+	ana_result_two={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
 	#print("result:")
 	contentVO['procedure_names']=ana_result
