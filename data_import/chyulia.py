@@ -174,12 +174,21 @@ def produce(request):
 	xaxis=['钢水','LDG','钢渣']
 	xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
 	yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
+	danwei=['Kg','NM3','Kg']
+	print('xasis_fieldname',xasis_fieldname)
+	print('yaxis',yaxis)
+	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
+	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
+	print('offset_result',offset_result)
+	print('offset_resultlist',offset_resultlist)
 	ana_result={}
-	ana_result['heat_no']=frame.HEAT_NO[0]
-	ana_result['xname']=xaxis
-	ana_result['xEnglishname']=xasis_fieldname
-	ana_result['yvalue']=yaxis
+	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
+	ana_result['xname']=xaxis#字段中文名字
+	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
+	ana_result['danwei']=danwei#字段的数值单位
+	ana_result['yvalue']=yaxis#该炉次字段的实际值
 	ana_result['attribute']='输出产品量'
+	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
 	contentVO['result']=ana_result
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
@@ -218,7 +227,7 @@ def ch_num2(request):
 	singleheat=float(single_heat(heat_no,bookno))#去single_heat函数查询单一炉次的值
 	print(singleheat)
 	#---------判断该炉次该字段在历史正态分布曲线中距离最近的取样点-----------
-	temp=normx[0]
+	temp=float(normx[0])
 	temp_index=0
 	for i in range (0,len(normx)-1):
 		former=float(normx[i])
