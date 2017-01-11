@@ -68,21 +68,17 @@
         var space = $ ("#select_space").find("option:selected").val();
         var tradeNo = $ ("#select_trade").find("option:selected").val()
         var sql_cust = ''
-        var sql_date1 = document.getElementById("select_date1").value
-        sql_date1_1 = sql_date1.substring(0, 4)
-        sql_date1_2 = sql_date1.substring(5, 7)
-        sql_date1_3 = sql_date1.substring(8)
+        var sql_date1_ = document.getElementById("select_date1").value
+        sql_date1_1 = sql_date1_.substring(0, 4)
+        sql_date1_2 = sql_date1_.substring(5, 7)
+        sql_date1_3 = sql_date1_.substring(8)
         sql_date1 = sql_date1_1 + sql_date1_2 + sql_date1_3 
-        var sql_date2 = document.getElementById("select_date2").value
-        sql_date2_1 = sql_date2.substring(0, 4)
-        sql_date2_2 = sql_date2.substring(5, 7)
-        sql_date2_3 = sql_date2.substring(8)
+        var sql_date2_ = document.getElementById("select_date2").value
+        sql_date2_1 = sql_date2_.substring(0, 4)
+        sql_date2_2 = sql_date2_.substring(5, 7)
+        sql_date2_3 = sql_date2_.substring(8)
         sql_date2 = sql_date2_1 + sql_date2_2 + sql_date2_3  
 
-        //var aspect_name = "总销量"
-        var unite = '吨'
-                  
-               
         var arr = new Array();
         var tradeNoNoNo = ""
         comma = ","
@@ -100,6 +96,35 @@
         //console.log(arr);            
         //console.log(tradeNoNoNo); 
         //console.log(tradeNo);
+        var dateChoose_name = ''
+        if (dateChoose == 1){
+            dateChoose_name = '订单时间';
+        }else if (dateChoose == 2){
+            dateChoose_name = '发货时间';
+        }else if(dateChoose == 3){
+            dateChoose_name = '出货销账时间';
+        }else if(dateChoose == 4){
+            dateChoose_name = '派车结算时间';
+        }else if (dateChoose == 5){
+            dateChoose_name = '装车通知时间';
+        }else if(dateChoose == 6){
+            dateChoose_name = '订单存货时间';
+        }else if(dateChoose == 7){
+            dateChoose_name = '质保书时间';
+        }else if(dateChoose == 8){
+            dateChoose_name = '外库接收时间';
+        }else{
+            dateChoose_name = '时间选择选项输入错误';
+        }
+
+        var space_name = ''
+        if (space == 1){
+            space_name = '世界';
+        }else if (space == 2){
+            space_name = '中国';
+        }else{
+            space_name = '山东';
+        }
         
         $.ajax({
             type: "post",
@@ -110,15 +135,16 @@
         ).done(function(data) {
             console.log(JSON.stringify(data.result));
             if ( space == 1 ){
-                drawMapChartWorld(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue);
+                drawMapChartWorld(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
             }else if ( space == 2 ){
-                drawMapChartChina(data.result,tradeNoNoNo,data.aspect_name,data.maxValue);
+                drawMapChartChina(data.result,tradeNoNoNo,data.aspect_name,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,data.unite);
             }else {
-                drawMapChartShandong(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue);
+                drawMapChartShandong(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
             }
             //console.log(tradeNo);
             //console.log(sql_date1)
             //console.log(sql_date2)
+            console.log(data.unite)
             var txt=$("#txt");
             var label=$("#label")
                 txt.append(data.describe); 

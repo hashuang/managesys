@@ -171,20 +171,27 @@ function drawBarAndBrokenLineChart(data){
 
 
 //地图----中国地图
-function drawMapChartChina(data,tradeNo,aspect_name,maxValue){
+function drawMapChartChina(data,tradeNo,aspect_name,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,unite){
     // echarts.registerMap('china', data.chinaJson);
     var myChart = echarts.init(document.getElementById('main4'));
     
         // 指定图表的配置项和数据
     option = {
         title : {
-            text: aspect_name,
-            subtext: 'QDIS',
+            text: module_name + '——' + aspect_name + '（' + space_name + '）',
+            subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
             x:'center'
         },
         tooltip: {
-            trigger: 'item'
-            // formatter: '{b}'
+            trigger: 'item',
+            formatter : function (params) {
+                //console.log(params);
+                if (typeof params.value =='object'){
+                   return aspect_name + '<br/>' + params.name + ' : 总销量为0，无法计算退货率！';
+                }else{
+                    return aspect_name + '<br/>' + params.name + ' : ' + params.value + unite;
+                }
+            }
         },
         legend: {
             orient: 'vertical',
@@ -192,8 +199,8 @@ function drawMapChartChina(data,tradeNo,aspect_name,maxValue){
             data:[tradeNo]
         },
         dataRange: {
-            min: 1,
-            max: maxValue,
+            min: 0,
+            max:  (maxValue + 1),
             x: 'left',
             y: 'bottom',
             text:['高','低'],           // 文本，默认为数值文本
@@ -242,15 +249,15 @@ function drawMapChartChina(data,tradeNo,aspect_name,maxValue){
 }
 
 //地图 --- 世界地图
-function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
+function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
     // echarts.registerMap('china', data.chinaJson);
     var myChart = echarts.init(document.getElementById('main4'));
     
         // 指定图表的配置项和数据
     option = {
         title : {
-            text: aspect_name,
-            subtext: 'QDIS',
+            text: module_name + '——' + aspect_name + '（' + space_name + '）',
+            subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
             x:'center',
             y:'top'
         },
@@ -258,9 +265,12 @@ function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
         tooltip : {
             trigger: 'item',
             formatter : function (params) {
-                var value = (params.value + '').split('.');
-                value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
-                return  aspect_name + '<br/>' + params.name + ' : ' + value + unite;
+                //console.log(params);
+                if (typeof params.value =='object'){
+                    return aspect_name + '<br/>' + params.name + ' : 总销量为0，无法计算退货率！';
+                }else{
+                    return aspect_name + '<br/>' + params.name + ' : ' + params.value + unite;
+                }
             }
         },
         toolbox: {
@@ -277,7 +287,7 @@ function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
         },
         dataRange: {
             min: 0,
-            max: maxValue,
+            max:  (maxValue + 1),
             text:['High','Low'],
             realtime: false,
             calculable : true,
@@ -295,8 +305,6 @@ function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
                 itemStyle:{
                     emphasis:{label:{show:true}}
                 },
-
-
                 data:data
             }
         ]
@@ -309,15 +317,15 @@ function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue){
 
 
 //地图----山东地图
-function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue){
+function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
     // echarts.registerMap('china', data.chinaJson);
     var myChart = echarts.init(document.getElementById('main4'));
     
         // 指定图表的配置项和数据
     option = {
         title : {
-            text: aspect_name,
-            subtext: 'QDIS',
+            text: module_name + '——' + aspect_name + '（' + space_name + '）',
+            subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
             x:'center'
         },
         legend: {
@@ -328,9 +336,12 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue){
         tooltip : {
             trigger: 'item',
             formatter : function (params) {
-                var value = (params.value + '').split('.');
-                value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
-                return  aspect_name + '<br/>' + params.name + ' : ' + value + unite;
+                //console.log(params);
+                if (typeof params.value =='object'){
+                    return aspect_name + '<br/>' + params.name + ' : 总销量为0，无法计算退货率！';
+                }else{
+                    return aspect_name + '<br/>' + params.name + ' : ' + params.value + unite;
+                }
             }
             // formatter: function(a){
             //   return a[2];
@@ -338,7 +349,7 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue){
         },
         dataRange: {
             min: 0,
-            max: maxValue,
+            max: (maxValue + 1),
             x: 'left',
             y: 'bottom',
             text:['高','低'],           // 文本，默认为数值文本
