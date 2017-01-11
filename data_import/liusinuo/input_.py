@@ -53,6 +53,7 @@ def select_aspect(aspect):
 		unite = "元"
 	elif aspect == 3:
 		aspect_name = "退货率"
+		unite = "%"
 	elif aspect == 4:
 		aspect_name = "主要质量问题"
 		unite = "个"
