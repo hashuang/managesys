@@ -21,11 +21,16 @@ from . import const
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    print("L")
-    print(L)
-    print("U")
-    print(U)
-    return x[(x<U)&(x>L)]
+    # print("L")
+    # print(L)
+    # print("U")
+    # print(U)
+    result=x[(x<U)&(x>L)]
+    wushu_clean={}
+    wushu_clean["minbook"]=L
+    wushu_clean["maxbook"]=U
+    wushu_clean["result"]=result
+    return wushu_clean
 def num_describe(scrapy_records,bookno):
 	print("hellohaha");
 	if bookno=='"AS"':
@@ -58,7 +63,19 @@ def num_describe(scrapy_records,bookno):
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr['1622324'])
 	#print(dfr[bookno].dtype)
-	clean=Wushu(dfr[bookno])
+	cleanbook=Wushu(dfr[bookno])
+	minbook=cleanbook["minbook"]
+	maxbook=cleanbook["maxbook"]	
+	if(minbook==maxbook):#不符合正态分布规律
+		print("no")
+		clean=dfr[bookno]		
+	else:
+		print("yes")
+		clean=cleanbook["result"]				
+	print("minbook")
+	print(minbook)
+	print("maxbook")
+	print(maxbook)
 	print(type(clean))
 	if clean is not None:
 		if(clean.max==clean.min()):
@@ -276,7 +293,8 @@ def describe_ha(request):
 	frame=DataFrame(scrapy_records)	
 	df=frame.sort_values(by=littleno)
 	dfr=df[df>0].dropna(how='any')	
-	clean=Wushu(dfr[littleno])
+	cleanbook=Wushu(dfr[littleno])
+	clean=cleanbook["result"]
 	describe=clean.describe()
 	desx=[ele for ele in describe.index]
 	desy=[ele for ele in describe]
