@@ -61,7 +61,10 @@ def num_describe(scrapy_records,bookno):
 	clean=Wushu(dfr[bookno])
 	print(type(clean))
 	if clean is not None:
-		bc=(clean.max()-clean.min())/7
+		if(clean.max==clean.min()):
+			bc=1
+		else:	
+			bc=(clean.max()-clean.min())/7
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
