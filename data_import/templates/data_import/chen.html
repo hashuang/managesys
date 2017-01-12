@@ -1,5 +1,8 @@
 {% extends "data_import/base.html" %}
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block pagejs %}
+<script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
+{% endblock pagejs %}
 {% block content %}
 
 <h2>青钢转炉数据分析</h2>
