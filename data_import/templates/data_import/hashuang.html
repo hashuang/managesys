@@ -3,19 +3,18 @@
 {% block content %}
 
 <h1>青钢转炉数据分析</h1>
-注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空的情况<br>
+注：1,存在多条件筛选无数据的情况或数据极少清洗后数据为空的情况。<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 2,钢种为计划牌号,下拉框显示顺序按钢种数量由多到少。钢种中选项null，在数据库中SPECIFICATION='&nbsp',但依然存在676条数据。<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-3,字段下拉框顺序按表结构顺序。区间有效位数与相应数据库数据有效位数相同。<br>
+3,字段下拉框顺序按表结构顺序。区间有效位数与相应数据库数据有效位数相同。不符合正太分布规律的字段没有进行五数概括法清洗例如副枪插入深度。<br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-4,不能统计的字段例如时间点数据
+4,不能统计的字段例如时间点数据。
 字段名:<select name="tableno" id="tableno" class="no_procedurename"></select><br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-5,不进行统计的字段例如清洗后数据量太少。点击字段名可查看清洗后字段数据描述
+5,不进行统计的字段例如清洗后数据量太少。点击字段名可查看清洗后字段数据描述。
 字段名:<select name="littleno" id="littleno" class="little_procedurename"></select><br><br>
-<div id="main3"style="width: 900px;height:20px;"><textarea id="littletxt" style="width: 900px;height:20px;border:0px;"></textarea></div>
-<div>
+<textarea id="littletxt" style="width: 900px;height:20px;border:0px;"></textarea><br><br><br>
     钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
     班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
         <option value='blank' selected = "selected"></option>
@@ -60,6 +59,7 @@
             success: function(data) {
                 //alert(data.result);
                 drawBarChart(data.result)
+                //ha_drawBarAndBrokenLineChart(data.result)
                 var txt=$("#txt");
                 var label=$("#label")
                 txt.text(" ")
@@ -102,6 +102,7 @@
                 //alert("multi_analy");
                 //alert(data.state);
                 drawBarChart(data.result)
+                //ha_drawBarAndBrokenLineChart(data.result)
                 var txt=$("#txt");
                 var label=$("#label")
                 txt.text(" ")
