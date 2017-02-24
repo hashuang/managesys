@@ -70,6 +70,8 @@ urlpatterns = [
     url(r'^time',chyulia.time),
     #多条件综合筛选
     url(r'^multi_analy',chyulia.multi_analy),
+    #回归系数最大因素
+    url(r'^max_influence',chyulia.max_influence),
     url(r'^steelprice',views.steelprice),   
     url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),

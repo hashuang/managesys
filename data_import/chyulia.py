@@ -8,6 +8,8 @@ from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
 import os
 import json
 import datetime
+import csv
+from decimal import *
 #from . import hashuang
 
 #可自由选择要进行筛选的条件
@@ -137,11 +139,20 @@ def offset(xasis_fieldname,yaxis):
 	sqlVO["db_name"]="l2own"
 	print('len(xasis_fieldname)',len(xasis_fieldname))
 	for i in range (0,len(xasis_fieldname)):#实际计算范围为从0到len(xasis_fieldname)-1
+		# if yaxis[i]==0 or yaxis[i] is None:
+		# 	offset_result.append(None)
+		# 	continue;
 		sqlVO["sql"]="SELECT HEAT_NO,"+xasis_fieldname[i]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
 		print(sqlVO["sql"])
 		scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 		temp_array=data_clean(scrapy_records,xasis_fieldname[i])#字段清洗后统计情况
-		temp_value=(yaxis[i]-temp_array['avg_value'])/(temp_array['clean_max']-temp_array['clean_min'])
+		# print(temp_array)
+		print(yaxis[i])
+		# print(isinstance(yaxis[i],float))#判断数据类型
+		try:
+			temp_value=(float(yaxis[i])-temp_array['avg_value'])/(temp_array['clean_max']-temp_array['clean_min'])
+		except:
+			temp_value=None
 		offset_result.append(temp_value)
 	#print('offset_result',offset_result)
 	return offset_result
@@ -438,6 +449,8 @@ def data_clean(scrapy_records,bookno):
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr[bookno].dtype)
 	clean=Wushu(dfr[bookno])
+	if bookno=="NB":
+		print(clean)
 	#print("clean",clean)
 	#平均值/期望值
 	dataclean_result={}
@@ -463,4 +476,111 @@ def data_clean(scrapy_records,bookno):
 	dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
 	return dataclean_result
 
+from . import zhuanlu
+def max_influence(request):
+	print("Enter max_influence")
+	field=request.POST.get("field");
+	offset_value=request.POST.get("offset_value");#炉次字段的偏离程度，
+	print(field)
+	#将待匹配的字段名设置为参数
+	#field='MIRON_WGT'
+	result=[]
+	#读取回归系数文件
+	with open('data_import/regression_all_EN1.csv','r') as csvfile:
+	# with open('data_import/test.csv','r') as csvfile:
+	    reader = csv.reader(csvfile)
+	    rows= [row for row in reader]
+	aa = np.array(rows)
+	aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
+	for aaa in aa:
+		if(aaa[0]==field):
+			result.append(aaa)
+		# elif(aaa[1]==field):
+		# 	temp=aaa[0]
+		# 	aaa[0]=aaa[1]
+		# 	aaa[1]=temp
+			# result.append(aaa)
+	    # fout.write("%s\n" % aaa)  
+	result1 = np.array(result)#转变为numpy数组格式
+	length_result1=len(result1)
+	print("长度"+str(length_result1))
+	print(result1)#根据回归系数大小排序结果
+	print("------------------")
+	xasis_fieldname=[]#字段英文名字数组
+	regression_coefficient=[]#字段回归系数值数组
+	str_sql=''
+	for i in range(length_result1):
+		xasis_fieldname.append(result1[i][1])
+		regression_coefficient.append(result1[i][2])
+		str_sql=str_sql+','+result1[i][1]
+	print(str_sql)
+	prime_cost='1634230'
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#将查询所得值全部转变为float格式（动态，适用于不同个数的xasis_fieldname长度）
+	yaxis=[]
+	for i in range(length_result1):
+		value = scrapy_records[0].get(xasis_fieldname[i],None)
+		if value != None :
+			scrapy_records[0][xasis_fieldname[i]] = Decimal(value)
+		else:
+			scrapy_records[0][xasis_fieldname[i]] = 0#将空值None暂时以0填充
+		yaxis.append(value)
+	frame=DataFrame(scrapy_records)
+	print("frame",frame)
+	# for i in range(length_result1):
+	# 	yaxis.append(frame[xasis_fieldname[i]][0])
+	# yaxis=[frame[xasis_fieldname[0]][0],frame[xasis_fieldname[1]][0],frame[xasis_fieldname[2]][0],frame[xasis_fieldname[3]][0],frame[xasis_fieldname[4]][0]]
+	print("yaxis",yaxis)
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	offset_result=offset(xasis_fieldname,yaxis)
+	print(xasis_fieldname)
+	print("偏离程度")
+	print(offset_result)
+	xasis_fieldname_result=[]#字段英文名字数组
+	regression_coefficient_result=[]#字段回归系数值数组
+	offset_result_final=[]#偏离程度值
+	#即字段偏离高，则正相关应对应偏高，负相关应对应偏低
+	if float(offset_value[0:-1])>=0:#读取隐藏域的值，由于隐藏域的偏离表示为百分比，例如12.6%。因此截取12.6来判断其正负
+		for i in range(length_result1):
+			if offset_result[i]==None or xasis_fieldname[i]=='NB':#由于数据清洗的问题，暂且将NB字段如此处理，因为NB字段的所有数据均相同，导致数据清洗时将所有数据都清除了
+				continue
+			if float(regression_coefficient[i]) * float(offset_result[i]) >=0:
+				xasis_fieldname_result.append(xasis_fieldname[i])
+				regression_coefficient_result.append(regression_coefficient[i])
+				offset_result_final.append(offset_result[i])
+	else:
+		for i in range(length_result1):
+			if offset_result[i]==None or xasis_fieldname[i]=='NB':
+				continue
+			if float(regression_coefficient[i]) * float(offset_result[i]) <=0:
+				xasis_fieldname_result.append(xasis_fieldname[i])
+				regression_coefficient_result.append(regression_coefficient[i])
+				offset_result_final.append(offset_result[i])
+	contentVO['xasis_fieldname']=xasis_fieldname_result#回归系数因素英文字段名
+	contentVO['regression_coefficient']=regression_coefficient_result#字段回归系数值
+	contentVO['offset_result']=offset_result_final#回归系数因素字段偏离值
+	contentVO['offset_number']=len(xasis_fieldname_result)#回归系数最大因素所取字段个数
+	print("字段名字")
+	print(xasis_fieldname_result)
+	print("回归系数")
+	print(regression_coefficient_result)
+	print("偏离程度")
+	print(offset_result_final)
+	#查询转炉工序字段名中英文对照
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
+	En_to_Ch_result=[]
+	for i in range(len(xasis_fieldname_result)):
+		En_to_Ch_result.append(ana_result[xasis_fieldname_result[i]])
+	print(En_to_Ch_result)
+	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 

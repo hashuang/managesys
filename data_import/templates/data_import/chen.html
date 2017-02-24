@@ -44,10 +44,7 @@
 <div id="main2" style="float:left;width:800px;height:500px">右</div>
 <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
 </div>
-
-<span id='wrong-message' style="color:red"></span>
-<span id='hover-console' style="color:#1e90ff"></span>
-<span id='console' style="color:#1e90ff">Event Console</span>
+<button onclick='maxfivefactor()' id='maxfivefactor'>铁水重量成本追溯</button>
 
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
@@ -93,6 +90,8 @@
                 //alert(data.result);
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
+                // alert(data.result.offset_result[0]);
+                $("#offset").val(data.result.offset_result[0]);
                 drawBarChart_cost(data.result);
             }
         })
@@ -112,10 +111,46 @@
                 //alert(data.result)
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart_produce(data.result)
+                // alert(data.result.offset_result[0]);
+                $("#offset1").val(data.result.offset_result[0]);
+                drawBarChart_produce(data.result);
             }
         })
     };  
+
+    //回归系数最大的五因素及其偏离程度
+    function maxfivefactor(field,offset_value){
+        // var prime_analyse = $("#prime_analyse").val();
+        // console.log(prime_analyse)
+        // var offset_value = $("#offset").val();//以铁水重量为例，读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
+        // field='MIRON_WGT';
+        // var offset_value = $("#offset1").val();//读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
+        // field='TOTAL_SLAB_WGT';
+        $.ajax({
+            type: "post",
+            url:  "/max_influence",
+            data: {'field':field,'offset_value':offset_value},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result)
+                alert("success");
+                // alert(data.offset_number);//字段个数
+                // alert(data.xasis_fieldname);//字段英文名数组
+                // alert(data.offset_result);//字段偏离程度
+                // alert(data.En_to_Ch_result);//字段中文名
+                // alert(data.regression_coefficient);
+                var content='';
+                for (var i=0;i<data.offset_number;i++){
+                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
+                }
+                alert(content);
+                   
+                
+            }
+        })
+    };
 
     // 条形图（投入）与loadChart_chen.js中的drawBarChart相同(多Y轴)
     function drawBarChart_cost(result){
@@ -671,8 +706,22 @@
 
             };
 
+        var ecConfig = echarts.config;
+        myChart.on('click', function (params) {
+            // if (typeof params.seriesIndex != 'undefined') {
+            if (params.componentType == 'markPoint') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                offset_value=result.offset_value;//读取偏离值
+                fieldname_english=result.fieldname;//读取字段英文名字
+                maxfivefactor(fieldname_english,offset_value);
+            }
+            console.log(params);
+            });
+
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
+
     }
 
     //带因素偏高偏低不带钢种的单字段统计
