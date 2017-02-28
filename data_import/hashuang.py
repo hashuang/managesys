@@ -21,10 +21,6 @@ from . import const
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    # print("L")
-    # print(L)
-    # print("U")
-    # print(U)
     result=x[(x<U)&(x>L)]
     wushu_clean={}
     wushu_clean["minbook"]=L
@@ -71,7 +67,8 @@ def num_describe(scrapy_records,bookno):
 		clean=dfr[bookno]		
 	else:
 		print("yes")
-		clean=cleanbook["result"]				
+		clean=cleanbook["result"]
+		#clean=dfr[bookno]				
 	print("minbook")
 	print(minbook)
 	print("maxbook")
@@ -145,11 +142,13 @@ def multi_analy(request):
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");
 	OPERATECREW=request.POST.get("OPERATECREW");
 	station=request.POST.get("station");
+	time1=request.POST.get("time1");
+	time2=request.POST.get("time2");
 	if SPECIFICATION !='blank':
 		if SPECIFICATION =='null':
-			sentence_SPECIFICATION="and SPECIFICATION is null"
+			sentence_SPECIFICATION="SPECIFICATION is null"
 		else:	
-			sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
+			sentence_SPECIFICATION= "  SPECIFICATION='"+SPECIFICATION+"'"
 	else:
 		sentence_SPECIFICATION=''
 	if OPERATESHIFT !='blank':
@@ -164,8 +163,13 @@ def multi_analy(request):
 		sentence_station=" and station='"+station+"'"
 	else:
 		sentence_station=''
-	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
-	#print(sentence)
+	if time1 != '' and time2!='':
+		sentence_time="and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'"
+	else:
+		sentence_time=''
+	sentence="SELECT HEAT_NO,"+bookno+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+	#sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE "+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	print(sentence)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]=sentence
