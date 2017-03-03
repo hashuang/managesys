@@ -57,9 +57,12 @@ urlpatterns = [
     #钢铁价格预测
     url(r'^steelprice',steelprice.steelprice),
     url(r'^price_history', steelprice.price_history),
+
     #chen
+    #显示chen页面
     url(r'^chen', chyulia.chen),
-    url(r'^ch_num2',chyulia.ch_num2),
+    #同时计算正态分布和概率分布
+    url(r'^probability_distribution',chyulia.probability_distribution), 
     url(r'^cost',chyulia.cost),
     url(r'^produce',chyulia.produce),
     #自动加载钢种
@@ -70,6 +73,10 @@ urlpatterns = [
     url(r'^time',chyulia.time),
     #多条件综合筛选
     url(r'^multi_analy',chyulia.multi_analy),
+    #回归系数最大因素
+    url(r'^max_influence',chyulia.max_influence),
+    #定期更新数据库转炉字段统计值
+    url(r'^updatevalue',chyulia.updatevalue),
     url(r'^steelprice',views.steelprice),   
     url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),
