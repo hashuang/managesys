@@ -241,6 +241,15 @@ function drawBarChart2(result){
             legend: {
                 data:['']
             },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
             xAxis: {
                 data: result.scope
             },
