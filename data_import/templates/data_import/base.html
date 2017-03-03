@@ -1,97 +1,285 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 {% load static %}
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
-    <script type="text/javascript" src="/static/data_import/libs/jquery/jquery-3.0.0.js"></script>
-    <script type="text/javascript" src="/static/data_import/libs/jquery/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/static/data_import/libs/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/data_import/libs/echarts/echarts-all.js"></script>
- 
-    {% block pagejs %}{% endblock pagejs %}
-
-    <link rel="stylesheet" type="text/css" href="/static/data_import/libs/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/static/data_import/css/common.css" />
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/libs/bootstrap/css/bootstrap.min.css' %}" />
     
-    <script type="text/javascript" src="{% static 'data_import/js/modernizr-1.5.min.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'data_import/css/article.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'data_import/css/gfm.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'data_import/css/hybrid.css' %}">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
-    </script>
+    <!-- css for skin -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/normalize.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/main.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/font-awesome.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/owl.carousel.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/responsive.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/style.css' %}" />
+   
     {% block pagecss %}{% endblock pagecss %}
+
+    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery-1.11.3.min.js' %}"></script> 
+    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery.cookie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/libs/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/libs/echarts/echarts-all.js' %}"></script>
+
 </head>
-
-<body>
-
-    <nav id="ccc" class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/index">青特钢大数据项目组数据管理</a>
+<body >
+    <!-- start preloader -->
+    <!--
+    <div id="loader-wrapper">
+        <div class="logo"></div>
+        <div id="loader">
+        </div>
+    </div>
+    -->
+    <!-- end preloader -->
+    
+<!-- Start Header Section -->
+<header class="main_menu_sec navbar navbar-default navbar-fixed-top">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="navbar-header ">
+                <a class="navbar-brand" id="logo_header" href="/index">青特钢大数据项目组数据管理</a>
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">数据迁移<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/data_import">数据迁移</a></li>
-                            <li><a href="/upload_file">导入模板文件</a></li>
-                            <li><a href="javascript:void(0)">数据分析工具</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目控制<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/summary">项目周期总结</a></li>
-                            <li><a href="/tasks">查看任务</a></li>
-                            <li><a href="/advices">项目建议</a></li>
-                            <li><a href="/shares">文件分享</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">成员工作成果展示<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="javascript:void(0)">郭宏悦</a></li>
-                            <li><a href="javascript:void(0)">叶鹏飞</a></li>
-                            <li><a href="/chen">陈玉莲</a></li>
-                            <li><a href="/space">刘斯诺</a></li>
-                            <li><a href="/ha">哈爽</a></li>
-                            <li><a href="/steelprice">程昌新</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">示例<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/echarts">echarts官方示例</a></li>
-                        </ul>
-                    </li>
-                </ul>
+        </div>          
+        <div class="col-lg-9 col-md-9 col-sm-12">
+            <div class="rgt_hd">                    
+                <div class="main_menu">
+                    <nav id="nav_menu">
+                        <!-- <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        </button>   --> 
 
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="userInfo">{% block username %}{% if user %}{{ user.username }}{% endif %}{% endblock %}<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/modify_password" id="userPsw">修改密码</a></li>
-                            <li><a href="/logout" id="checkOut">退出</a></li>
-                        </ul>
-                    </li>
-                </ul>   
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
+                    <div id="navbar">
+                        <ul>
+                            <li><a class="page-scroll" href="index.html">Home</a></li> 
+                            <li><a href="#">数据迁移 <i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="/data_import">数据迁移</a></li>
+                                    <li><a class="page-scroll" href="/upload_file">导入模板文件</a></li>
+                                    <li><a class="page-scroll" href="javascript:void(0)">数据分析工具</a></li>
+                                </ul>
+                            </li>                       
 
-    <div class="content" style="width: 95%; margin-left: auto;margin-right: auto">
-        {% block content %}{% endblock %}
-    </div> 
-<script type="text/javascript" src="/static/data_import/js/loadParams.js"></script>
+                            <li><a href="#">项目控制<i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="/summary">项目周期总结</a></li>
+                                    <li><a class="page-scroll" href="/tasks">查看任务</a></li>
+                                    <li><a class="page-scroll" href="/advices">项目建议</a></li>
+                                    <li><a class="page-scroll" href="/shares">文件分享</a></li>
+                                </ul>
+                            </li> 
+                        
+                            <li><a href="#">成员工作成果展示<i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="javascript:void(0)">郭宏悦</a></li>
+                                    <li><a class="page-scroll" href="javascript:void(0)">叶鹏飞</a></li>
+                                    <li><a class="page-scroll" href="/chen">陈玉莲</a></li>
+                                    <li><a class="page-scroll" href="/space">刘斯诺</a></li>
+                                    <li><a class="page-scroll" href="/ha">哈爽</a></li>
+                                    <li><a class="page-scroll" href="/steelprice">程昌新</a></li>
+                                </ul>
+                            </li> 
+                            
+                            <li><a href="#">示例<i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="/echarts">echarts官方示例</a></li>
+                                </ul>
+                            </li>
+
+                            <li><a href="#" class="page-scroll" id="userInfo">hello,{% block username %}{% if user %}{{ user.username }}{% endif %}{% endblock %}<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/modify_password" id="userPsw">修改密码</a></li>
+                                    <li><a href="/logout" id="checkOut">退出</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                        <!-- user -->
+                    </div>    
+                    </nav>    
+                </div>                  
+                    
+            </div>
+        </div>  
+    </div>  
+</div>  
+</header>
+<!-- End Header Section -->
+
+<!-- start Data Section -->
+{% block indexcontent %}{% endblock %} 
+<section id="data_sec">
+<div class="container">
+    <div class="row">
+        {% block content %}{% endblock %}                    
+    </div>
+</div>
+</section>
+<!-- End Data Section -->
+
+<!-- start our teastimonial Section -->
+<section id="tstm_sec">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="all_tstm">
+                
+            <div class="clnt_tstm">
+                <div class="sngl_tstm">
+                    <i class="fa fa-quote-right"></i>
+                    <h3>what people say?</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur sequi accusamus voluptatum rem itaque alias deleniti nostrum aperiam fugiat voluptates debitis praesentium incidunt accusantium distinctio,</p>
+                    <h6>- jhon deo</h6>                 
+                </div>
+            </div>                      
+            
+            <div class="clnt_tstm">
+                <div class="sngl_tstm">
+                    <i class="fa fa-quote-right"></i>
+                    <h3>Clien Design</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur sequi accusamus voluptatum rem itaque alias deleniti nostrum aperiam fugiat voluptates debitis praesentium incidunt accusantium distinctio,</p>
+                    <h6>- shura deo</h6>                    
+                </div>
+            </div>              
+            <div class="clnt_tstm">
+                <div class="sngl_tstm">
+                    <i class="fa fa-quote-right"></i>
+                    <h3>Awesome Support </h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur sequi accusamus voluptatum rem itaque alias deleniti nostrum aperiam fugiat voluptates debitis praesentium incidunt accusantium distinctio,</p>
+                    <h6>- kumara deo</h6>                   
+                </div>
+            </div>              
+            <div class="clnt_tstm">
+                <div class="sngl_tstm">
+                    <i class="fa fa-quote-right"></i>
+                    <h3>Theme Feature great</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur sequi accusamus voluptatum rem itaque alias deleniti nostrum aperiam fugiat voluptates debitis praesentium incidunt accusantium distinctio,</p>
+                    <h6>- dhera deo</h6>                    
+                </div>
+            </div>              
+            <div class="clnt_tstm">
+                <div class="sngl_tstm">
+                    <i class="fa fa-quote-right"></i>
+                    <h3>Non conflict</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur sequi accusamus voluptatum rem itaque alias deleniti nostrum aperiam fugiat voluptates debitis praesentium incidunt accusantium distinctio,</p>
+                    <h6>- jhon deo</h6>                 
+                </div>
+            </div>  
+                
+            </div>
+        </div>  
+    </div>
+</div>
+</section>
+<!-- End our teastimonial Section -->
+
+<footer id="ft_sec">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ft">                        
+                <ul>
+                    <li><a href=""><i class="fa fa-facebook"></i></a></li>
+                    <li><a href=""><i class="fa fa-twitter"></i></a></li>
+                    <li><a href=""><i class="fa fa-dribbble"></i></a></li>
+                    <li><a href=""><i class="fa fa-rss"></i></a></li>
+                    <li><a href=""><i class="fa fa-flickr"></i></a></li>
+                    <li><a href=""><i class="fa fa-pinterest"></i></a></li>
+                    <li><a href=""><i class="fa fa-linkedin"></i></a></li>
+                    <li><a href=""><i class="fa fa-skype"></i></a></li>
+                    <li><a href=""><i class="fa fa-google"></i></a></li>
+                </ul>                   
+            </div>
+            <ul class="copy_right">
+                <li>&copy; 2016</li>
+                <li>developer by md. shiddikur rahman</li>
+            </ul>                   
+        </div>  
+    </div>
+</div>
+</footer>
+<!-- start slider Section -->
+
+<!-- js -->
+    <!-- <script type="text/javascript" src="{% static 'data_import/libs/echarts/echarts-all.js' %}"></script> -->
+ <!--    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery-3.0.0.js' %}"></script> -->
+    
+
+    <!-- js for skin -->
+    <!-- <script src="js/vendor/jquery-1.11.3.min.js"></script> -->
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/isotope.pkgd.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery-ui.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/appear.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.counterup.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/waypoints.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/owl.carousel.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/showHide.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.nicescroll.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/scrolling-nav.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/plugins.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data_import/skin1/js/main.js' %}"></script>
+
+    {% block pagejs %}{% endblock pagejs %}
+    <script type="text/javascript">
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+    </script>
+
+
 <script type="text/javascript">
-    $.ajaxSetup({
-        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    $(document).ready(function(){
+        $('.show_hide').showHide({           
+            speed: 1000,  // speed you want the toggle to happen    
+            easing: '',  // the animation effect you want. Remove this line if you dont want an effect and if you haven't included jQuery UI
+            changeText: 1, // if you dont want the button text to change, set this to 0
+            showText: 'View',// the button text to show when a div is closed
+            hideText: 'Close' // the button text to show when a div is open
+                         
+        }); 
     });
 </script>
+
+<script>
+    jQuery(document).ready(function( $ ) {
+        $('.counter').counterUp({
+            delay: 10,
+            time: 1000
+        });
+    });
+</script>
+
+<script>
+    //Hide Overflow of Body on DOM Ready //
+    $(document).ready(function(){
+        $("body").css("overflow", "hidden");
+        });
+
+        // Show Overflow of Body when Everything has Loaded 
+        $(window).load(function(){
+        $("body").css("overflow", "visible");        
+        var nice=$('html').niceScroll({
+        cursorborder:"5",
+        cursorcolor:"#00AFF0",
+        cursorwidth:"3px",
+        boxzoom:true, 
+        autohidemode:true
+        });
+    });
+</script>
+
+</body>
+</html>
 
