@@ -1,6 +1,6 @@
 // 正态分布
 function drawBarChart_norm(result){
-	var myChart = echarts.init(document.getElementById('main2'));
+    var myChart = echarts.init(document.getElementById('main2'));
     var bookname=document.getElementById('bookno1')
         // 指定图表的配置项和数据
         var option = {
@@ -241,6 +241,15 @@ function drawBarChart2(result){
             legend: {
                 data:['']
             },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
             xAxis: {
                 data: result.scope
             },
@@ -448,24 +457,24 @@ function drawMapChart(data){
     myChart.setOption(option);
 }
 function loadjson(){
-	var chart = echarts.init(document.getElementById('main'),'vintage');
-		chart.setOption({
-		    series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		});
+    var chart = echarts.init(document.getElementById('main'),'vintage');
+        chart.setOption({
+            series: [{
+                type: 'map',
+                map: 'china'
+            }]
+        });
 }
 
 function loadtheme(){
-	var chart = echarts.init(document.getElementById('theme'),'vintage');
-		chart.setOption({
-			series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		    
-		});
+    var chart = echarts.init(document.getElementById('theme'),'vintage');
+        chart.setOption({
+            series: [{
+                type: 'map',
+                map: 'china'
+            }]
+            
+        });
 }
 
 
