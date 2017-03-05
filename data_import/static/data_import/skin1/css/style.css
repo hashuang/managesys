@@ -300,37 +300,6 @@ transform : translateX(100%);
 .hover_effect_btn a:hover::before, .hover_effect_btn a:focus::before {
 transform : translateX(0%);
 }
-#protfolio_sec ul.filter {
-color : #2e2e2e;
-}
-#protfolio_sec ul.filter li {
-color : #666666;
-cursor : pointer;
-display : inline-block;
-font-family : lato;
-font-size : 14px;
-margin-right : 5px;
-padding : 15px 35px;
-position : relative;
-}
-#protfolio_sec ul.filter li:hover {
-color : #36BFF3;
-}
-#protfolio_sec ul.filter li.active {
-border-bottom : 1px solid #00AFF0;
-}
-#protfolio_sec .all-portfolios {
-margin-top : 20px;
-margin-left : -10px;
-}
-#protfolio_sec .single-portfolio {
-float : left;
-margin-bottom : 10px;
-width : 277px;
-}
-#protfolio_sec .single-portfolio:hover .img_hoverlay {
-display : block;
-}
 #message {
 height : 90px;
 }
@@ -995,4 +964,38 @@ width : 731px !important ;
 	text-decoration : none;
 	text-transform : capitalize;
 	transition : all 0.4s 0s ease;
+}
+
+
+#protfolio_sec ul.filter {
+	color : #2e2e2e;
+}
+#protfolio_sec ul.filter li {
+	color : #666666;
+	cursor : pointer;
+	display : inline-block;
+	font-family : lato;
+	font-size : 14px;
+	margin-right : 5px;
+	padding : 15px 35px;
+	position : relative;
+}
+#protfolio_sec ul.filter li:hover {
+	color : #36BFF3;
+}
+#protfolio_sec ul.filter li.active {
+	border-bottom : 1px solid #00AFF0;
+}
+#protfolio_sec .all-portfolios {
+	margin-top : 20px;
+	margin-left : -10px;
+}
+#protfolio_sec .single-portfolio {
+	float : left;
+	margin-left : 300px;
+	margin-bottom : 10px;
+	width : 650px;
+}
+#protfolio_sec .single-portfolio:hover .img_hoverlay {
+display : block;
 }
