@@ -3,6 +3,7 @@ from . import views
 from . import chyulia
 from . import hashuang
 from . import steelprice
+from . import qualityzhuanlu
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -61,9 +62,9 @@ urlpatterns = [
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
-    #同时计算正态分布和概率分布
-    url(r'^probability_distribution',chyulia.probability_distribution), 
-    url(r'^cost',chyulia.cost),
+<<<<<<< HEAD
+
+>>>>>>> upstream/master
     url(r'^produce',chyulia.produce),
     #自动加载钢种
     url(r'^getGrape',chyulia.getGrape),
@@ -81,6 +82,19 @@ urlpatterns = [
     url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),
     #url(r'^paihao_getGrape',hashuang.paihao_getGrape)
+    #质量回溯
+    url(r'^product_quality',hashuang.product_quality),
+    url(r'^heat_no_quality',hashuang.heat_no_quality),
+    url(r'^liquid_ele',hashuang.liquid_ele),
+    url(r'^zhengtai_ele',hashuang.zhengtai_ele),
+    url(r'^one_product_quality', qualityzhuanlu.quality_zhuanlu),
+    #quchen
+    #url(r'^chen', chyulia.chen),
+    #同时计算正态分布和概率分布
+    url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
+    url(r'^m_quality',qualityzhuanlu.cost),
+    url(r'^s_quality',qualityzhuanlu.produce),   
+    url(r'^q_max_influence',qualityzhuanlu.max_influence),
 
     
 ]
