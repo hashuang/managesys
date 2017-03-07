@@ -56,13 +56,13 @@ function drawBarChart(result){
                 name: '',
                 type: 'bar',
                 data: result.num,
-                markPoint: {
-                    data:[
-                            {type : 'max', name: '最大值'},
-                            {type : 'min', name: '最小值'},
-                            //{name : '标记点', value : result.vvalue_y, xAxis: result.vvalue_x, yAxis:0.3}  
-                    ]
-                },
+                // markPoint: {
+                //     data:[
+                //             {type : 'max', name: '最大值'},
+                //             {type : 'min', name: '最小值'},
+                //             //{name : '标记点', value : result.vvalue_y, xAxis: result.vvalue_x, yAxis:0.3}  
+                //     ]
+                // },
             },
             
             ]
