@@ -32,25 +32,26 @@
     字段名<select name="bookno2" id="bookno2" class="procedurename1"></select>
     <button onclick='multi_analy()' id='multi_analy'>综合统计分析</button>
 </div>
-    <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。</p>
+    <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。此综合筛选功能详见哈爽工作内容。</p>
 -------------------------------------------------------------------------------
 <div>
-    <p><strong>2.单炉次投入成本及产品产出统计情况 and 3.单炉次因素偏高偏低展示</strong></p>
+    <p><strong>2.单炉次投入成本及产品产出情况分析及原因追溯</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>投入成本分析结果</button>
     <button onclick='produce()' id='click3'>产出产品分析结果</button>
+    <p></p>
 </div>
 
-<div style="width:1600px">
-<div id="main1" style="float:left;width:800px;height:500px">左</div>
-<div id="main2" style="float:left;width:800px;height:500px">右</div>
+<div style="width:1400px">
+<div id="main1" style="float:left;width:600px;height:450px">左</div>
+<div id="main2" style="float:left;width:600px;height:450px">右</div>
 <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
 </div>
 <p></p>
 <div>
     <!--table用来放置因素追溯的分析结果-->
-    <table id='txt' style="width: 900px;height:800px;border:0px;">
+    <table id='txt' style="width: 700px;height:300px;border:0px;">
 <!--         <caption >因素追溯的分析结果</caption>
         <tr> 
         <th>序号</th>
@@ -249,7 +250,7 @@
                     min: 0,
                     max: 5000,
                     position: 'left',
-                    offset: -200,
+                    offset: -130,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -267,7 +268,7 @@
                     max: 2000,
                     position: 'right',
                     splitLine:{show: false},//去除网格线
-                    offset: -200,
+                    offset: -130,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -298,9 +299,9 @@
                 series: [{
                     name: '铁水重量',
                     type: 'bar',
-                    barWidth : 80,//柱条（K线蜡烛）宽度
-                    barGap: '100%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barWidth : 70,//柱条（K线蜡烛）宽度
+                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap:'40%',//类目间柱形距离，默认为类目间距的20%，可设固定值
                     barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
                     data: [result.yvalue[0]],
                     itemStyle: {
@@ -314,9 +315,9 @@
                 {
                     name:'耗氧量',
                     type:'bar',
-                    barWidth : 80,
-                    barGap: '100%',
-                    barCategoryGap:'60%',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
                     barMinHeight:10,
                     yAxisIndex: 1,
                     data:[result.yvalue[1]],
@@ -331,9 +332,9 @@
                 {
                     name:'生铁',
                     type:'bar',
-                    barWidth : 80,
-                    barGap: '100%',
-                    barCategoryGap:'60%',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
                     barMinHeight:10,
                     yAxisIndex: 2,
                     data:[result.yvalue[2]],
@@ -348,9 +349,9 @@
                 {
                     name:'废钢总和',
                     type:'bar',
-                    barWidth : 80,
-                    barGap: '100%',
-                    barCategoryGap:'60%',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
                     barMinHeight:10,
                     yAxisIndex: 2,
                     data:[result.yvalue[3]],
@@ -443,7 +444,7 @@
                     min: 0,
                     max: 12000,
                     position: 'left',
-                    offset: -250,
+                    offset: -180,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -475,8 +476,8 @@
                 series: [{
                     name: '钢水重量',
                     type: 'bar',
-                    barWidth : 100,//柱条（K线蜡烛）宽度
-                    barGap: '100%',//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barWidth : 90,//柱条（K线蜡烛）宽度
+                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
                     barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
                     barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
                     data: [result.yvalue[0]],
@@ -491,8 +492,8 @@
                 {
                     name:'转炉煤气',
                     type:'bar',
-                    barWidth : 100,
-                    barGap: '100%',
+                    barWidth : 90,
+                    barGap: '80%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
                     yAxisIndex: 1,
@@ -508,8 +509,8 @@
                 {
                     name:'钢渣',
                     type:'bar',
-                    barWidth : 100,
-                    barGap: '100%',
+                    barWidth : 90,
+                    barGap: '80%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
                     yAxisIndex: 2,
