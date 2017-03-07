@@ -218,7 +218,7 @@ def offset(xasis_fieldname,yaxis):
 #对偏离程度进行定性判断：高，偏高，正常范围，偏低，低，极端异常
 def qualitative_offset(offset_result):
 	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
-	qualitative_standard=[0.1,0.2,0.4]
+	qualitative_standard=[0.1,0.3,0.4]
 	qualitative_offset_result=[]
 	for i in range(len(offset_result)):
 		if abs(float(offset_result[i]))<=qualitative_standard[0]:
@@ -228,13 +228,18 @@ def qualitative_offset(offset_result):
 				qualitative_offset_result.append('偏高')
 			else:#偏低
 				qualitative_offset_result.append('偏低')
-		elif  abs(float(offset_result[i]))<=qualitative_standard[2]:
+		# elif  abs(float(offset_result[i]))<=qualitative_standard[2]:
+		# 	if float(offset_result[i])>0:#高
+		# 		qualitative_offset_result.append('高')
+		# 	else:#低
+		# 		qualitative_offset_result.append('低')
+		# else:#极端情况
+		# 	qualitative_offset_result.append('极端异常')
+		else:#取消数据异常情况
 			if float(offset_result[i])>0:#高
 				qualitative_offset_result.append('高')
-			else:#低
-				qualitative_offset_result.append('低')
-		else:#极端情况
-			qualitative_offset_result.append('极端异常')
+			else:
+				qualitative_offset_result.append('低')		
 	return  qualitative_offset_result
 
 #计算单炉次字段值
