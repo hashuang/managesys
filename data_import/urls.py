@@ -62,9 +62,6 @@ urlpatterns = [
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
-<<<<<<< HEAD
-
->>>>>>> upstream/master
     url(r'^produce',chyulia.produce),
     #自动加载钢种
     url(r'^getGrape',chyulia.getGrape),

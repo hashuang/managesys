@@ -88,10 +88,20 @@
                 {
                     name: '成分含量',
                     type: 'gauge',
+                    center:['25%','50%'],
                     min:min_ele,
                     max:result.max_ele,
                     detail: {formatter:'{value}'},
                     data: [{value:result.some_ele , name: '成分含量'}]
+                },
+                {
+                    name: '成分含量',
+                    type: 'gauge',
+                    center:['55%','75%'],
+                    min:3,
+                    max:34,
+                    detail: {formatter:'{value}'},
+                    data: [{value:8 , name: '成分含量'}]
                 }
             ]
         };
