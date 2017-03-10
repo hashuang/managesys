@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from . import views
 from . import chyulia
+from . import fluc_chyulia
 from . import hashuang
 from . import steelprice
 from . import qualityzhuanlu
@@ -62,22 +63,25 @@ urlpatterns = [
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
-<<<<<<< HEAD
-
->>>>>>> upstream/master
+    url(r'^cost',chyulia.cost),
     url(r'^produce',chyulia.produce),
     #自动加载钢种
     url(r'^getGrape',chyulia.getGrape),
-    #波动率
+    #跳转到波动率页面fluctuation.html
     url(r'^fluctuation',chyulia.fluctuation),
-    #比较时间
-    url(r'^time',chyulia.time),
-    #多条件综合筛选
+    #多条件综合筛选(chen.html)
     url(r'^multi_analy',chyulia.multi_analy),
-    #回归系数最大因素
+    #单炉次原因追溯
     url(r'^max_influence',chyulia.max_influence),
     #定期更新数据库转炉字段统计值
     url(r'^updatevalue',chyulia.updatevalue),
+    #同时计算正态分布和概率分布
+    url(r'^probability_normal',chyulia.probability_normal), 
+    #比较总体的波动率计算(fluctuation.html)
+    url(r'^fluc_cost',fluc_chyulia.fluc_cost),
+    url(r'^fluc_produce',fluc_chyulia.fluc_produce),
+    #波动率原因追溯
+    url(r'^fluc_influence',fluc_chyulia.fluc_influence),
     url(r'^steelprice',views.steelprice),   
     url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),
