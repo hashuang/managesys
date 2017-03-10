@@ -375,6 +375,92 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue,module_nam
 }
 
 
+//时间折线图 (Echarts 2)
+function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+
+    var myChart = echarts.init(document.getElementById('main4'));
+
+    option = {
+    title : {
+        text: module_name + '——' + aspect_name + '（' + space_name + '）',
+        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'item',
+        formatter : function (params) {
+            var date = new Date(params.value[0]);
+            data = date.getFullYear() + '-'
+                   + (date.getMonth() + 1) + '-'
+                   + date.getDate() + ' ';
+            return data + '<br/>'
+                   + params.value[1];
+        }
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            //mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            //restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    dataZoom: {
+        show: true,
+        start : 70
+    },
+    legend : {
+        orient: 'vertical',
+        x:'left',
+        data : [tradeNo]
+    },
+    grid: {
+        y2: 80
+    },
+    xAxis : [
+        {
+            type : 'time',
+            splitNumber:10
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name: 'series1',
+            type: 'line',
+            showAllSymbol: true,
+            symbolSize: function (value){
+                return Math.round(value[2]/10) + 2;
+            },
+            data: (function () {
+                var d = [];
+                var len = 0;
+                var now = new Date();
+                var value;
+                while (len++ < 200) {
+                    d.push([
+                        new Date(2014, 9, 1, 0, len * 10000),
+                        (Math.random()*30).toFixed(2) - 0,
+                        (Math.random()*100).toFixed(2) - 0
+                    ]);
+                }
+                return d;
+            })()
+        }
+    ]
+};
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+
+
 function loadjson(){
 	var chart = echarts.init(document.getElementById('main'),'vintage');
 		chart.setOption({
@@ -452,3 +538,5 @@ function drawBarAndBrokenLineBofItChart(data){
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+

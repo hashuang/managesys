@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from . import views
 from . import chyulia
 from . import hashuang
@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^echarts',views.echarts),
     #sinuo
     url(r'^space',views.space),
+    url(r'^time',views.time),
     url(r'^liusinuo',views.space),
     #ha
     url(r'^ha', views.ha),
