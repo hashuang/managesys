@@ -59,7 +59,6 @@ urlpatterns = [
     #钢铁价格预测
     url(r'^steelprice',steelprice.steelprice),
     url(r'^price_history', steelprice.price_history),
-
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
@@ -83,7 +82,6 @@ urlpatterns = [
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
     url(r'^steelprice',views.steelprice),   
-    url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),
     #url(r'^paihao_getGrape',hashuang.paihao_getGrape)
     #质量回溯
