@@ -146,9 +146,9 @@ def multi_analy(request):
 	time2=request.POST.get("time2");
 	if SPECIFICATION !='blank':
 		if SPECIFICATION =='null':
-			sentence_SPECIFICATION="SPECIFICATION is null"
+			sentence_SPECIFICATION="and SPECIFICATION is null"
 		else:	
-			sentence_SPECIFICATION= "  SPECIFICATION='"+SPECIFICATION+"'"
+			sentence_SPECIFICATION= "and SPECIFICATION='"+SPECIFICATION+"'"
 	else:
 		sentence_SPECIFICATION=''
 	if OPERATESHIFT !='blank':
@@ -169,6 +169,7 @@ def multi_analy(request):
 		sentence_time=''
 	sentence="SELECT HEAT_NO,"+bookno+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	#sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE "+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	print('sql语句：')
 	print(sentence)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
