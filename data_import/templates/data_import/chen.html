@@ -51,7 +51,7 @@
 <p></p>
 <div>
     <!--table用来放置因素追溯的分析结果-->
-    <table id='txt' style="width: 700px;height:300px;border:0px;">
+    <table id='txt' style="width: 700px;height:100px;border:0px;">
 <!--         <caption >因素追溯的分析结果</caption>
         <tr> 
         <th>序号</th>
@@ -211,6 +211,7 @@
                      }
                 },
                 toolbox: {
+                    show : true,
                     feature: {
                         dataView: {show: true, readOnly: false},
                         restore: {show: true},
@@ -373,7 +374,7 @@
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
                 fieldname_chinese=result.xname[params.seriesIndex];
                 fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                probability_normal(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
             }
             console.log(params);
             });
@@ -533,7 +534,7 @@
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
                 fieldname_chinese=result.xname[params.seriesIndex];
                 fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                probability_normal(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
             }
             console.log(params);
             });
@@ -542,122 +543,9 @@
             // 使用刚指定的配置项和数据显示图表。
     };
 
-    // 正态分布画图
-    //与loadChart_chen.js中的drawBarChart_norm相同
-    function drawBarChart_norm(result){
-        var myChart = echarts.init(document.getElementById('main2'));
-        //var bookname=document.getElementById('bookno1')
-            // 指定图表的配置项和数据
-            var option = {
-                title: {
-                    //text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
-                    text: bookno = result.fieldname_chinese+result.fieldname+'的正态分布',//+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
-                    x:'center'
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                     }
-                },
-                legend: {
-                    data:['']
-                },
-                xAxis: [
-                    {
-                        data: result.normx,
-                        axisLabel :{  
-                                //interval:0,//横轴信息全部显示
-                                //rotate: 60//60度角倾斜显示  
-                            } 
-                    },
-                    {
-                        type : 'category',
-                        axisLine: {show:false},
-                        axisTick: {show:false},
-                        axisLabel: {show:false},
-                        splitArea: {show:false},
-                        splitLine: {show:false},
-                        data : ['Line','Bar','Scatter','K','Map']
-                    }
-                ],
-                yAxis: {
-                    name:'密度'
-                },
-                series: [{
-                    name: '',
-                    type: 'bar',
-                    data: result.normy,
-                    markPoint: {
-                        itemStyle : {
-                             normal: {
-                                 color:'#1e90ff'
-                             }
-                         },
-                        data:[
-                                // {type : 'max', name: '最大值'},
-                                // {type : 'min', name: '最小值'},
-                                {name : '位置点'+'偏离程度'+result.offset_value, value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
-                                //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
-                        ]
-                    },
-                    // markLine: {
-                    //     name:'炉次号'+result.fieldname+'的标线'
-                    //     itemStyle : {
-                    //         normal: {
-                    //             color:'#1e90ff'
-                    //         }
-                    //     },
-                    //     data:[
-                    //             [
-                    //             {name: '标线1起点', value: result.singleheat, xAxis: result.singleheat, yAxis: 0},
-                    //             {name: '标线1终点', xAxis: result.singleheat, yAxis: 0.3}
-                    //             ]
-                    //            ] 
-                        
-                    // }
-                    // itemStyle: {
-                    //         normal: {
-                    //         //color: 'tomato',
-                    //         //barBorderColor: 'tomato',
-                    //         barBorderWidth: 6,
-                    //         barBorderRadius:0,
-                    //         label : {
-                    //             show: true, position: 'top'
-                    //         }
-                    //     }
-                    // }
-
-                },
-                  {
-                    name: '',
-                    type: 'line',
-                    data: result.normy
-                }
-                ]
-
-            };
-
-        var ecConfig = echarts.config;
-        myChart.on('click', function (params) {
-            // if (typeof params.seriesIndex != 'undefined') {
-            if (params.componentType == 'markPoint') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                offset_value=result.offset_value;//读取偏离值
-                fieldname_english=result.fieldname;//读取字段英文名字
-                retrospectfactor(fieldname_english,offset_value);
-            }
-            console.log(params);
-            });
-
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-
-    }
 
     //正态分布+概率分布
-    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value){
+    function probability_normal(fieldname_chinese,fieldname_english,offset_value,actual_value){
         var field1 = $("#prime_analyse").val();//炉次号
         //var field2 = $("#field2").val();//字段
         //var field2 = $("#bookno1").find("option:selected").val();
@@ -666,20 +554,21 @@
         console.log(field1,fieldname_english,fieldname_chinese);
             $.ajax({
             type: "post",
-            url:  "/probability_distribution",
+            url:  "/probability_normal",
             data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value},
             error: function() {
                 alert("404");
             },
             success: function(data) {
-                // alert("enter probability_distribution");
+                // alert("enter probability_normal");
                 //概率分布
                 // alert(data.ana_result['scope']);
                 // alert(data.ana_result['num']);
                 //正态分布
                 // alert(data.normal_result['normx']);
                 // alert(data.normal_result['normy']);
-                probability_distribution_picture(data);
+
+                probability_normal_picture(data);
 
             }
         })
@@ -687,13 +576,13 @@
     }; 
 
     //正态分布+概率分布画图
-    function probability_distribution_picture(result){
+    function probability_normal_picture(result){
         var myChart = echarts.init(document.getElementById('main2'));
         //var bookname=document.getElementById('bookno1')
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: result.normal_result.fieldname_chinese+'('+result.normal_result.fieldname+')的概率(bar)及正态(line)分布',
+                    text: result.base_result.fieldname_chinese+'('+result.base_result.fieldname+')的概率(bar)及正态(line)分布',
                     x:'center'
                 },
                 tooltip: {
@@ -705,9 +594,18 @@
                 legend: {
                     data:['']
                 },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
                 xAxis: [
                     {
-                        data: result.normal_result.normx,
+                        data: result.ana_result.normx,
                         axisLabel :{  
                                 //interval:0,//横轴信息全部显示
                                 //rotate: 60//60度角倾斜显示  
@@ -735,7 +633,7 @@
                     type: 'line',
                     xAxisIndex:0,
                     yAxisIndex:0,
-                    data: result.normal_result.normy,
+                    data: result.ana_result.normy,
                     // markPoint: {
                     //     itemStyle : {
                     //          normal: {
@@ -749,7 +647,7 @@
                     //     ]
                     // },
                     markLine: {
-                        name:'炉次号'+result.normal_result.fieldname+'的标线',
+                        name:'炉次号'+result.base_result.fieldname+'的标线',
                         itemStyle : {
                             normal: {
                                 color:'#1e90ff'
@@ -757,15 +655,15 @@
                         },
                         data:[
                                 [
-                                {name: '位置点偏离程度'+result.normal_result.offset_value, value:  result.normal_result.actual_value, xAxis: result.normal_result.match_value, yAxis: 0},
-                                {name: '标线1终点', xAxis: result.normal_result.match_value, yAxis: 'max'}
+                                {name: '位置点偏离程度'+result.base_result.offset_value, value:  result.base_result.actual_value, xAxis: result.base_result.match_value, yAxis: 0},
+                                {name: '标线1终点', xAxis: result.base_result.match_value, yAxis: 'max'}
                                 ],
                                 [{
                                     // 固定起点的 x 位置，用于模拟一条指向最大值的水平线
-                                    name: '位置点偏离程度'+result.normal_result.offset_value,
-                                    value: result.normal_result.offset_value,
+                                    name: '位置点偏离程度'+result.base_result.offset_value,
+                                    value: result.base_result.offset_value,
                                     yAxis: 'max',
-                                    xAxis: result.normal_result.match_value
+                                    xAxis: result.base_result.match_value
                                  }, 
                                  {
                                     type: 'max'
@@ -804,8 +702,8 @@
             // if (params.componentType == 'markPoint') {
                 //mes += '  seriesIndex : ' + param.seriesIndex;
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                offset_value=result.normal_result.offset_value;//读取偏离值
-                fieldname_english=result.normal_result.fieldname;//读取字段英文名字
+                offset_value=result.base_result.offset_value;//读取偏离值
+                fieldname_english=result.base_result.fieldname;//读取字段英文名字
                 retrospectfactor(fieldname_english,offset_value);
             // }
             console.log(params);
