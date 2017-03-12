@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 import json
 
 from django.conf import settings
@@ -11,9 +12,11 @@ media_root = settings.MEDIA_ROOT
 data_root = media_root + '/files/data/'
 
 def steelprice(request):
+	if not request.user.is_authenticated():	
+		return HttpResponseRedirect("/login")
 	print(media_root)
 	contentVO={
-		'title':'price_history请求结果',
+		'title':'钢材价格预测',
 		'state':'success'
 	}
 	return render(request,'data_import/steelprice.html',contentVO)
@@ -21,14 +24,20 @@ def steelprice(request):
 
 
 def price_history(request):
-	print(media_root)
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == 'POST':
+		history_begin =	request.POST.get('history_begin', '')
+		history_end =	request.POST.get('history_end', '')
+	path = data_root + 'tegang.csv'
+	prices = get_history_price(path,history_begin,history_end)
+
+	print(type(prices.get('price',None)[0]))
+
 	contentVO={
-		'title':'price_history请求结果',
+		'title':'钢材历史价格',
 		'state':'success'
 	}
-	path = data_root + 'tegang.csv'
-	prices = get_history_price(path)
-	print(type(prices.get('price',None)[0]))
 	contentVO['timeline'] = prices.get('timeline',None)
 	contentVO['price'] = prices.get('price',None)
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')

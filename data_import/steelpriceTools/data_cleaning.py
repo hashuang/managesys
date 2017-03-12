@@ -7,24 +7,35 @@ import pandas as pd
 #from sklearn.cross_validation import train_test_split
 
 
-def get_history_price(path):
+def get_history_price(path,begin,end):
 	dfori = pd.read_csv(path, encoding = 'gbk')
-	
 	cols = list(dfori.columns)
 	cols_len = len(cols)
-
-	dfori[cols[1]] = pd.to_numeric(dfori[cols[1]].map(lambda x : x.replace(',','')))
+	print(path)
+	print(begin)
+	print(end)
+	'''
+	时间字符串转时间格式
+	'''
+	begin = datetime.datetime.strptime(begin, '%Y-%m-%d')
+	end = datetime.datetime.strptime(end, '%Y-%m-%d')
 
 	'''
 	datetime format
 	'''
 	dfori[cols[0]] = dfori[cols[0]].map(lambda x : str(x))
-	# dfori[cols[0]] = pd.to_datetime(dfori[cols[0]])
+	dfori[cols[0]] = dfori[cols[0]].map(lambda x : datetime.datetime.strptime(x, '%Y%m%d'))
+
+	dfori[cols[1]] = pd.to_numeric(dfori[cols[1]].map(lambda x : x.replace(',','')))
+	'''
+	根据起止时间选择数据
+	'''
+	dfori = dfori[(dfori[cols[0]] > begin) & (dfori[cols[0]] < end)]
 
 	history_price = pd.DataFrame()
 	history_price = dfori[cols[0:2]]
-
 	result = {}
+	history_price[cols[0]] = history_price[cols[0]].map(lambda x : str(x))
 	result['timeline'] = list(history_price[cols[0]])
 	result['price'] = list(history_price[cols[1]])
 	return result
