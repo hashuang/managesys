@@ -75,8 +75,6 @@ def select_date(sql_date1,sql_date2):
 def select_trade(tradeNo):	
 	#allTrade = 0
 	tradeNo_list = tradeNo.split(",") #英文逗号！
-	print (tradeNo)
-	print (tradeNo_list)
 	tradeNoList = ""
 	#tradeNo_list = tradeNo
 	pause = "、"
@@ -90,7 +88,7 @@ def select_trade(tradeNo):
 	return tradeNo_list,tradeNoList
 
 #=====================【 地 点 选 项 】==================================
-def select_space(module,space):	
+def select_space(module,space,space_detail):	
 	# space = 0
 	# while space!=1 and space!=2 and space!=3:
 		
@@ -103,7 +101,8 @@ def select_space(module,space):
 			space_dict = {"中东":0,"中国":0,"马来西亚":0,"韩国":0,"英国":0,"美国":0,"日本":0,"泰国":0,
 			"沙特":0,"新西兰":0,"新加坡":0,"德国":0,"土耳其":0,"墨西哥":0,"印度":0,"印尼":0,"其他":0}
 		else:
-			space_name = '"' + input("\n请输入国家名\n >>>") + '"'
+			#space_name = '"' + input("\n请输入国家名\n >>>") + '"'
+			space_name = space_detail
 	elif space == 2:
 		sql_ctry_prov_cty = "province"
 		if module == 1:
@@ -115,7 +114,8 @@ def select_space(module,space):
 			"安徽":0,"重庆":0,"北京":0,"上海":0,"天津":0,"广西":0,
 			"内蒙古":0,"西藏":0,"新疆":0,"宁夏":0,"澳门":0,"香港":0}
 		else:
-			space_name = '"' + input("\n请输入省名\n >>>") + '"'
+			#space_name = '"' + input("\n请输入省名\n >>>") + '"'
+			space_name = space_detail
 	elif space == 3:
 		sql_ctry_prov_cty = "city"
 		if module == 1:
@@ -124,7 +124,8 @@ def select_space(module,space):
 			"烟台":0,"潍坊":0,"济宁":0,"泰安":0,"威海":0,"日照":0,
 			"滨州":0,"德州":0,"聊城":0,"临沂":0,"菏泽":0,"莱芜":0}
 		else:
-			space_name = input("\n请输入城市名\n >>>")
+			#space_name = input("\n请输入城市名\n >>>")
+			space_name = space_detail
 	else:
 		print("ERROR 地区选项 非法输入！")
 	'''		

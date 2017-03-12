@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^echarts',views.echarts),
     #sinuo
     url(r'^space',views.space),
+    url(r'^time',views.time),
     url(r'^liusinuo',views.space),
     #ha
     url(r'^ha', views.ha),
