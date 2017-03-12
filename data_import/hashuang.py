@@ -9,12 +9,24 @@ from django.http import HttpResponse,HttpResponseRedirect,StreamingHttpResponse
 import os
 import json
 import datetime
+from django.contrib import auth
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db.models import F
+from data_import.forms import UploadFileForm
+from . import util
+from . import const
 
 
 def Wushu(x):
     L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
     U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    return x[(x<U)&(x>L)]	
+    result=x[(x<U)&(x>L)]
+    wushu_clean={}
+    wushu_clean["minbook"]=L
+    wushu_clean["maxbook"]=U
+    wushu_clean["result"]=result
+    return wushu_clean
 def num_describe(scrapy_records,bookno):
 	print("hellohaha");
 	if bookno=='"AS"':
@@ -27,14 +39,16 @@ def num_describe(scrapy_records,bookno):
 			#bookno=value
 	#print(bookno)
 	print(scrapy_records[1:5])
+	ivalue_i=[]
 	for n in range(len(scrapy_records)):
 		ivalue = scrapy_records[n].get(bookno,None)
 		if ivalue !=None and ivalue !=0:
-			ivalue=ivalue
-			print(ivalue)
-			break;
-	ivalue_b=str(ivalue)
-	ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue=ivalue
+			 ivalue_b=str(ivalue)
+			 ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue_i.append(ivalue_valid)
+			 ivalue_i.sort(reverse=True)
+	ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
 	print(ivalue_valid)		
 	for i in range(len(scrapy_records)):
 		value = scrapy_records[i].get(bookno,None)
@@ -45,23 +59,40 @@ def num_describe(scrapy_records,bookno):
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr['1622324'])
 	#print(dfr[bookno].dtype)
-	clean=Wushu(dfr[bookno])
+	cleanbook=Wushu(dfr[bookno])
+	minbook=cleanbook["minbook"]
+	maxbook=cleanbook["maxbook"]	
+	if(minbook==maxbook):#不符合正态分布规律
+		print("no")
+		clean=dfr[bookno]		
+	else:
+		print("yes")
+		clean=cleanbook["result"]
+		#clean=dfr[bookno]				
+	print("minbook")
+	print(minbook)
+	print("maxbook")
+	print(maxbook)
 	print(type(clean))
 	if clean is not None:
-		bc=(clean.max()-clean.min())/10
+		if(clean.max==clean.min()):
+			bc=1
+		else:	
+			bc=(clean.max()-clean.min())/7
 		bcq=math.ceil(bc*1000)/1000
+		print(bcq)
 		try:
-			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq+1))
+			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
 			end=pd.value_counts(section,sort=False)/clean.count()
 			describe=clean.describe()
 		except ValueError as e:
 		 	print(e)
 	numx=[ele for ele in end.index]
-	numy=[ele for ele in end]
+	#numy=[ele for ele in end]
 	desx=[ele for ele in describe.index]
 	desy=[ele for ele in describe]
 	print(numx)
-
+	print(describe)
 	#contentVO={
 		#'title':'测试',
 		#'state':'success'
@@ -74,11 +105,21 @@ def num_describe(scrapy_records,bookno):
 	#d3_data=[]
 	d4_data=[]
 	d1_valid=vaild(d1,ivalue_valid,d1_data)
+	for i in range(len(d1_valid)):
+		if d1_valid[i]<0:
+			d1_valid[i]=0
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
 	numx1=list(set(d1_valid).union(set(d2_valid)))
 	numx2=sorted(numx1)
+	print("numx2:")
+	print(numx2)
 	sections=[]
 	numx3=union_section(numx2,sections)
+	cut1=pd.cut(clean,numx2)
+	end1=pd.value_counts(cut1,sort=False)/clean.count()
+	numy=[ele for ele in end1]
+	print("end1:")
+	print(end1)
 	#numy1=vaild(numy,ivalue_valid,d3_data)
 	numy1=["%.6f"%(n) for n in numy]
 	desy1=vaild(desy,ivalue_valid,d4_data)
@@ -101,11 +142,13 @@ def multi_analy(request):
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");
 	OPERATECREW=request.POST.get("OPERATECREW");
 	station=request.POST.get("station");
+	time1=request.POST.get("time1");
+	time2=request.POST.get("time2");
 	if SPECIFICATION !='blank':
 		if SPECIFICATION =='null':
-			sentence_SPECIFICATION="and SPECIFICATION is null"
+			sentence_SPECIFICATION="SPECIFICATION is null"
 		else:	
-			sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
+			sentence_SPECIFICATION= "  SPECIFICATION='"+SPECIFICATION+"'"
 	else:
 		sentence_SPECIFICATION=''
 	if OPERATESHIFT !='blank':
@@ -120,8 +163,13 @@ def multi_analy(request):
 		sentence_station=" and station='"+station+"'"
 	else:
 		sentence_station=''
-	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
-	#print(sentence)
+	if time1 != '' and time2!='':
+		sentence_time="and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'"
+	else:
+		sentence_time=''
+	sentence="SELECT HEAT_NO,"+bookno+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+	#sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE "+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
+	print(sentence)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]=sentence
@@ -208,4 +256,170 @@ def paihao_getGrape(request):
 	grape=[ele for ele in frame['SPECIFICATION']]
 	#print(grape)
 	contentVO['result']=grape
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')             	
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+from . import zhuanlu
+def no_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['no_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def little_lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_C
+	contentVO['little_procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+def describe_ha(request):
+	littleno=request.POST.get("littleno").upper();
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT HEAT_NO,"+littleno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	# print(bookno)
+	# print(scrapy_records[:5])
+	contentVO={
+		'title':'分析结果绘图',
+		'state':'success',
+	}
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(littleno,None)
+		if value != None :
+			scrapy_records[i][littleno] = float(value)
+	frame=DataFrame(scrapy_records)	
+	df=frame.sort_values(by=littleno)
+	dfr=df[df>0].dropna(how='any')	
+	cleanbook=Wushu(dfr[littleno])
+	clean=cleanbook["result"]
+	describe=clean.describe()
+	desx=[ele for ele in describe.index]
+	desy=[ele for ele in describe]
+	desy1=["%.2f"%(n) for n in desy]
+	print(desx)
+	print(desy)
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy1
+
+	return HttpResponse(json.dumps(ana_describe),content_type='application/json')
+def product_quality(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/product_quality.html')
+def heat_no_quality(request):
+	print("计划牌号")
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	#sqlVO["sql"]="select distinct SPECIFICATION from qg_user.PRO_BOF_HIS_ALLFIELDS order by SPECIFICATION";
+	sqlVO["sql"]="select HEAT_NO from pro_bof_his_allfields where HEAT_NO like '16%' order by HEAT_NO DESC"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	frame=DataFrame(scrapy_records)
+	#print(frame['SPECIFICATION'])
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	grape=[ele for ele in frame['HEAT_NO']]
+	#print(grape)
+	contentVO['result']=grape
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def liquid_ele(request):
+	print("success")
+	prime_analyse=request.POST.get("prime_analyse");
+	liquid_steel=request.POST.get("liquid_steel");
+	sentence1="SELECT "+liquid_steel+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_analyse+"'"
+	sentence2="select MAX_VALUE,MIN_VALUE from pro_bof_his_allstructure where DATA_ITEM_EN='"+liquid_steel+"'"
+	print(sentence1)
+	print(sentence2)
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]=sentence1
+	sqlVO_des={}
+	sqlVO_des["db_name"]="l2own"
+	sqlVO_des["sql"]=sentence2
+	#print(sqlVO["sql"])
+	scrapy_records_ele=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	scrapy_records_des=models.BaseManage().direct_select_query_sqlVO(sqlVO_des)
+	print(scrapy_records_ele)
+	print(scrapy_records_des)
+	ele_value = scrapy_records_ele[0].get(liquid_steel,None)
+	iele_vale=str(ele_value)
+	print(ele_value)
+	print(iele_vale)
+	max_value=scrapy_records_des[0].get('MAX_VALUE',None)
+	min_value=scrapy_records_des[0].get('MIN_VALUE',None)
+	print(max_value)
+	
+	print(min_value)
+	
+	liquid_describe={}
+	liquid_describe['some_ele']=iele_vale
+	liquid_describe['max_ele']=max_value
+	liquid_describe['min_ele']=min_value
+	print(liquid_describe)
+	return HttpResponse(json.dumps(liquid_describe),content_type='application/json')
+#bookno是字段名
+from scipy.stats import norm
+def zhengtai_ele(request):
+	fieldname_english=request.POST.get("fieldname_english");
+	sentence="select MAX_VALUE,MIN_VALUE,DESIRED_VALUE,STANDARD_DEVIATION from pro_bof_his_allstructure where DATA_ITEM_EN='"+fieldname_english+"'"
+	print(sentence)
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]=sentence
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	max_value=scrapy_records[0].get('MAX_VALUE',None)
+	min_value=scrapy_records[0].get('MIN_VALUE',None)
+	avg_value=scrapy_records[0].get('DESIRED_VALUE',None)
+	std_value=scrapy_records[0].get('STANDARD_DEVIATION',None)
+	max_v=float(max_value)
+	min_v=float(min_value)
+	avg_v=float(avg_value)
+	std_v=float(std_value)
+	aa=(max_v-min_v)/50
+	normx = np.arange(min_v,max_v,aa)
+	normy = norm.pdf(normx,avg_v,std_v)
+	dataclean_result={}
+	dataclean_result['clean_min']=max_v
+	dataclean_result['clean_max']=max_v
+	dataclean_result['avg_value']=avg_v#期望值
+	dataclean_result['std_value']=std_v#标准差
+	dataclean_result['normx']=normx#x轴取样点
+	dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值  
+	print(dataclean_result)
+	return dataclean_result
+	# dataclean_result={}
+	# avg_value=np.mean(clean)
+	# print("期望值",avg_value)
+	# #标准差
+	# std_value=np.std(clean)
+	# print("标准差",std_value)
+	# #方差
+	# var_value=np.var(clean)
+	# print("方差",var_value)
+	# #normx,normy=Norm_dist(avg_value,var_value)
+	# print("min",clean.min())
+	# print("max",clean.max())
+	# aa=(clean.max()-clean.min())/50
+	# normx = np.arange(clean.min(),clean.max(),aa)  
+	# normy = norm.pdf(normx,avg_value,std_value)
+	# dataclean_result['clean_min']=clean.min()
+	# dataclean_result['clean_max']=clean.max()
+	# dataclean_result['avg_value']=avg_value#期望值
+	# dataclean_result['std_value']=std_value#标准差
+	# dataclean_result['normx']=normx#x轴取样点
+	# dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
+	
+
+
+
+

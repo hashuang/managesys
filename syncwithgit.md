@@ -1,4 +1,211 @@
 #使用git进行代码更新同步
+##git教程——整理by chyulia
+###一、git的配置教程
+**1、  注册github帐户**
+登录http://github.com，拥有一个自己的帐号和密码 。
+**2、安装Git客户端。 (例如：Git-2.10.0-64-bit.exe)**
+安装完成。 
+**3、绑定你的github帐户和邮件。**
+打开git Bash，弹出一个命令行shell（或在git环境下），输入：  
+```     
+ git config --global user.name "yourname"  （这里的yourname相当于你的一个签名，而非github的登录名。以后你提交的文档都会有这个签名） 
+```
+回车后继续输入：
+```
+git config --global user.email "youremail@xx.xxx" （这里输入的是你github的帐户邮箱）
+```
+**4、设置SSH** 
+要在新电脑上使用git时，需要在本地创建SSH key，然后将生成的SSH key文件内容添加到github帐号上去。  
+  
+SSH是一种连接方式，一方面免于你总是在连接时输入用户和密码，另一方面增加安全性。简单理解是，ssh是两段很长的字符串，一段是锁，另一段是钥匙。你把锁放在你的github帐户上，而电脑上留有你的钥匙，每当连接时，git会自动用钥匙去开锁。  
+
+使用流程 ：
+第一步：生成钥匙和锁   
+在命令行输入：  
+```
+ssh-keygen -t rsa -C  “your_email@youremail.com “
+```
+然后回车，期间会问你生成的文件名和passphrase，对于我这种菜鸟，我一路点回车。 （passphrase 可以设置密码）（即连续敲三次回车即可，生成的SSH key文件保存在中～/.ssh/id_rsa.pub）  
+第二步：将锁放到github的帐户里   
+上一步生成的文件放在了C:/Users/用户名（你的windows用户）/.ssh/文件夹中，用记事本打开其中的id_rsa.pub文件，全部内容复制。登录github网站，找到account setting。  
+接着拷贝.ssh/id_rsa.pub文件内的所以内容，将它粘帖到github帐号管理中的添加SSH key界面中。
+打开github帐号管理中的添加SSH key界面的步骤如下：  
+```
+1. 登录github
+2. 点击右上方的Accounting settings图标
+3. 选择 SSH key
+4. 点击 Add SSH key
+在出现的界面中填写SSH key的名称，填一个你自己喜欢的名称即可，然后将上面拷贝的~/.ssh/id_rsa.pub文件内容粘帖到key一栏，在点击“add key”按钮就可以了。
+添加过程github会提示你输入一次你的github密码
+```
+第三步：测试一下该SSH key  
+在git Bash 中输入以下代码:
+```
+$ ssh -T git@github.com
+```
+当你输入以上代码时，会有一段警告代码，如：  
+```
+The authenticity of host 'github.com (207.97.227.239)' can't be established.
+# RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+# Are you sure you want to continue connecting (yes/no)?
+```
+这是正常的，你输入 yes 回车既可。如果你创建 SSH key 的时候设置了密码，接下来就会提示你输入密码，如：  
+```
+Enter passphrase for key '/c/Users/Administrator/.ssh/id_rsa':
+```
+当然如果你密码输错了，会再要求你输入，知道对了为止。  
+注意：输入密码时如果输错一个字就会不正确，使用删除键是无法更正的。  
+密码正确后你会看到下面这段话，如：  
+```
+Hi username! You've successfully authenticated, but GitHub does not
+# provide shell access.
+```
+如果用户名是正确的,你已经成功设置SSH密钥。如果你看到 “access denied” ，者表示拒绝访问，那么你就需要使用 https 去访问，而不是 SSH 。  
+###二、使用git同步代码的步骤及代码：
+**查看状态**
+```
+E:\managesys>git status
+--查看状态
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   data_import/chyulia.py
+        modified:   data_import/static/data_import/js/loadChart_chen.js
+        modified:   data_import/templates/data_import/chen.html
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+**选择要上传的自己改动过的文件**
+```
+E:\managesys>git add  data_import/chyulia.py  data_import/static/data_import/js/loadChart_chen.js  data_import/templates/data_import/chen.html
+--选择要上传的自己改动过的文件 
+```
+**将不需要上传的文件取消掉**
+```
+E:\managesys>git checkout -- data_import/templates/data_import/hashuang.html
+--将不需要上传的文件取消掉（可选，非必须）
+```
+**更准确来说checkout -- filename的是撤销修改，即add还未commit的文件，回退到上一次的add状态,还未add的文件则回退到上一次commit的状态**
+  
+**提交时必须添加注释**
+```
+E:\managesys>git commit -m "实现echarts图表的联动，点击第一个输入或产出图中的柱状，联动产生第二个图中该炉次指定字段的正态分布趋势及所在位置点"
+--添加注释，尽量写清自己的改动内容（注意commit与-m之间是有空格的）
+[master 1894f34] 实现echarts图表的联动，点击第一个输入或产出图中的柱状，联动产生第二个图中该炉次指定字段的正态分布趋势及所在位置点
+ 3 files changed, 409 insertions(+), 47 deletions(-)
+```
+**从管理员的github里面获取最新的程序**
+```
+E:\managesys>git fetch upstream master
+-- 从管理员的github里面获取最新的程序
+remote: Counting objects: 100, done.
+remote: Compressing objects: 100% (37/37), done.
+remote: Total 100 (delta 68), reused 86 (delta 54), pack-reused 0
+Receiving objects: 100% (100/100), 11.36 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (68/68), completed with 14 local objects.
+From github.com:ccxysfh/managesys
+ * branch            master     -> FETCH_HEAD
+   adc2197..1561299  master     -> upstream/master
+```
+**在本地仓库和远程主仓库合并**
+```
+E:\managesys>git merge upstream/master
+-将自己的程序上传到自己的github账户
+Already up-to-date.
+```
+**再次查看状态**
+```
+E:\managesys>git status
+--再次查看状态
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+nothing to commit, working tree clean  
+```
+**将修改上传到自己的github**
+```
+E:\managesys>git push origin master
+--将修改上传到自己的github
+Counting objects: 11, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (11/11), 6.50 KiB | 0 bytes/s, done.
+Total 11 (delta 7), reused 0 (delta 0)
+remote: Resolving deltas: 100% (7/7), completed with 7 local objects.
+To https://github.com/chyulia/managesys.git
+   0880f6c..1894f34  master -> master
+--到此提交至自己的github账户已完成，可在github网页中可向总管理员发起提交请求
+```
+-------------------------------------------------------------------------------
+###三、一些附加功能
+**为冗长的仓库ssh url添加别称**
+```
+E:\managesys>git remote add qinggang git@github.com:chyulia/managesys.git
+--修改我的github的文件夹的名字，在下次使用时，就可以用qinggang这个名字来代替整个网址。
+(目前项目中我的github账户分支为默认的origin)
+  
+E:\managesys>git remote add upstream git@github.com:ccxysfh/managesys.git
+---将远程的这个github地址在本地取名为upstream，下次使用时，直接使用upstream这个名字即可代表这个地址
+```
+**查看提交（commit）记录**
+```
+E:\managesys>git log
+--查看提交（commit）记录
+```
+**查看远程git的所有配置**
+```
+E:\managesys>git remote –v
+--查看远程git的所有配置
+origin  https://github.com/chyulia/managesys.git (fetch)
+origin  https://github.com/chyulia/managesys.git (push)
+upstream        git@github.com:ccxysfh/managesys.git (fetch)
+upstream        git@github.com:ccxysfh/managesys.git (push)
+```
+  
+##git使用规范流程
+###第一步：新建分支
+首先，每次开发新功能，都应该新建一个单独的分支（这方面可以参考《Git分支管理策略》）
+```
+# 获取主干最新代码
+$ git checkout master
+$ git pull
+# 新建一个开发分支myfeature
+$ git checkout -b myfeature
+```
+###第二步：提交分支commit
+分支修改后，就可以提交commit了。
+```
+$ git add --all
+$ git status
+$ git commit --verbose
+```
+- git add 命令的all参数，表示保存所有变化（包括新建、修改和删除）。从Git 2.0开始，all是 git add 的默认参数，所以也可以用 git add . 代替。
+- git status 命令，用来查看发生变动的文件。
+- git commit 命令的verbose参数，会列出 diff 的结果。
+  
+###第三步：撰写提交信息
+提交commit时，必须给出完整扼要的提交信息，下面是一个范本。
+```
+Present-tense summary under 50 characters
+
+* More information about commit (under 72 characters).
+* More information about commit (under 72 characters).
+
+http://project.management-system.com/ticket/123
+```
+第一行是不超过50个字的提要，然后空一行，罗列出改动原因、主要变动、以及需要注意的问题。最后，提供对应的网址（比如Bug ticket）。
+##第四步：与主干同步
+分支的开发过程中，要经常与主干保持同步。
+```
+$ git fetch origin
+$ git rebase origin/master
+```
+  
+  
+  
 ##使用git维护自己的代码
 我们普通文件夹就是一个工作区，git init(ls -a 查看隐藏目录)，在本地创建一个版本库，对工作区内容进行版本控制，版本库中有一个暂存区，add文件就将文件暂时缓存在暂存区，直到commit提交才会真正保存到版本库中。
 ###下载git，安装过程中勾选git bash
