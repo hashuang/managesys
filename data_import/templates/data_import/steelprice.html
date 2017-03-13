@@ -57,86 +57,67 @@
                 <div class="col-sm-12  col-lg-12 col-md-12 col-xs-12 ">
                     <div class="single-portfolio price-predict">
                         
-                          <div class="row">
+                          <!-- <div class="row">
                             <div class="col-xs-3 ">相关因素显示</div>
                             <div class="col-xs-9">
                                 <div class="col-xs-3">权重设置</div>
                                 <div class="col-xs-3">预测尺度</div>
                                 <div class="col-xs-3">可信度分析</div>
                             </div>
-                          </div>
-
+                          </div> -->
                           <div class="row">
                             <div class="col-md-5">
-                              <form role="form">
+                              <form role="form" id="predict_form" action="">
                                 <div class="row">
                                 <div class="col-md-6">
                                   <div class="form-group">
                                     <label >预测钢材种类</label>
-                                    <select class="form-control input-lg" placeholder="选择时间尺度">
-                                      <option value="gc1">钢材1</option>
-                                      <option value="gc2">钢材2</option>
-                                      <option value="gc3">钢材3</option>
+                                    <select class="form-control input-lg" id="steel_type" name="steel_type" placeholder="钢种">
+                                    {% for type,display in steel_type.items %}
+                                      {% if type == "60Si2Mn" %}                                  
+                                      <option value="{{ type }}" selected>{{ display }}</option>
+                                      {% else %}
+                                      <option value="{{ type }}">{{ display }}</option>
+                                      {% endif %}
+                                    {% endfor %}
                                     </select>
-                                  </div>
-                                  <div class="form-group">
-                                    选择预测方法：
-                                    <div class="checkbox ">
-                                      <label>
-                                        <input type="checkbox" >线性回归
-                                      </label>
-                                    </div>
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox">随机森林
-                                      </label>
-                                    </div>
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox">elm
-                                      </label>
-                                    </div>  
-                                  </div>
-                                  <div class="form-group">
-                                    <input class="form-control input-sm" type="text" placeholder="预期精度">
                                   </div>
                                   <div class="form-group">
                                     <label>时间尺度选择</label>
-                                    <select class="form-control input-lg" placeholder="选择时间尺度">
-                                      <option value="day">日</option>
-                                      <option value="week">周</option>
-                                      <option value="halfmonth">半月</option>
-                                      <option value="month">月</option>
-                                      <option value="threemonth">季度</option>
-                                      <option value="halfyear">半年</option>
-                                      <option value="year">年</option>
+                                    <select class="form-control input-lg" id="time_scale" placeholder="选择时间尺度">
+                                    {% for scale,display in time_scale.items %}
+                                      {% if scale == "day" %}
+                                      <option value="{{ scale }}" selected>{{ display }}</option>
+                                      {% else %}
+                                      <option value="{{ scale }}" >{{ display }}</option>
+                                      {% endif %}
+                                    {% endfor %}
                                     </select>
                                   </div>
-                                  
+                                  <div class="form-group">
+                                    <label>预测方法选择：</label>
+                                    {% for method,display in predict_method.items %}
+                                    <div class="checkbox " id="predict_method">
+                                      <label>
+                                        <input type="checkbox" name="predict_method" value="{{ method }}">{{ display }}
+                                      </label>
+                                    </div>
+                                    {% endfor %}
+                                  </div>              
                                 </div>
                                 <div class="col-md-6">
                                   <div class="form-group">
-                                    影响因素选择：
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox">铁矿石
-                                      </label>
-                                    </div>
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox">进口总量
-                                      </label>
-                                    </div>
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox">出口总量
-                                      </label>
-                                    </div>  
+                                    <label>钢材价格影响因素：</label>
+                                    <ul>
+                                      <li>铁矿石</li>
+                                      <li>进口总量</li>
+                                      <li>出口总量</li>
+                                    </ul>   
                                   </div>
                                 </div>
                                 </div>                                
                                 <div class="form-group">
-                                  <button type="submit" class="btn btn-primary">查询</button>
+                                  <input class="btn btn-primary"  type="submit" value="查询"> 
                                 </div>
                               </form>
                             </div>
@@ -154,11 +135,16 @@
     </div>          
 </div>
 <script type="text/javascript">
+  $(document).on('submit', 'form#predict_form', function() { 
+    predict_query();
+    console.log("叫一声佛祖，回头无岸！");
+    return false;                 
+    });
   $(document).on('submit', 'form#history_form', function() { 
     history_query();
     return false;                 
     });
-
+  
 </script>
 </section>
 <!-- End Portfolio Section -->        

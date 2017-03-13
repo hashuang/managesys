@@ -60,6 +60,7 @@ urlpatterns = [
     #price-predict
     url(r'^steelprice',steelprice.steelprice),
     url(r'^price_history', steelprice.price_history),
+    url(r'^price_predict', steelprice.price_predict),
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
