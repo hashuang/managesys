@@ -35,7 +35,7 @@ def get_history_price(path,begin,end):
 	history_price = pd.DataFrame()
 	history_price = dfori[cols[0:2]]
 	result = {}
-	history_price[cols[0]] = history_price[cols[0]].map(lambda x : str(x))
+	history_price[cols[0]] = history_price[cols[0]].map(lambda x : str(x)[0:10])
 	result['timeline'] = list(history_price[cols[0]])
 	result['price'] = list(history_price[cols[1]])
 	return result
