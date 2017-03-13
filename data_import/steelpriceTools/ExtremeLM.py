@@ -4,7 +4,6 @@ from sklearn.cluster import k_means
 import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
-import matplotlib.pyplot as plt
 from sklearn import preprocessing
 
 from data_import.steelpriceTools.elm import ELMClassifier, ELMRegressor, GenELMClassifier, GenELMRegressor
