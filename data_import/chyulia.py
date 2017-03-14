@@ -12,7 +12,7 @@ import csv
 from decimal import *
 #from . import hashuang
 
-#多条件筛选：可自由选择要进行筛选的条件
+#多条件筛选：可自由选择要进行筛选的条件(chen.html)
 def multi_analy(request):
 	print("multi_analy")
 	bookno=request.POST.get("bookno").upper();
@@ -218,7 +218,7 @@ def offset(xasis_fieldname,yaxis):
 #对偏离程度进行定性判断：高，偏高，正常范围，偏低，低，极端异常
 def qualitative_offset(offset_result):
 	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
-	qualitative_standard=[0.1,0.2,0.4]
+	qualitative_standard=[0.1,0.3,0.4]
 	qualitative_offset_result=[]
 	for i in range(len(offset_result)):
 		if abs(float(offset_result[i]))<=qualitative_standard[0]:
@@ -228,13 +228,18 @@ def qualitative_offset(offset_result):
 				qualitative_offset_result.append('偏高')
 			else:#偏低
 				qualitative_offset_result.append('偏低')
-		elif  abs(float(offset_result[i]))<=qualitative_standard[2]:
+		# elif  abs(float(offset_result[i]))<=qualitative_standard[2]:
+		# 	if float(offset_result[i])>0:#高
+		# 		qualitative_offset_result.append('高')
+		# 	else:#低
+		# 		qualitative_offset_result.append('低')
+		# else:#极端情况
+		# 	qualitative_offset_result.append('极端异常')
+		else:#取消数据异常情况
 			if float(offset_result[i])>0:#高
 				qualitative_offset_result.append('高')
-			else:#低
-				qualitative_offset_result.append('低')
-		else:#极端情况
-			qualitative_offset_result.append('极端异常')
+			else:
+				qualitative_offset_result.append('低')		
 	return  qualitative_offset_result
 
 #计算单炉次字段值
@@ -253,43 +258,7 @@ def single_heat(heat_no,fieldname):
 	yaxis=frame1.FIELD[0]
 	return yaxis
 
-#根据时间段查询数据
-def time(request):
-	print("success")
-	time1=request.POST.get("time1");
-	time2=request.POST.get("time2");
-	fieldname=request.POST.get("field").upper();
-	print(time1)
-	print(time2)
-	sqlVO1={}
-	sqlVO1["db_name"]="l2own"
-	sqlVO1["sql"]="SELECT HEAT_NO,"+fieldname+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"' and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'";
-	#sqlVO1["sql"]="SELECT HEAT_NO,"+fieldname+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'";
-	print(sqlVO1["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO1)
-	print(scrapy_records[:5])
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	ana_result,ana_describe=num_describe(scrapy_records,fieldname)
-	contentVO['result']=ana_result
-	contentVO['describe']=ana_describe
-	#if(time1)<(time2):
-	#	contentVO['compare']='xiaoyu'
-	#else:
-	#	contentVO['compare']='dayu'
-	#time_test='2015/11/30 22:45:45'
-	#string转datetime
-	#d= datetime.datetime.strptime(time1,'%Y-%m-%d')
-	#d1= datetime.datetime.strptime(time_test,'%Y/%m/%d %H:%M:%S')
-	#datetime转string
-	#str_time=d.strftime('%Y-%m-%d %H:%M:%S')
-	#print(d)
-	#print(d1)
-	#print(d<d1)
-	#print(str_time)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 
 #请求chen.html页面
 def chen(request):
@@ -407,18 +376,22 @@ def num_describe(scrapy_records,bookno):
 	d2_valid=vaild(d2,ivalue_valid,d2_data)
 	numx1=list(set(d1_valid).union(set(d2_valid)))
 	numx2=sorted(numx1)
-	print("numx2:")
-	print(numx2)
+	# print("numx2:")
+	# print(numx2)
 	sections=[]
 	numx3=union_section(numx2,sections)
 	cut1=pd.cut(clean,numx2)
 	end1=pd.value_counts(cut1,sort=False)/clean.count()
 	numy=[ele for ele in end1]
-	print("end1:")
-	print(end1)
+	# print("end1:")
+	# print(end1)
 	#numy1=vaild(numy,ivalue_valid,d3_data)
 	numy1=["%.6f"%(n) for n in numy]
 	desy1=vaild(desy,ivalue_valid,d4_data)
+	print("x轴:")
+	print(numx3)
+	print("y轴:")
+	print(numy1)
 	ana_result={}
 	ana_result['scope']=numx3
 	#print(ana_result['scope'])
@@ -499,7 +472,7 @@ def data_clean(scrapy_records,bookno):
 
 #同时计算概率分布和正态分布
 from scipy.stats import norm
-def probability_distribution(request):
+def probability_normal(request):
 	print("同时计算概率直方图和正态分布图！")
 
 	#获取信息
@@ -555,7 +528,6 @@ def probability_distribution(request):
 	print(maxbook)
 	print(type(clean))
 
-	#计算概率直方分布起始——————————————————————————————————————————————————————————————————————————————————————————————
 	if clean is not None:
 		if(clean.max==clean.min()):
 			bc=1
@@ -564,9 +536,10 @@ def probability_distribution(request):
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
+			#计算概率直方分布
 			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
 			end=pd.value_counts(section,sort=False)/clean.count()
-			describe=clean.describe()
+			describe=clean.describe()#参数统计信息
 		except ValueError as e:
 		 	print(e)
 	numx=[ele for ele in end.index]
@@ -575,10 +548,7 @@ def probability_distribution(request):
 	desy=[ele for ele in describe]
 	print(numx)
 	print(describe)
-	#contentVO={
-		#'title':'测试',
-		#'state':'success'
-	#}
+
 	s1=pd.Series(numx)
 	d1=getA(s1)
 	d2=getB(s1)
@@ -604,56 +574,37 @@ def probability_distribution(request):
 	# print(end1)
 	#numy1=vaild(numy,ivalue_valid,d3_data)
 	numy1=["%.6f"%(n) for n in numy]
-	print("概率分布：直方图bar")
+	print("x轴:")
 	print(numx3)
+	print("y轴:")
 	print(numy1)
 	desy1=vaild(desy,ivalue_valid,d4_data)
-	ana_result={}
-	ana_result['scope']=numx3#区间数组
-	#print(ana_result['scope'])
-	ana_result['num']=numy1#区间对应值
-	#contentVO['result']=ana_result
-	ana_describe={}
-	ana_describe['scopeb']=desx
-	ana_describe['numb']=desy1
-	#contentVO['describe']=ana_describe
-	# return ana_result,ana_describe
-	#计算概率直方分布结束——————————————————————————————————————————————————————————————————————————————————————————————
-	#计算正态分布起始——————————————————————————————————————————————————————————————————————————————————————————————————
-	
-	avg_value=np.mean(clean)
-	print("期望值",avg_value)
-	#标准差
-	std_value=np.std(clean)
-	print("标准差",std_value)
-	#方差
-	var_value=np.var(clean)
-	print("方差",var_value)
-	#normx,normy=Norm_dist(avg_value,var_value)
-	print("min",clean.min())
-	print("max",clean.max())
-	aa=(clean.max()-clean.min())/50
-	normx_array = np.arange(clean.min(),clean.max(),aa)  
-	normy_array = norm.pdf(normx_array,avg_value,std_value)
+
+	#计算正态分布起始--------------------------------------------------
+	#desy1内容依次为count、mean、std、min、25%、50%、75%、max
+	aa=(desy1[7]-desy1[3])/50
+	normx_array = np.arange(desy1[3],desy1[7],aa)  
+	normy_array = norm.pdf(normx_array,desy1[1],desy1[2])
 	#转换格式，限制小数位数
 	normx=["%.4f"%(n) for n in list(normx_array)]
 	normy=["%.7f"%(n) for n in list(normy_array)]
-	print("正态分布：曲线line")
-	print("normx",normx)
-	print("normy",normy)
-	normal_result={}
-	normal_result['clean_min']=clean.min()#最小值
-	normal_result['clean_max']=clean.max()#最大值
-	normal_result['avg_value']=avg_value#期望值
-	normal_result['std_value']=std_value#标准差
-	normal_result['normx']=normx#x轴取样点
-	normal_result['normy']=normy#正态分布取样点对应的Y轴取值
-	normal_result['fieldname']=bookno#字段英文名
-	normal_result['fieldname_chinese']=fieldname_chinese#字段中文名
-	normal_result['actual_value']=actual_value#自身值
-	# normal_result['offset_value']="%.2f%%"%(offset_value*100)#偏离程度(当offset_value为小数形式时可用此行代码)
-	normal_result['offset_value']=offset_value#偏离程度(当offset_value已经为百分号形式时可用此行代码)
-	# return normal_result
+	#计算正态分布结束---------------------------------------------------------
+
+	ana_result={}
+	#概率分布：x轴：scope,y轴：num
+	ana_result['scope']=numx3#区间数组
+	ana_result['num']=numy1#区间对应值
+
+	#正态分布：x轴：normx,y轴：numy
+	ana_result['normx']=normx
+	ana_result['normy']=normy
+
+	#统计参数：内容依次为count、mean、std、min、25%、50%、75%、max
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy1
+	
+
 
 	#---------判断该炉次该字段在历史正态分布曲线中距离最近的取样点-----------
 	temp=float(normx[0])
@@ -671,19 +622,27 @@ def probability_distribution(request):
 			break;
 	print(temp_index,temp)
 
-	normal_result['match_index']=temp_index#对应序号
-	normal_result['match_value']=str("%.4f"%(temp))#距离最近的值,由于在之前将其转化为float类型进行过数据对比，例如，123.0000被默认识别为123，当再次转化为str类型时，则也成了‘123’，因此就与normx的值对不上了
+	#单炉次的一些信息
+	base_result={}
+	base_result['fieldname']=bookno#字段英文名
+	base_result['fieldname_chinese']=fieldname_chinese#字段中文名
+	base_result['actual_value']=actual_value#自身值
+	# base_result['offset_value']="%.2f%%"%(offset_value*100)#偏离程度(当offset_value为小数形式时可用此行代码)
+	base_result['offset_value']=offset_value#偏离程度(当offset_value已经为百分号形式时可用此行代码)
+	# return base_result
+	base_result['match_index']=temp_index#对应序号
+	base_result['match_value']=str("%.4f"%(temp))#距离最近的值,由于在之前将其转化为float类型进行过数据对比，例如，123.0000被默认识别为123，当再次转化为str类型时，则也成了‘123’，因此就与normx的值对不上了
 	
-	#--------------------------------------------------------------------------
-	#计算正态分布结束———————————————————————————————————————————————————————————————————————————————————————————————————
-
-	#返回概率分布及正态分布计算结果
-	final_result={}
-	final_result['ana_result']=ana_result#概率分布
-	final_result['ana_describe']=ana_describe
-	final_result['normal_result']=normal_result#正态分布
-	# return final_result
-	return HttpResponse(json.dumps(final_result),content_type='application/json')
+	#返回计算结果
+	contentVO={
+	'title':'测试',
+	'state':'success'
+	}
+	contentVO['ana_result']=ana_result#概率分布及正态分布
+	contentVO['ana_describe']=ana_describe#统计数据的描述
+	contentVO['base_result']=base_result#该炉次的相关信息
+	print('contentVO',contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 	
 #影响因素追溯
 from . import zhuanlu
