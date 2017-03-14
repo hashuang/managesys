@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^echarts',views.echarts),
     #sinuo
     url(r'^space',views.space),
+    url(r'^time',views.time),
     url(r'^liusinuo',views.space),
     #ha
     url(r'^ha', views.ha),
@@ -56,9 +57,10 @@ urlpatterns = [
     url(r'^paihao_getGrape',hashuang.paihao_getGrape),
     url(r'^little_lond_to',hashuang.little_lond_to),
     url(r'^describe_ha',hashuang.describe_ha),
-    #钢铁价格预测
+    #price-predict
     url(r'^steelprice',steelprice.steelprice),
     url(r'^price_history', steelprice.price_history),
+    url(r'^price_predict', steelprice.price_predict),
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
@@ -81,7 +83,6 @@ urlpatterns = [
     url(r'^fluc_produce',fluc_chyulia.fluc_produce),
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
-    url(r'^steelprice',views.steelprice),   
     #url(r'^zong_analy_ha',hashuang.multi_analy),
     #url(r'^paihao_getGrape',hashuang.paihao_getGrape)
     #质量回溯

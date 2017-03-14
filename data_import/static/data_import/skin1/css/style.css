@@ -992,9 +992,9 @@ width : 731px !important ;
 }
 #protfolio_sec .single-portfolio {
 	float : left;
-	margin-left : 300px;
+	margin-left : 100px;
 	margin-bottom : 10px;
-	width : 650px;
+	width : 1200px;
 }
 #protfolio_sec .single-portfolio:hover .img_hoverlay {
 display : block;

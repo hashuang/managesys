@@ -76,7 +76,7 @@
 
                     <div id="navbar">
                         <ul>
-                            <li><a class="page-scroll" href="index.html">项目介绍</a></li> 
+                            <li><a class="page-scroll" href="/index">项目介绍</a></li> 
                             <li><a href="#">数据迁移 <i class="fa fa-angle-down"></i></a>
                                 <ul>
                                     <li><a class="page-scroll" href="/data_import">数据迁移</a></li>
@@ -228,34 +228,26 @@
     </div>
 </div>
 </footer>
-<!-- start slider Section -->
 
-<!-- js -->
-    <!-- <script type="text/javascript" src="{% static 'data_import/libs/echarts/echarts-all.js' %}"></script> -->
- <!--    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery-3.0.0.js' %}"></script> -->
-    
 
-    <!-- js for skin -->
-    <!-- <script src="js/vendor/jquery-1.11.3.min.js"></script> -->
-    <!-- <script type="text/javascript" src="{% static 'data_import/skin1/js/isotope.pkgd.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery-ui.js' %}"></script> -->
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/appear.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.counterup.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/waypoints.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/owl.carousel.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/showHide.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.nicescroll.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/scrolling-nav.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/plugins.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/skin1/js/main.js' %}"></script>
-    <script type="text/javascript" src="{% static 'data_import/js/loadParams.js' %}"></script>
+<!-- js for skin -->
+<script type="text/javascript" src="{% static 'data_import/skin1/js/appear.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.counterup.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/waypoints.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/owl.carousel.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/showHide.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/jquery.nicescroll.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/scrolling-nav.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/plugins.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/skin1/js/main.js' %}"></script>
+<script type="text/javascript" src="{% static 'data_import/js/loadParams.js' %}"></script>
 
-    {% block pagejs %}{% endblock pagejs %}
-    <script type="text/javascript">
-        $.ajaxSetup({
-            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
-        });
-    </script>
+{% block pagejs %}{% endblock pagejs %}
+<script type="text/javascript">
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    });
+</script>
 
 
 <script type="text/javascript">

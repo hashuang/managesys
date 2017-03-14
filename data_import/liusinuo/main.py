@@ -31,7 +31,7 @@ from . import max_min_average
 from . import conclusion
 from . import save_txt
 
-def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space):
+def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,space_detail):
 	#========================【 输 入 】===========================
 	module,module_name,module_unit = input_.select_module(module) #模块选择 
 	aspect,aspect_name,unite = input_.select_aspect(aspect) #分析内容选择
@@ -48,7 +48,7 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space):
 			pass
 	else:
 		tradeNo_list,tradeNoList = input_.select_trade(tradeNo) #钢种选择
-		space,sql_ctry_prov_cty,space_name,space_dict = input_.select_space(module,space) #地点选择
+		space,sql_ctry_prov_cty,space_name,space_dict = input_.select_space(module,space,space_detail) #地点选择
 
 
 	#========================【 分 析 】============================
