@@ -45,26 +45,30 @@
         <button onclick='fluc_cost()' id='click1'>成本投入</button>
         <button onclick='fluc_produce()' id='click2'>成本产出</button>
     </div>
-    <div style="width:1400px">
-        <div id="main1" style="float:left;width:600px;height:450px">左</div>
-        <div id="main2" style="float:left;width:600px;height:450px">右</div>
-        <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->    
-    </div>
-    <p></p>
-    <div>
-        <!--table用来放置因素追溯的分析结果-->
-        <table id='txt' style="width: 700px;height:100px;border:0px;">
-    <!--         <caption >因素追溯的分析结果</caption>
-            <tr> 
-            <th>序号</th>
-            <th>影响因素中文名</th>
-            <th>影响因素英文名</th>
-            <th>影响因素回归系数</th>
-            <th>影响因素偏离值</th>
-            </tr> -->
-        </table>
-    </div>
 </form>
+
+    <div style="width:1400px">
+        <div id="main1" style="float:left;width:600px;height:450px"></div>
+        <!-- <div id="main2" style="float:left;width:600px;height:450px">右</div> -->
+        <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->  
+        <div id="main2" style="float:left;width:600px;height:450px">
+            <!--table用来放置因素追溯的分析结果-->
+            <table id='txt' style="width: 600px;height:100px;border:0px;">
+            <!-- <caption >因素追溯的分析结果</caption>
+                <tr> 
+                <th>序号</th>
+                <th>影响因素中文名</th>
+                <th>影响因素英文名</th>
+                <th>影响因素回归系数</th>
+                <th>影响因素偏离值</th>
+                </tr> -->
+            </table>
+        </div> 
+    </div>
+    <p><strong>转炉工序多炉次整体成本追溯</strong></p>
+    <textarea id="cause_txt" style="width: 900px;height:100px;"></textarea>
+
+
 
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
@@ -83,16 +87,14 @@
         var history_time1 = $('#datepicker-example7-start-history').val();//对比历史波动率的时间范围起始时间
         var history_time2 = $('#datepicker-example7-end-history').val();//对比历史波动率的时间范围终止时间
         var myChart_main1 = echarts.init(document.getElementById('main1'));
-        var myChart_main2 = echarts.init(document.getElementById('main2'));
+        // var myChart_main2 = echarts.init(document.getElementById('main2'));
 		myChart_main1.showLoading({
                     text: "图表数据正在努力加载..."
                 });
-        myChart_main2.showLoading({
-                    text: "图表数据正在努力加载..."
-                });
-		//alert(time1);
-		//var time1 = new Date(document.getElementById('datepicker-example7-start').value);
-		//var time2 = new Date(document.getElementById('datepicker-example7-end').value);
+//         myChart_main2.showLoading({
+//                     text: "图表数据正在努力加载..."
+//                 });
+
 		console.log(time1,time2)
             $.ajax({
             type: "post",
@@ -103,13 +105,8 @@
             },
             success: function(data) {
             	// alert("success!");
-                // alert(data.result);
-            	//alert(data.result.scope);
-            	//alert(data.result.num);
-                //alert(data.compare);
-                // $("#biaozhuncha").html(">>计算得，在该时间段内，字段"+fieldname+"的标准差（波动率）为："+data.describe.numb[2]); 
                 drawBarChart_cost_fluc(data);
-                drawBarChart_cost_fluc2(data);
+                // drawBarChart_cost_fluc2(data);
                 // myChart_main1.hideLoading();
                 // myChart_main2.hideLoading();
             }
@@ -127,16 +124,13 @@ function fluc_produce(){
         var history_time1 = $('#datepicker-example7-start-history').val();//对比历史波动率的时间范围起始时间
         var history_time2 = $('#datepicker-example7-end-history').val();//对比历史波动率的时间范围终止时间
         var myChart_main1 = echarts.init(document.getElementById('main1'));
-        var myChart_main2 = echarts.init(document.getElementById('main2'));
+        // var myChart_main2 = echarts.init(document.getElementById('main2'));
         myChart_main1.showLoading({
                     text: "图表数据正在努力加载..."
                 });
-        myChart_main2.showLoading({
-                    text: "图表数据正在努力加载..."
-                });
-        //alert(time1);
-        //var time1 = new Date(document.getElementById('datepicker-example7-start').value);
-        //var time2 = new Date(document.getElementById('datepicker-example7-end').value);
+//         myChart_main2.showLoading({
+//                     text: "图表数据正在努力加载..."
+//                 });
         console.log(time1,time2)
             $.ajax({
             type: "post",
@@ -147,13 +141,8 @@ function fluc_produce(){
             },
             success: function(data) {
                 // alert("success!");
-                // alert(data.result);
-                //alert(data.result.scope);
-                //alert(data.result.num);
-                //alert(data.compare);
-
-                // drawBarChart_cost_fluc(data);
-                drawBarChart_cost_fluc2(data);
+                drawBarChart_cost_fluc(data);
+                // drawBarChart_cost_fluc2(data);
                 // myChart_main1.hideLoading();
                 // myChart_main2.hideLoading();
             }
@@ -208,8 +197,8 @@ function fluc_produce(){
          });
         };
 
-            // 条形图（投入）与loadChart_chen.js中的drawBarChart相同(多Y轴)
-    function drawBarChart_cost_fluc(result){
+// 条形图（投入）(多Y轴)(弃用)
+    function drawBarChart_cost_fluc2(result){
         var myChart = echarts.init(document.getElementById('main1'));
         
         var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
@@ -483,20 +472,20 @@ function fluc_produce(){
 
     };
 
-function drawBarChart_cost_fluc2(result){
-        var myChart = echarts.init(document.getElementById('main2'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
+function drawBarChart_cost_fluc(result){
+        var myChart = echarts.init(document.getElementById('main1'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#eeeeee', '#3397c9','#f39646','#e02222'];
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
                 title: {
-                    text: '在'+result.time1+'至'+result.time2+'时间范围内的成本投入字段波动率计算',
+                    text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的成本字段波动率计算',
                     x:'center'
                 },
                 tooltip: {
                         trigger:'item',
                         formatter: function (params){
-                            var res = result.fieldname_ch[params.dataIndex]+'<br/>'+params.seriesName+'：'+params.value+ '<br/>偏离程度：'+result.offset_result[params.dataIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.dataIndex];        
+                            var res = result.fieldname_ch[params.dataIndex]+'<br/>'+params.seriesName+'：'+params.value+ '<br/>偏离程度：'+result.offset_result_cent[params.dataIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.dataIndex];        
                             // var res = result.fieldname_ch[params.seriesIndex]+':</br>波动率实际值：'+params.value+'</br>波动率历史值：'+result.ana_describe_history[params.seriesIndex].numb[2]+ '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
                             return res;
                             }
@@ -553,6 +542,9 @@ function drawBarChart_cost_fluc2(result){
                         normal: {
                             label : {
                                 show: true, position: 'top'
+                            },
+                            color:function(params) {
+                                return colors[params.dataIndex]
                             }
                         }
                     }
@@ -570,9 +562,12 @@ function drawBarChart_cost_fluc2(result){
                         normal: {
                             label : {
                                 show: true, position: 'top'
-                            }
+                            },
+                            color: function(params) {
+                                return colors[params.dataIndex]
                         }
                     }
+                }
                 },
                 
                 ]
@@ -586,9 +581,10 @@ function drawBarChart_cost_fluc2(result){
                 // fieldname_chinese=result.fieldname_ch[params.seriesIndex];
                 // fieldname_english=result.fieldname_en[params.seriesIndex];
                 // probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
-                offset_value=result.fluc_ratio[params.dataIndex];//读取偏离值
-                fieldname_en=result.fieldname_en[params.dataIndex];//读取字段英文名字
-                retrospectfactor(fieldname_en,offset_value,result.sentence_select,result.sentence_selecthistory);
+
+                // fieldname_en=result.fieldname_en[params.dataIndex];//读取字段英文名字
+                index=params.dataIndex;
+                retrospectfactor(result,index);
             }
             console.log(params);
             });
@@ -622,13 +618,10 @@ function drawBarChart_cost_fluc2(result){
 
 
        //回归系数因素追溯及其偏离程度
-    function retrospectfactor(field,offset_value,sentence_select,sentence_selecthistory){
-        // var prime_analyse = $("#prime_analyse").val();
-        // console.log(prime_analyse)
-        // var offset_value = $("#offset").val();//以铁水重量为例，读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
-        // field='MIRON_WGT';
-        // var offset_value = $("#offset1").val();//读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
-        // field='TOTAL_SLAB_WGT';
+    function retrospectfactor(result,index){
+        var field = result.fieldname_en[index];//字段名
+        // var offset_value = result.offset_result[index];//偏离程度
+        // var fluc_ratio = result.fluc_ratio[index];//波动率
         var txt = echarts.init(document.getElementById('txt'));
         txt.showLoading({
                     text: "追溯结果正在努力计算中..."
@@ -636,7 +629,7 @@ function drawBarChart_cost_fluc2(result){
         $.ajax({
             type: "post",
             url:  "/fluc_influence",
-            data: {'field':field,'offset_value':offset_value,'sentence_select':sentence_select,'sentence_selecthistory':sentence_selecthistory},
+            data: {'field':field,'offset_value':result.offset_result[index],'sentence_select':result.sentence_select,'sentence_selecthistory':result.sentence_selecthistory},
             error: function() {
                 alert("成本投入字段需要往前追溯，目前可能会是错误！！");
             },
@@ -649,15 +642,19 @@ function drawBarChart_cost_fluc2(result){
                 // alert(data.En_to_Ch_result);//字段中文名
                 // alert(data.regression_coefficient);
                 $("#txt").empty();//清除表格内容
-                var content='';
-                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
-                for (var i=0;i<data.offset_number;i++){
-                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
-                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+                $("#cause_txt").empty();//清除文本内容
 
+                $("#cause_txt").append('经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result[index]+'\n成本追溯所得字段影响因素分析如下(前五):\n');
+                
+                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+
+                for (var i=0;i<data.offset_number;i++){
+                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
+
+                    if (i < 5){
+                        $("#cause_txt").append('   No.'+(i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                    }
                 }
-                // alert(content);
-                   
                 
             }
         })
