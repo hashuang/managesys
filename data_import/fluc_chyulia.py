@@ -60,7 +60,7 @@ def fluc_cost(request):
 	# sentence="SELECT HEAT_NO,"+fieldname+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	sentence="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	# sentence="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
-	sentence_select='sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time'
+	sentence_select=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	#对比历史波动率的时间范围的sql
 	# sentence_history="SELECT HEAT_NO,"+fieldname+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	sentence_history="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
@@ -206,11 +206,20 @@ def fluc_produce(request):
 	sentence_history="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	sentence_selecthistory=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	
+	time={
+		'time1':time1,
+		'time2':time2,
+		'history_time1':history_time1,
+		'history_time2':history_time2
+	}
 	contentVO={
 		'title':'测试',
 		'state':'success',
 		'time1':time1,
-		'time2':time2
+		'time2':time2,
+		'history_time1':history_time1,
+		'history_time2':history_time2,
+		'time':time
 	}
 	xasis_fieldname_ch=['钢水','LDG','钢渣']
 	xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
@@ -288,9 +297,10 @@ def fluc_produce(request):
 	# contentVO['ana_describe']=ana_describe
 	# contentVO['ana_result_history']=ana_result_history
 	# contentVO['ana_describe_history']=ana_describe_history
-	contentVO['fluc_ratio']=fluc_ratiolist#标准偏差，即变异系数
+	contentVO['fluc_ratio']=fluc_ratiolist#标准偏差，即变异系数(波动率)
 	contentVO['fluc_ratio_history']=fluc_ratio_historylist#标准偏差，即变异系数
-	contentVO['offset_result']=offset_resultlist#偏离程度
+	contentVO['offset_result']=offset_result#偏离程度（小数）
+	contentVO['offset_result_cent']=offset_resultlist#偏离程度(百分数)
 	contentVO['qualitative_offset_result']=qualitative_offset_result#偏离程度的定性判断
 
 	contentVO['sentence_select']=sentence_select
