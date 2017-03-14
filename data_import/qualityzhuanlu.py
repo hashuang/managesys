@@ -94,7 +94,7 @@ def cost(request):
 	#print(prime_cost)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(MIRON_C,0) as MIRON_C,nvl(MIRON_SI,0) as MIRON_SI ,nvl(MIRON_MN,0) as MIRON_MN,nvl(MIRON_P,0) as MIRON_P FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(STEELWGT,0)as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
 	#print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 
@@ -107,8 +107,8 @@ def cost(request):
 		'state':'success'
 	}
 
-	xaxis=['C','SI','MN','P']
-	xasis_fieldname=['MIRON_C','MIRON_SI','MIRON_MN','MIRON_P']
+	xaxis=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
+	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
 
 	for i in range(len(xasis_fieldname)):
 		value = scrapy_records[0].get(xasis_fieldname[i],None)
@@ -116,9 +116,9 @@ def cost(request):
 			scrapy_records[0][xasis_fieldname[i]] = float(value)
 	frame=DataFrame(scrapy_records)
 
-	yaxis=[frame.MIRON_C[0],frame.MIRON_SI[0],frame.MIRON_MN[0],frame.MIRON_P[0]]
+	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.STEELWGT[0],frame.FINAL_TEMP_VALUE[0]]
 	print('实际值')
-	print(frame.MIRON_C[0])
+	print(frame.C[0])
 	#danwei=['','','','']
 	print('xasis_fieldname',xasis_fieldname)
 	print('yaxis',yaxis)
@@ -735,7 +735,7 @@ def max_influence(request):
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
-	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_cost+"'";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	#将查询所得值全部转变为float格式（动态，适用于不同个数的xasis_fieldname长度）

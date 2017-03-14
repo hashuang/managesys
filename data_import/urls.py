@@ -55,6 +55,21 @@ urlpatterns = [
     url(r'^paihao_getGrape',hashuang.paihao_getGrape),
     url(r'^little_lond_to',hashuang.little_lond_to),
     url(r'^describe_ha',hashuang.describe_ha),
+    #质量回溯
+    url(r'^product_quality',hashuang.product_quality),
+    url(r'^heat_no_quality',hashuang.heat_no_quality),
+    url(r'^liquid_ele',hashuang.liquid_ele),
+    url(r'^zhengtai_ele',hashuang.zhengtai_ele),
+    url(r'^one_product_quality', qualityzhuanlu.quality_zhuanlu),
+    #quchen
+    #同时计算正态分布和概率分布
+    url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
+    url(r'^m_quality',qualityzhuanlu.cost),
+    url(r'^s_quality',qualityzhuanlu.produce),   
+    url(r'^q_max_influence',qualityzhuanlu.max_influence),
+    #多炉次波动率
+    #url(r'^fluctuation_quality',hashuang.fluctuation_quality)
+
     #钢铁价格预测
     url(r'^steelprice',steelprice.steelprice),
     url(r'^price_history', steelprice.price_history),
@@ -79,19 +94,7 @@ urlpatterns = [
     url(r'^steelprice',views.steelprice),
     #url(r'^zong_analy_ha',hashuang.multi_analy),
     #url(r'^paihao_getGrape',hashuang.paihao_getGrape)
-    #质量回溯
-    url(r'^product_quality',hashuang.product_quality),
-    url(r'^heat_no_quality',hashuang.heat_no_quality),
-    url(r'^liquid_ele',hashuang.liquid_ele),
-    url(r'^zhengtai_ele',hashuang.zhengtai_ele),
-    url(r'^one_product_quality', qualityzhuanlu.quality_zhuanlu),
-    #quchen
-    #url(r'^chen', chyulia.chen),
-    #同时计算正态分布和概率分布
-    url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
-    url(r'^m_quality',qualityzhuanlu.cost),
-    url(r'^s_quality',qualityzhuanlu.produce),   
-    url(r'^q_max_influence',qualityzhuanlu.max_influence),
+    
 
     
 ]
