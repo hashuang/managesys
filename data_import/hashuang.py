@@ -419,10 +419,8 @@ def zhengtai_ele(request):
 	# dataclean_result['std_value']=std_value#标准差
 	# dataclean_result['normx']=normx#x轴取样点
 	# dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
-def fluctuation_quality():
+def w_fluc_quality(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'data_import/fluctuation_quality.html')
-
-
+	return render(request,'data_import/m_fluc_quality.html')
 
