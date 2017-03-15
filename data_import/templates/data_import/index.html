@@ -1,13 +1,130 @@
 {% extends "data_import/base.html" %}
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
 
-{% block content %}
-    {% autoescape off %}
-    <article>
-      {{ abstract.display_html }}
-    </article>
-  {% endautoescape %}
+{% block indexcontent %}
+ <!-- start slider Section -->
+<section id="slider_sec">
+<div class="container">
+    <div class="row">
+        <div class="slider">
+                <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+              <!-- Indicators -->
+              <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+              </ol>
 
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <div class="wrap_caption">
+                      <div class="caption_carousel">
+                        <h1>价格预测</h1>
+                        <p>选择种类、影响因素、预测时间、尺度，给出相应的价格预测曲线，包括历史价格展示和未来价格预测两部分</p>
+                      </div>                        
+                    </div>
+                </div>                  
+                <div class="item">
+                    <div class="wrap_caption">
+                      <div class="caption_carousel">
+                        <h1>销售分析</h1>
+                        <p>空间分析、时间分析、客户分析、钢种分析</p>
+                      </div>                        
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="wrap_caption">
+                      <div class="caption_carousel">
+                        <h1>订单效益测算</h1>
+                        <p>输入订单信息，对订单成本、效益进行分析，并给出接单策略</p>
+                      </div>                        
+                    </div>
+                </div>                    
+                <div class="item ">
+                    <div class="wrap_caption">
+                      <div class="caption_carousel">
+                        <h1>生产过程成本与质量分析</h1>
+                        <p>以工序为目标进行操作</p>
+                      </div>                        
+                    </div>
+                </div>          
+              </div>
+
+              <!-- Controls -->
+              <a class="left left_crousel_btn" href="#carousel-example-generic" role="button" data-slide="prev">
+                <i class="fa fa-angle-left"></i>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="right right_crousel_btn" href="#carousel-example-generic" role="button" data-slide="next">
+                <i class="fa fa-angle-right"></i>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+        </div>  
+    </div>          
+</div>  
+</section>
+<!-- End slider Section -->
+<!-- start Service Section -->
+<section id="pr_sec">
+<div class="container">
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs12 ">
+			<div class="title_sec">
+				<h1>OUR Service</h1>
+				<h2>WE’RE BRANDING & DIGITAL STUDIO FROM VIET NAM</h2>
+			</div>			
+		</div>		
+		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+			<div class="service">						
+				<i class="fa fa-globe"></i>
+				<h2>web Development</h2>
+				<div class="service_hoverly">
+					<i class="fa fa-globe"></i>
+					<h2>web Development</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore ab odio quas  , voluptate aspernatur!</p>
+				</div>
+			</div>
+		</div>				
+		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+			<div class="service">						
+				<i class="fa fa-paper-plane"></i>
+				<h2>E-mail marketing</h2>
+				<div class="service_hoverly">
+					<i class="fa fa-paper-plane"></i>
+					<h2>E-mail marketing</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore ab odio quas  , voluptate aspernatur!</p>
+				</div>
+			</div>
+		</div>				
+		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+			<div class="service">						
+				<i class="fa fa-wordpress"></i>
+				<h2>WordPress</h2>
+				<div class="service_hoverly">
+					<i class="fa fa-wordpress"></i>
+					<h2>WordPress</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore ab odio quas  , voluptate aspernatur!</p>
+				</div>
+			</div>
+		</div>				
+		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+			<div class="service">						
+				<i class="fa fa-paint-brush"></i>
+				<h2>Graphic Design</h2>
+				<div class="service_hoverly">
+					<i class="fa fa-paint-brush"></i>
+					<h2>Graphic Design</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore ab odio quas  , voluptate aspernatur!</p>
+				</div>
+			</div>
+		</div>			
+	</div>
+</div>
+</section>
+<!-- End Service Section -->
 {% endblock %}
 
 

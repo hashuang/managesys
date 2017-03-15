@@ -1,11 +1,11 @@
 // 正态分布
 function drawBarChart_norm(result){
-	var myChart = echarts.init(document.getElementById('main2'));
+    var myChart = echarts.init(document.getElementById('main2'));
     var bookname=document.getElementById('bookno1')
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index]+result.offset_value,
                 x:'center'
             },
             tooltip: {
@@ -40,7 +40,7 @@ function drawBarChart_norm(result){
                     data:[
                             {type : 'max', name: '最大值'},
                             {type : 'min', name: '最小值'},
-                            {name : '测试点', value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
+                            {name : '测试点'+'aaa', value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
                             //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
                     ]
                 },
@@ -240,6 +240,15 @@ function drawBarChart2(result){
             tooltip: {},
             legend: {
                 data:['']
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
             },
             xAxis: {
                 data: result.scope
@@ -448,24 +457,24 @@ function drawMapChart(data){
     myChart.setOption(option);
 }
 function loadjson(){
-	var chart = echarts.init(document.getElementById('main'),'vintage');
-		chart.setOption({
-		    series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		});
+    var chart = echarts.init(document.getElementById('main'),'vintage');
+        chart.setOption({
+            series: [{
+                type: 'map',
+                map: 'china'
+            }]
+        });
 }
 
 function loadtheme(){
-	var chart = echarts.init(document.getElementById('theme'),'vintage');
-		chart.setOption({
-			series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		    
-		});
+    var chart = echarts.init(document.getElementById('theme'),'vintage');
+        chart.setOption({
+            series: [{
+                type: 'map',
+                map: 'china'
+            }]
+            
+        });
 }
 
 

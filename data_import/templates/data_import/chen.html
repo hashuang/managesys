@@ -1,5 +1,8 @@
 {% extends "data_import/base.html" %}
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block pagejs %}
+<script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
+{% endblock pagejs %}
 {% block content %}
 
 <h2>青钢转炉数据分析</h2>
@@ -29,29 +32,55 @@
     字段名<select name="bookno2" id="bookno2" class="procedurename1"></select>
     <button onclick='multi_analy()' id='multi_analy'>综合统计分析</button>
 </div>
-    <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。</p>
+    <p>注：当四个筛选条件同时生效时，满足的数据量很少，甚至无该条件下的数据。此综合筛选功能详见哈爽工作内容。</p>
 -------------------------------------------------------------------------------
 <div>
-    <p><strong>2.单炉次投入成本及产品产出统计情况 and 3.单炉次因素偏高偏低展示</strong></p>
+    <p><strong>2.单炉次投入成本及产品产出情况分析及原因追溯</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>投入成本分析结果</button>
     <button onclick='produce()' id='click3'>产出产品分析结果</button>
+    <p></p>
 </div>
 
-<div style="width:1600px">
-<div id="main1" style="float:left;width:800px;height:500px">左</div>
-<div id="main2" style="float:left;width:800px;height:500px">右</div>
+<div style="width:1400px">
+<div id="main1" style="float:left;width:600px;height:450px">左</div>
+<div id="main2" style="float:left;width:600px;height:450px">右</div>
 <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
 </div>
-<!--
-<span id='wrong-message' style="color:red"></span>
-<span id='hover-console' style="color:#1e90ff"></span>
-<span id='console' style="color:#1e90ff">Event Console</span>
--->
+<p></p>
+<div>
+    <!--table用来放置因素追溯的分析结果-->
+    <table id='txt' style="width: 700px;height:300px;border:0px;">
+<!--         <caption >因素追溯的分析结果</caption>
+        <tr> 
+        <th>序号</th>
+        <th>影响因素中文名</th>
+        <th>影响因素英文名</th>
+        <th>影响因素回归系数</th>
+        <th>影响因素偏离值</th>
+        </tr> -->
+    </table>
+</div>
+<button onclick='updatevalue()' id='updatevalue'>定期更新数据库转炉字段统计值</button>
+
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
 <script type="text/javascript"> 
+    //定期更新数据库中表结构表中的期望等参数值
+    function updatevalue(){
+        $.ajax({
+        type: "post",
+        url:  "/updatevalue",
+        data: {},
+        error: function() {
+            alert("发生错误！");
+        },
+        success: function(data) {
+            alert(data.state);
+        }
+     })
+    }
     //多条件综合筛选
     function multi_analy(){
         var bookno = $("#bookno2").val();//字段，需要转化为大写
@@ -93,13 +122,15 @@
                 //alert(data.result);
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart_test(data.result);
+                // alert(data.result.offset_result[0]);
+                $("#offset").val(data.result.offset_result[0]);
+                drawBarChart_cost(data.result);
             }
         })
     };   
     //产品产出
     function produce(){
-         var prime_analyse = $("#prime_analyse").val();
+        var prime_analyse = $("#prime_analyse").val();
         console.log(prime_analyse)
         $.ajax({
             type: "post",
@@ -112,99 +143,407 @@
                 //alert(data.result)
                 //alert(data.result.xname)
                 //alert(data.result.yvalue)
-                drawBarChart_test(data.result)
+                // alert(data.result.offset_result[0]);
+                $("#offset1").val(data.result.offset_result[0]);
+                drawBarChart_produce(data.result);
             }
         })
     };  
 
-    // 条形图（投入和产出）与loadChart_chen.js中的drawBarChart相同
-    //xasis_fieldname
-    function drawBarChart_test(result){
+    //回归系数因素追溯及其偏离程度
+    function retrospectfactor(field,offset_value){
+        // var prime_analyse = $("#prime_analyse").val();
+        // console.log(prime_analyse)
+        // var offset_value = $("#offset").val();//以铁水重量为例，读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
+        // field='MIRON_WGT';
+        // var offset_value = $("#offset1").val();//读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
+        // field='TOTAL_SLAB_WGT';
+        $.ajax({
+            type: "post",
+            url:  "/max_influence",
+            data: {'field':field,'offset_value':offset_value},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result)
+                // alert("success");
+                // alert(data.offset_number);//字段个数
+                // alert(data.xasis_fieldname);//字段英文名数组
+                // alert(data.offset_result);//字段偏离程度
+                // alert(data.En_to_Ch_result);//字段中文名
+                // alert(data.regression_coefficient);
+                $("#txt").empty();//清除表格内容
+                var content='';
+                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                for (var i=0;i<data.offset_number;i++){
+                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
+                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+
+                }
+                alert(content);
+                   
+                
+            }
+        })
+    };
+
+    // 条形图（投入）与loadChart_chen.js中的drawBarChart相同(多Y轴)
+    function drawBarChart_cost(result){
         var myChart = echarts.init(document.getElementById('main1'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
             // 指定图表的配置项和数据
             var option = {
+                color:colors,
                 title: {
                     text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
                     x:'center'
                 },
                 tooltip: {
-                    trigger: 'axis',
-                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    // trigger: 'axis',
+                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        trigger:'item',
+                        formatter: function (params){
+                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
+                            return res;
+
                      }
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                        }
                 },
                 legend: {
                     data:['']
                 },
                 xAxis: {
-                    data: result.xname,
-                    axisLabel :{  
-                            interval:0,//横轴信息全部显示
-                            //rotate: 60//60度角倾斜显示  
-                        } 
-                },
-                yAxis: {
-                    name:'Kg'
-                },
-                series: [{
-                    name: '投入量(Kg)',
-                    type: 'bar',
-                    data: result.yvalue,
-                    markPoint: {
-                        data:[
-                                //{type : 'max', name: '最大值'},
-                                //{type : 'min', name: '最小值'}
-                                //{name : '标记点测试', value : 100, xAxis: result.scope[1], yAxis: 0.2}  
-                        ]
+                    type: 'category',
+                    axisTick: {
+                    alignWithLabel: true
                     },
+                    data: ['单炉次字段']
+                },
+                yAxis: [{
+                    type: 'value',
+                    name: '铁水重量(Kg)',
+                    min: 0,
+                    max: 105000,
+                    position: 'left',
+                    offset:0,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[0]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '耗氧量(NM3)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    offset: -130,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[1]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} NM3'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '生铁(Kg)',
+                    min: 0,
+                    max: 2000,
+                    position: 'right',
+                    splitLine:{show: false},//去除网格线
+                    offset: -130,
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[2]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '废钢总和(Kg)',
+                    min: 0,
+                    max: 12000,
+                    position: 'right',
+                    offset: 0,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[3]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                }
+                ],
+                series: [{
+                    name: '铁水重量',
+                    type: 'bar',
+                    barWidth : 70,//柱条（K线蜡烛）宽度
+                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap:'40%',//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
+                    data: [result.yvalue[0]],
                     itemStyle: {
                         normal: {
-                            //color: 'tomato',
-                            //barBorderColor: 'tomato',
-                            barBorderWidth: 6,
-                            barBorderRadius:0,
                             label : {
                                 show: true, position: 'top'
                             }
                         }
                     }
-
+                },
+                {
+                    name:'耗氧量',
+                    type:'bar',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
+                    barMinHeight:10,
+                    yAxisIndex: 1,
+                    data:[result.yvalue[1]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'生铁',
+                    type:'bar',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
+                    barMinHeight:10,
+                    yAxisIndex: 2,
+                    data:[result.yvalue[2]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'废钢总和',
+                    type:'bar',
+                    barWidth : 70,
+                    barGap: '80%',
+                    barCategoryGap:'40%',
+                    barMinHeight:10,
+                    yAxisIndex: 2,
+                    data:[result.yvalue[3]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
                 }
                 ]
             };
-    //--------------------------------------------------
-       var ecConfig = echarts.config;  
-        function eConsole(param) {
-            //var mes = '【' + param.type + '】';
-            if (typeof param.seriesIndex != 'undefined') {
+
+            var ecConfig = echarts.config;
+            myChart.on('click', function (params) {
+            if (typeof params.seriesIndex != 'undefined') {
                 //mes += '  seriesIndex : ' + param.seriesIndex;
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                fieldname_chinese=param.name;
-                fieldname_english=result.xEnglishname[param.dataIndex];
-                ch_num2(fieldname_chinese,fieldname_english);
+                fieldname_chinese=result.xname[params.seriesIndex];
+                fieldname_english=result.xEnglishname[params.seriesIndex];
+                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
             }
-            // if (param.type == 'hover') {
-            //     document.getElementById('hover-console').innerHTML = 'Event Console : ' + mes;
-            // }
-            // else {
-            //     document.getElementById('console').innerHTML = mes;
-            // }
-            console.log(param);
-        }
+            console.log(params);
+            });
 
-        myChart.on(ecConfig.EVENT.CLICK, eConsole);
-        myChart.on(ecConfig.EVENT.DBLCLICK, eConsole);
-        //myChart.on(ecConfig.EVENT.HOVER, eConsole);
-        myChart.on(ecConfig.EVENT.DATA_ZOOM, eConsole);
-        myChart.on(ecConfig.EVENT.LEGEND_SELECTED, eConsole);
-        myChart.on(ecConfig.EVENT.MAGIC_TYPE_CHANGED, eConsole);
-        myChart.on(ecConfig.EVENT.DATA_VIEW_CHANGED, eConsole);
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-    //------------------------------------------------------------
-    }
+            myChart.setOption(option);
+            // 使用刚指定的配置项和数据显示图表。
+    };
 
-    // 正态分布与loadChart_chen.js中的drawBarChart_norm相同
+    // 条形图（产出）（多Y轴）
+    function drawBarChart_produce(result){
+        var myChart = echarts.init(document.getElementById('main1'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
+            // 指定图表的配置项和数据
+            var option = {
+                color:colors,
+                title: {
+                    text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
+                    x:'center'
+                },
+                tooltip: {
+                    // trigger: 'axis',
+                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        trigger:'item',
+                        formatter: function (params){
+                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                          
+                            return res;
+
+                     }
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                        }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick: {
+                    alignWithLabel: true
+                    },
+                    data: ['单炉次字段']
+                },
+                yAxis: [{
+                    type: 'value',
+                    name: '钢水(Kg)',
+                    min: 0,
+                    max: 105000,
+                    position: 'left',
+                    offset:0,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[0]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '转炉煤气(NM3)',
+                    min: 0,
+                    max: 12000,
+                    position: 'left',
+                    offset: -180,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[1]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} NM3'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '钢渣(Kg)',
+                    min: 0,
+                    max: 22000,
+                    position: 'right',
+                    splitLine:{show: false},//去除网格线
+                    offset: 0,
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[2]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                }
+                ],
+                series: [{
+                    name: '钢水重量',
+                    type: 'bar',
+                    barWidth : 90,//柱条（K线蜡烛）宽度
+                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
+                    data: [result.yvalue[0]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'转炉煤气',
+                    type:'bar',
+                    barWidth : 90,
+                    barGap: '80%',
+                    barCategoryGap:'60%',
+                    barMinHeight:10,
+                    yAxisIndex: 1,
+                    data:[result.yvalue[1]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'钢渣',
+                    type:'bar',
+                    barWidth : 90,
+                    barGap: '80%',
+                    barCategoryGap:'60%',
+                    barMinHeight:10,
+                    yAxisIndex: 2,
+                    data:[result.yvalue[2]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                }
+                ]
+            };
+
+            var ecConfig = echarts.config;
+            myChart.on('click', function (params) {
+            if (typeof params.seriesIndex != 'undefined') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                fieldname_chinese=result.xname[params.seriesIndex];
+                fieldname_english=result.xEnglishname[params.seriesIndex];
+                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+            }
+            console.log(params);
+            });
+
+            myChart.setOption(option);
+            // 使用刚指定的配置项和数据显示图表。
+    };
+
+    // 正态分布画图
+    //与loadChart_chen.js中的drawBarChart_norm相同
     function drawBarChart_norm(result){
         var myChart = echarts.init(document.getElementById('main2'));
         //var bookname=document.getElementById('bookno1')
@@ -224,15 +563,26 @@
                 legend: {
                     data:['']
                 },
-                xAxis: {
-                    data: result.normx,
-                    axisLabel :{  
-                            //interval:0,//横轴信息全部显示
-                            //rotate: 60//60度角倾斜显示  
-                        } 
-                },
+                xAxis: [
+                    {
+                        data: result.normx,
+                        axisLabel :{  
+                                //interval:0,//横轴信息全部显示
+                                //rotate: 60//60度角倾斜显示  
+                            } 
+                    },
+                    {
+                        type : 'category',
+                        axisLine: {show:false},
+                        axisTick: {show:false},
+                        axisLabel: {show:false},
+                        splitArea: {show:false},
+                        splitLine: {show:false},
+                        data : ['Line','Bar','Scatter','K','Map']
+                    }
+                ],
                 yAxis: {
-                    name:'Y'
+                    name:'密度'
                 },
                 series: [{
                     name: '',
@@ -245,9 +595,9 @@
                              }
                          },
                         data:[
-                                {type : 'max', name: '最大值'},
-                                {type : 'min', name: '最小值'},
-                                {name : '测试点', value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
+                                // {type : 'max', name: '最大值'},
+                                // {type : 'min', name: '最小值'},
+                                {name : '位置点'+'偏离程度'+result.offset_value, value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
                                 //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
                         ]
                     },
@@ -288,47 +638,192 @@
 
             };
 
+        var ecConfig = echarts.config;
+        myChart.on('click', function (params) {
+            // if (typeof params.seriesIndex != 'undefined') {
+            if (params.componentType == 'markPoint') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                offset_value=result.offset_value;//读取偏离值
+                fieldname_english=result.fieldname;//读取字段英文名字
+                retrospectfactor(fieldname_english,offset_value);
+            }
+            console.log(params);
+            });
+
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
+
     }
 
-    //带因素偏高偏低不带钢种的单字段统计
-    function ch_num2(fieldname_chinese,fieldname_english){
+    //正态分布+概率分布
+    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value){
         var field1 = $("#prime_analyse").val();//炉次号
         //var field2 = $("#field2").val();//字段
         //var field2 = $("#bookno1").find("option:selected").val();
-        var field2=fieldname_english;
-        var typee=1;
-        console.log(field1,field2)
+        var fieldname_english=fieldname_english;//字段英文名
+        var fieldname_chinese=fieldname_chinese;//字段中文名
+        console.log(field1,fieldname_english,fieldname_chinese);
             $.ajax({
             type: "post",
-            url:  "/ch_num2",
-            data: {'heat':field1,'bookno':field2,'typee':typee},
+            url:  "/probability_distribution",
+            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value},
             error: function() {
                 alert("404");
             },
             success: function(data) {
-                //alert(data.result);
-                //alert(data.result.normx);
-                //alert(data.result.normy);
-                //alert(data.result['singleheat']);
-                //alert(data.result['singleheat_value']);
-                //alert(data.result.normx[result.singleheat_index]);
-                data.result['fieldname_chinese']=fieldname_chinese;
-                alert(data.result['fieldname_chinese']);
-                drawBarChart_norm(data.result);
+                // alert("enter probability_distribution");
+                //概率分布
+                // alert(data.ana_result['scope']);
+                // alert(data.ana_result['num']);
+                //正态分布
+                // alert(data.normal_result['normx']);
+                // alert(data.normal_result['normy']);
+                probability_distribution_picture(data);
+
             }
         })
 
     }; 
+
+    //正态分布+概率分布画图
+    function probability_distribution_picture(result){
+        var myChart = echarts.init(document.getElementById('main2'));
+        //var bookname=document.getElementById('bookno1')
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: result.normal_result.fieldname_chinese+'('+result.normal_result.fieldname+')的概率(bar)及正态(line)分布',
+                    x:'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                     }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: [
+                    {
+                        data: result.normal_result.normx,
+                        axisLabel :{  
+                                //interval:0,//横轴信息全部显示
+                                //rotate: 60//60度角倾斜显示  
+                            } 
+                    },
+                    {
+                        type : 'category',
+                        axisLine: {show:true},
+                        axisTick: {show:true},
+                        axisLabel: {show:true},
+                        splitArea: {show:true},
+                        splitLine: {show:true},
+                        data : result.ana_result.scope
+                    }
+                ],
+                yAxis: [{
+                    name:'正态分布密度(line)'
+                },
+                {
+                    name:'概率分布密度(bar)'
+                }
+                ],
+                series: [{
+                    name: '正态分布',
+                    type: 'line',
+                    xAxisIndex:0,
+                    yAxisIndex:0,
+                    data: result.normal_result.normy,
+                    // markPoint: {
+                    //     itemStyle : {
+                    //          normal: {
+                    //              color:'#1e90ff'
+                    //          }
+                    //      },
+                    //     data:[
+                    //             // {type : 'max', name: '最大值'},
+                    //             // {type : 'min', name: '最小值'},
+                    //             {name : '位置点偏离程度'+result.normal_result.offset_value, value : result.normal_result.actual_value, xAxis: result.normal_result.match_value, yAxis: result.normal_result.normy[result.normal_result.match_index]},
+                    //     ]
+                    // },
+                    markLine: {
+                        name:'炉次号'+result.normal_result.fieldname+'的标线',
+                        itemStyle : {
+                            normal: {
+                                color:'#1e90ff'
+                            }
+                        },
+                        data:[
+                                [
+                                {name: '位置点偏离程度'+result.normal_result.offset_value, value:  result.normal_result.actual_value, xAxis: result.normal_result.match_value, yAxis: 0},
+                                {name: '标线1终点', xAxis: result.normal_result.match_value, yAxis: 'max'}
+                                ],
+                                [{
+                                    // 固定起点的 x 位置，用于模拟一条指向最大值的水平线
+                                    name: '位置点偏离程度'+result.normal_result.offset_value,
+                                    value: result.normal_result.offset_value,
+                                    yAxis: 'max',
+                                    xAxis: result.normal_result.match_value
+                                 }, 
+                                 {
+                                    type: 'max'
+                                }],
+                               ] 
+                        
+                    },
+                    // itemStyle: {
+                    //         normal: {
+                    //         color: 'tomato',
+                    //         // label : {
+                    //         //     show: false, position: 'top'
+                    //         // }
+                    //     }
+                    // }
+
+                },
+                  {
+                    name: '概率分布',
+                    type: 'bar',
+                    xAxisIndex:1,//xAxis坐标轴数组的索引，指定该系列数据所用的横坐标轴
+                    yAxisIndex:1,
+                    data: result.ana_result.num,
+                    // itemStyle: {
+                    //     normal: {
+                    //     color: '#675bba',
+                    //     }
+                    // }
+                }
+                ]
+
+            };
+
+        var ecConfig = echarts.config;
+        myChart.on('click', function (params) {
+            // if (params.componentType == 'markPoint') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                offset_value=result.normal_result.offset_value;//读取偏离值
+                fieldname_english=result.normal_result.fieldname;//读取字段英文名字
+                retrospectfactor(fieldname_english,offset_value);
+            // }
+            console.log(params);
+            });
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+    }
+
     //自动加载钢种
     function loadGrape_chen(){ 
-          $.ajax({
-         type: "POST",
-         dataType:"json",
-         url: "/getGrape" ,
-         data: {'greet':'hello'},
-         success: function(data){
+        $.ajax({
+        type: "POST",
+        dataType:"json",
+        url: "/getGrape" ,
+        data: {'greet':'hello'},
+        success: function(data){
             //alert(data.result);
             //alert(data.result.length);
             pnames=data.result;
