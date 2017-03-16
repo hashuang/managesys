@@ -54,7 +54,8 @@ def num_describe(scrapy_records,bookno):
 		value = scrapy_records[i].get(bookno,None)
 		if value != None :
 			scrapy_records[i][bookno] = float(value)			
-	frame=DataFrame(scrapy_records)	
+	frame=DataFrame(scrapy_records)
+	print(frame[1:5])	
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr['1622324'])
@@ -167,7 +168,7 @@ def multi_analy(request):
 		sentence_time="and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'"
 	else:
 		sentence_time=''
-	sentence="SELECT HEAT_NO,"+bookno+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	#sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE "+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
 	print('sql语句：')
 	print(sentence)
