@@ -49,11 +49,11 @@ urlpatterns = [
     url(r'^space',views.space),
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
-    
+
     #ha
     #显示统计分析页面
     url(r'^ha', hashuang.ha),
-    #加载文本框内容describe
+    #按表结构加载下拉框
     url(r'^lond_to',hashuang.lond_to),
     url(r'^no_lond_to',hashuang.no_lond_to),
     url(r'^little_lond_to',hashuang.little_lond_to),
