@@ -208,13 +208,6 @@ def getB(s):
         else:
             data.append(a1[1][:-1])
     return data	
-#def vaild(lis,ivalue_valid,data):
-    #for i in range(len(lis)):
-        #shu=lis[i]
-        #shua=float(shu)
-        #shub=round(shua,ivalue_valid)
-        #data.append(shub)
-    #return data 
 def union_section(section_point,sections):#拼接区间
     for i in range(len(section_point)):
         section=None
@@ -424,6 +417,7 @@ def w_fluc_quality(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/m_fluc_quality.html')
+#统计分析按表结构加载下拉框	
 from . import zhuanlu	
 def lond_to(request):
 	contentVO={
