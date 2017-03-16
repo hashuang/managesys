@@ -94,7 +94,7 @@ def cost(request):
 	#print(prime_cost)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(STEELWGT,0)as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(TOTAL_SLAB_WGT,0)as TOTAL_SLAB_WGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
 	#print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 
@@ -107,8 +107,8 @@ def cost(request):
 		'state':'success'
 	}
 
-	xaxis=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
-	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
+	xaxis=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
+	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
 
 	for i in range(len(xasis_fieldname)):
 		value = scrapy_records[0].get(xasis_fieldname[i],None)
@@ -116,7 +116,7 @@ def cost(request):
 			scrapy_records[0][xasis_fieldname[i]] = float(value)
 	frame=DataFrame(scrapy_records)
 
-	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.STEELWGT[0],frame.FINAL_TEMP_VALUE[0]]
+	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.TOTAL_SLAB_WGT[0],frame.FINAL_TEMP_VALUE[0]]
 	print('实际值')
 	print(frame.C[0])
 	#danwei=['','','','']
