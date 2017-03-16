@@ -1,4 +1,4 @@
-#coding=UTF-8
+# -*- coding: utf-8 -*-
 import openpyxl
 from QinggangManageSys.settings import BASE_DIR
 from QinggangManageSys.settings import ROW_NUM

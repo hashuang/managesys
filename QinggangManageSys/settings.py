@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 from . import choose_settings
 
+
 ROW_NUM=10000
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = choose_settings.DEBUG
@@ -159,3 +160,8 @@ STATIC_ROOT = choose_settings.STATIC_ROOT
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = choose_settings.STATIC_URL
 
+'''
+custom settings
+'''
+# 系统基本界面主目录
+MAIN_OUTFIT_BASE = 'data_import/main/'
