@@ -5,6 +5,7 @@ from . import fluc_chyulia
 from . import hashuang
 from . import steelprice
 from . import qualityzhuanlu
+from . import flu_quality
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -63,14 +64,14 @@ urlpatterns = [
     url(r'^liquid_ele',hashuang.liquid_ele),
     url(r'^zhengtai_ele',hashuang.zhengtai_ele),
     url(r'^one_product_quality', qualityzhuanlu.quality_zhuanlu),
-    #quchen
     #同时计算正态分布和概率分布
     url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
     url(r'^m_quality',qualityzhuanlu.cost),
     url(r'^s_quality',qualityzhuanlu.produce),   
     url(r'^q_max_influence',qualityzhuanlu.max_influence),
     #多炉次波动率
-    #url(r'^fluctuation_quality',hashuang.fluctuation_quality)
+    url(r'^w_flu_quality',hashuang.w_fluc_quality),
+    url(r'^s_fluc_quality',flu_quality.fluc_produce),
 
     #钢铁价格预测
     #price-predict

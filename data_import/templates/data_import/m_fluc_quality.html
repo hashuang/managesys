@@ -5,25 +5,23 @@
 {% endblock pagejs %}
 {% block content %}
 
-<h2>波动率相关分析</h2>
-<h5><a href='/chen'>返回转炉数据分析</a></h5>
-<p><strong>1.请选择要进行波动率计算的各项参数</strong></p>
+<h2>多炉次质量回溯--波动率分析</h2>
 <form action="javascript:void(0)" method="post">
-    <div>
-         钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select>
-        班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name">
+    <div><br>
+         钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
+        班次：<select name="OPERATESHIFT" id="OPERATESHIFT" class="OPERATESHIFT_name"><br><br>
             <option value='blank' selected = "selected"></option>
             <option value=1>白班</option>
             <option value=2>中班</option>
             <option value=3>夜班</option>
-        </select>
-        班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name">
+        </select><br><br>
+        班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name"><br>
             <option value='blank' selected = "selected"></option>
             <option value='A'>甲班</option>
             <option value='B'>乙班</option>
             <option value='C'>丙班</option>
-        </select>
-        工位：<select name="station" id="station" class="station_name">
+        </select><br><br>
+        工位：<select name="station" id="station" class="station_name"><br>
             <option value='blank' selected = "selected"></option>
             <option value='BOF1'>BOF1</option>
             <option value='BOF2'>BOF2</option>
@@ -32,28 +30,28 @@
         <!-- 字段名：<select name="flu_field" id="flu_field" class="fluctution_time"></select> -->
         <!--<input id="datepicker-example5" type="text">-->
         </div>
-
-        <b>计算波动率的时间范围:</b>
+        <br>
+        <b>检验时间范围:</b>
         <div>
         起始时间：<input id="datepicker-example7-start" type="text">
         终止时间：<input id="datepicker-example7-end" type="text">
         </div>
-        <b>对比历史波动率的时间范围:</b>
+        <b>对比时间范围:</b>
         <div>
         起始时间：<input id="datepicker-example7-start-history" type="text">
-        终止时间：<input id="datepicker-example7-end-history" type="text">
-        <button onclick='fluc_cost()' id='click1'>成本投入</button>
-        <button onclick='fluc_produce()' id='click2'>成本产出</button>
+        终止时间：<input id="datepicker-example7-end-history" type="text"><br><br>
+        <!-- <button onclick='fluc_cost()' id='click1'>成本投入</button> -->
+        <button onclick='fluc_produce()' id='click2'>含量分析追溯</button>
     </div>
 </form>
 
     <div style="width:1400px">
-        <div id="main1" style="float:left;width:600px;height:450px"></div>
+        <div id="main1" style="float:left;width:1200px;height:450px"></div>
         <!-- <div id="main2" style="float:left;width:600px;height:450px">右</div> -->
         <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->  
         <div id="main2" style="float:left;width:600px;height:450px">
             <!--table用来放置因素追溯的分析结果-->
-            <table id='txt' style="width: 600px;height:100px;border:0px;">
+            <table id='txt' style="width: 1200px;height:100px;border:0px;">
             <!-- <caption >因素追溯的分析结果</caption>
                 <tr> 
                 <th>序号</th>
@@ -65,8 +63,8 @@
             </table>
         </div> 
     </div>
-    <p><strong>转炉工序多炉次整体成本追溯</strong></p>
-    <textarea id="cause_txt" style="width: 900px;height:100px;"></textarea>
+  <!--   <p><strong>转炉工序多炉次质量追溯</strong></p> -->
+    <textarea id="cause_txt" style="width: 1200px;height:100px;border:0px"></textarea>
 
 
 
@@ -76,43 +74,7 @@
 <link rel="stylesheet" href="/static/data_import/css/default.css" type="text/css">
 <script type="text/javascript"> 
 
-    function fluc_cost(){
-        var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
-        var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
-        var OPERATECREW = $("#OPERATECREW").val();//班别
-        var station = $("#station").val();//工位
-        var fieldname = $("#flu_field").find("option:selected").val();//字段名
-        var time1 = $('#datepicker-example7-start').val();//计算波动率的时间范围起始时间
-        var time2 = $('#datepicker-example7-end').val();//计算波动率的时间范围终止时间
-        var history_time1 = $('#datepicker-example7-start-history').val();//对比历史波动率的时间范围起始时间
-        var history_time2 = $('#datepicker-example7-end-history').val();//对比历史波动率的时间范围终止时间
-        var myChart_main1 = echarts.init(document.getElementById('main1'));
-        // var myChart_main2 = echarts.init(document.getElementById('main2'));
-        myChart_main1.showLoading({
-                    text: "图表数据正在努力加载..."
-                });
-//         myChart_main2.showLoading({
-//                     text: "图表数据正在努力加载..."
-//                 });
-
-        console.log(time1,time2)
-            $.ajax({
-            type: "post",
-            url:  "/fluc_cost",
-            data: {'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station,'time1':time1,'time2':time2,'fieldname':fieldname,'history_time1':history_time1,'history_time2':history_time2},
-            error: function() {
-                alert("404");
-            },
-            success: function(data) {
-                // alert("success!");
-                drawBarChart_cost_fluc(data);
-                // drawBarChart_cost_fluc2(data);
-                // myChart_main1.hideLoading();
-                // myChart_main2.hideLoading();
-            }
-        })
-    }; 
-
+   
 function fluc_produce(){
         var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
         var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
@@ -134,7 +96,7 @@ function fluc_produce(){
         console.log(time1,time2)
             $.ajax({
             type: "post",
-            url:  "/fluc_produce",
+            url:  "/s_fluc_quality",
             data: {'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station,'time1':time1,'time2':time2,'fieldname':fieldname,'history_time1':history_time1,'history_time2':history_time2},
             error: function() {
                 alert("404");
@@ -207,7 +169,7 @@ function fluc_produce(){
             var option = {
                 color:colors,
                 title: {
-                    text: '在'+result.time1+'至'+result.time2+'时间范围内的成本投入字段波动率计算',
+                    // text: '在'+result.time1+'至'+result.time2+'时间范围内的波动率计算',
                     x:'center'
                 },
                 tooltip: {
@@ -474,20 +436,22 @@ function fluc_produce(){
 
 function drawBarChart_cost_fluc(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#eeeeee', '#3397c9','#f39646','#e02222'];
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#3397c9','#f39646','#e02222'];
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
                 title: {
-                    text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的成本字段波动率计算',
+                    // text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的波动率计算',
                     x:'center'
                 },
                 tooltip: {
                         trigger:'item',
+                         
                         formatter: function (params){
                             var res = result.fieldname_ch[params.dataIndex]+'<br/>'+params.seriesName+'：'+params.value+ '<br/>偏离程度：'+result.offset_result_cent[params.dataIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.dataIndex];        
                             // var res = result.fieldname_ch[params.seriesIndex]+':</br>波动率实际值：'+params.value+'</br>波动率历史值：'+result.ana_describe_history[params.seriesIndex].numb[2]+ '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
                             return res;
+
                             }
                      
                 },
@@ -499,11 +463,15 @@ function drawBarChart_cost_fluc(result){
                         saveAsImage: {show: true}
                         }
                 },
+            
                 legend: {
                     data:['波动率','对比历史波动率']
                 },
+                       
                 xAxis: [{
                     type: 'category',
+                    rotate: 45,//柱体名字偏移的角度数
+                    margin: 10,
                     axisTick: {
                     alignWithLabel: true
                     },
@@ -631,7 +599,7 @@ function drawBarChart_cost_fluc(result){
             url:  "/fluc_influence",
             data: {'field':field,'offset_value':result.offset_result[index],'sentence_select':result.sentence_select,'sentence_selecthistory':result.sentence_selecthistory},
             error: function() {
-                alert("成本投入字段需要往前追溯，目前可能会是错误！！");
+                alert("目前可能会是错误！！");
             },
             success: function(data) {
                 //alert(data.result)
@@ -644,7 +612,7 @@ function drawBarChart_cost_fluc(result){
                 $("#txt").empty();//清除表格内容
                 $("#cause_txt").empty();//清除文本内容
 
-                $("#cause_txt").append('经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result[index]+'\n成本追溯所得字段影响因素分析如下(前五):\n');
+                $("#cause_txt").append('经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result[index]+'\n成本追溯所得字段影响因素分析如下:\n');
                 
                 $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
 
@@ -652,7 +620,7 @@ function drawBarChart_cost_fluc(result){
                     $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
 
                     if (i < 5){
-                        $("#cause_txt").append('   No.'+(i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                        $("#cause_txt").append((i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
                     }
                 }
                 
