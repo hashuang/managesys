@@ -41,17 +41,17 @@
         起始时间：<input id="datepicker-example7-start-history" type="text">
         终止时间：<input id="datepicker-example7-end-history" type="text"><br><br>
         <!-- <button onclick='fluc_cost()' id='click1'>成本投入</button> -->
-        <button onclick='fluc_produce()' id='click2'>成本产出</button>
+        <button onclick='fluc_produce()' id='click2'>含量分析</button>
     </div>
 </form>
 
     <div style="width:1400px">
-        <div id="main1" style="float:left;width:600px;height:450px"></div>
+        <div id="main1" style="float:left;width:1200px;height:450px"></div>
         <!-- <div id="main2" style="float:left;width:600px;height:450px">右</div> -->
         <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->  
         <div id="main2" style="float:left;width:600px;height:450px">
             <!--table用来放置因素追溯的分析结果-->
-            <table id='txt' style="width: 600px;height:100px;border:0px;">
+            <table id='txt' style="width: 1200px;height:100px;border:0px;">
             <!-- <caption >因素追溯的分析结果</caption>
                 <tr> 
                 <th>序号</th>
@@ -63,8 +63,8 @@
             </table>
         </div> 
     </div>
-    <p><strong>转炉工序多炉次质量追溯</strong></p>
-    <textarea id="cause_txt" style="width: 900px;height:100px;"></textarea>
+  <!--   <p><strong>转炉工序多炉次质量追溯</strong></p> -->
+    <textarea id="cause_txt" style="width: 1200px;height:100px;border:0px"></textarea>
 
 
 
@@ -463,9 +463,11 @@ function drawBarChart_cost_fluc(result){
                         saveAsImage: {show: true}
                         }
                 },
+            
                 legend: {
-                            data:['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
-                        },
+                    data:['波动率','对比历史波动率']
+                },
+                       
                 xAxis: [{
                     type: 'category',
                     rotate: 45,//柱体名字偏移的角度数
@@ -618,7 +620,7 @@ function drawBarChart_cost_fluc(result){
                     $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
 
                     if (i < 5){
-                        $("#cause_txt").append('   No.'+(i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                        $("#cause_txt").append((i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
                     }
                 }
                 

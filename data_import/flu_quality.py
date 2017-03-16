@@ -82,7 +82,7 @@ def fluc_produce(request):
 		'history_time2':history_time2,
 		'time':time
 	}
-	xasis_fieldname_ch=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
+	xasis_fieldname_ch=['C','SI','MN','P','S','重量','温度']
 	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
 
 	# for i in range(len(fieldname_en)):
