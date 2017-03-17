@@ -94,7 +94,7 @@ def cost(request):
 	#print(prime_cost)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(MIRON_C,0) as MIRON_C,nvl(MIRON_SI,0) as MIRON_SI ,nvl(MIRON_MN,0) as MIRON_MN,nvl(MIRON_P,0) as MIRON_P FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(TOTAL_SLAB_WGT,0)as TOTAL_SLAB_WGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
 	#print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 
@@ -107,8 +107,8 @@ def cost(request):
 		'state':'success'
 	}
 
-	xaxis=['C','SI','MN','P']
-	xasis_fieldname=['MIRON_C','MIRON_SI','MIRON_MN','MIRON_P']
+	xaxis=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
+	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
 
 	for i in range(len(xasis_fieldname)):
 		value = scrapy_records[0].get(xasis_fieldname[i],None)
@@ -116,10 +116,10 @@ def cost(request):
 			scrapy_records[0][xasis_fieldname[i]] = float(value)
 	frame=DataFrame(scrapy_records)
 
-	yaxis=[frame.MIRON_C[0],frame.MIRON_SI[0],frame.MIRON_MN[0],frame.MIRON_P[0]]
+	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.TOTAL_SLAB_WGT[0],frame.FINAL_TEMP_VALUE[0]]
 	print('实际值')
-	print(frame.MIRON_C[0])
-	danwei=['','','','']
+	print(frame.C[0])
+	#danwei=['','','','']
 	print('xasis_fieldname',xasis_fieldname)
 	print('yaxis',yaxis)
 	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
@@ -131,7 +131,7 @@ def cost(request):
 	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
 	ana_result['xname']=xaxis#字段中文名字
 	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
-	ana_result['danwei']=danwei#字段的数值单位
+	#ana_result['danwei']=danwei#字段的数值单位
 	ana_result['yvalue']=yaxis#该炉次字段的实际值
 	ana_result['attribute']='含量'
 	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
@@ -146,27 +146,31 @@ def produce(request):
 	print(prime_produce)
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_produce+"'";
+	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN ,nvl(P,0) as P FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_produce+"'";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	value = scrapy_records[0].get('TOTAL_SLAB_WGT',None)
+	value = scrapy_records[0].get('C',None)
 	if value != None :
-		scrapy_records[0]['TOTAL_SLAB_WGT'] = float(value)
-	value1 = scrapy_records[0].get('LDG_TOTAL_SLAB_WGT',None)
+		scrapy_records[0]['C'] = float(value)
+	value1 = scrapy_records[0].get('SI',None)
 	if value1 != None :
-		scrapy_records[0]['LDG_TOTAL_SLAB_WGT'] = float(value1)	
-	value2 = scrapy_records[0].get('STEEL_SLAG',None)
+		scrapy_records[0]['SI'] = float(value1)	
+	value2 = scrapy_records[0].get('MN',None)
 	if value2 != None :
-		scrapy_records[0]['STEEL_SLAG'] = float(value2)	
+		scrapy_records[0]['MN'] = float(value2)	
+	value3 = scrapy_records[0].get('P',None)
+	if value3 != None :
+		scrapy_records[0]['P'] = float(value3)	
 	frame=DataFrame(scrapy_records)
 	contentVO={
 		'title':'测试',
 		'state':'success'
 	}
-	xaxis=['钢水','LDG','钢渣']
-	xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
-	yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
-	danwei=['Kg','NM3','Kg']
+	print(frame)
+	xaxis=['C','SI','MN','P']
+	xasis_fieldname=['C','SI','MN','P']
+	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0]]
+	#danwei=['Kg','NM3','Kg']
 	print('xasis_fieldname',xasis_fieldname)
 	print('yaxis',yaxis)
 	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
@@ -178,9 +182,9 @@ def produce(request):
 	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
 	ana_result['xname']=xaxis#字段中文名字
 	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
-	ana_result['danwei']=danwei#字段的数值单位
+	#ana_result['danwei']=danwei#字段的数值单位
 	ana_result['yvalue']=yaxis#该炉次字段的实际值
-	ana_result['attribute']='输出产品量'
+	ana_result['attribute']='钢水含量'
 	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
 	ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
 	contentVO['result']=ana_result
@@ -206,7 +210,7 @@ def offset(xasis_fieldname,yaxis):
 		# print(isinstance(yaxis[i],float))#判断数据类型
 		for j in range (4):
 			value = scrapy_records[0].get(parameters[j],None)
-			if value != None :
+			if value != None and value != 'null':
 				scrapy_records[0][parameters[j]] = float(value)
 
 		try:
@@ -731,7 +735,7 @@ def max_influence(request):
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
-	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_cost+"'";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	#将查询所得值全部转变为float格式（动态，适用于不同个数的xasis_fieldname长度）
@@ -754,7 +758,7 @@ def max_influence(request):
 		'state':'success'
 	}
 	offset_result=offset(xasis_fieldname,yaxis)
-	print(xasis_fieldname)
+	print("xasis_fieldname",xasis_fieldname)
 	print("偏离程度")
 	print(offset_result)
 	xasis_fieldname_result=[]#字段英文名字数组

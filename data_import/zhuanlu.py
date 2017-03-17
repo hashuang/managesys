@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 from collections import OrderedDict
 PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								

@@ -5,9 +5,49 @@ import numpy as np
 import pandas as pd
 
 
-def get_history_price(path):
+#from sklearn.cross_validation import train_test_split
+
+
+
+def get_history_price(path,begin,end):
 	dfori = pd.read_csv(path, encoding = 'gbk')
-	
+	cols = list(dfori.columns)
+	cols_len = len(cols)
+	print(path)
+	print(begin)
+	print(end)
+	'''
+	时间字符串转时间格式
+	'''
+	begin = datetime.datetime.strptime(begin, '%Y-%m-%d')
+	end = datetime.datetime.strptime(end, '%Y-%m-%d')
+
+	'''
+	datetime format
+	'''
+	dfori[cols[0]] = dfori[cols[0]].map(lambda x : str(x))
+	dfori[cols[0]] = dfori[cols[0]].map(lambda x : datetime.datetime.strptime(x, '%Y%m%d'))
+
+	dfori[cols[1]] = pd.to_numeric(dfori[cols[1]].map(lambda x : x.replace(',','')))
+	'''
+	根据起止时间选择数据
+	'''
+	dfori = dfori[(dfori[cols[0]] > begin) & (dfori[cols[0]] < end)]
+
+	history_price = pd.DataFrame()
+	history_price = dfori[cols[0:2]]
+	result = {}
+	history_price[cols[0]] = history_price[cols[0]].map(lambda x : str(x)[0:10])
+	result['timeline'] = list(history_price[cols[0]])
+	result['price'] = list(history_price[cols[1]])
+	return result
+
+def create_single_model(path,PRE_DAYS):
+	'''
+	120视为半年24周
+	'''
+	#,80,100,120,240,360
+	dfori = pd.read_csv(path, encoding = 'gbk')
 	cols = list(dfori.columns)
 	cols_len = len(cols)
 
@@ -16,27 +56,46 @@ def get_history_price(path):
 	'''
 	datetime format
 	'''
+
 	dfori[cols[0]] = dfori[cols[0]].map(lambda x : str(x))
-	# dfori[cols[0]] = pd.to_datetime(dfori[cols[0]])
+	dfori[cols[0]] = dfori[cols[0]].map(lambda x : datetime.datetime.strptime(x, '%Y%m%d'))
 
-	history_price = pd.DataFrame()
-	history_price = dfori[cols[0:2]]
 
-	result = {}
-	result['timeline'] = list(history_price[cols[0]])
-	result['price'] = list(history_price[cols[1]])
-	return result
+	'''
+	初始化数据集
+	model['end'] = dfori[cols[0]][:len(dfori.index)- PRE_DAYS[i] ] + datetime.timedelta(days= PRE_DAYS[i])
+	这种时间拼接方式的漏洞在于会凭空增加没有数据的日期
+	'''
+	models = []
+	for i in range(len(PRE_DAYS)):
+	    day = PRE_DAYS[i]
+	    model = pd.DataFrame()
+	    model['begin'] = dfori[cols[0]][:len(dfori.index)-day]
+	    model['end'] = pd.Series()
+	    for m in range(len(model['begin'])):
+	        model.ix[m,'end'] = dfori.ix[m + day,cols[0]]
+	    models.append(model.copy())
+	'''
+	按照天数组织数据，得到训练第一层模型所需要的数据集，训练数据比例以最长天数为基准取0.4比例保留，其他数据集参照
+	'''
+	for i in range(len(PRE_DAYS)):
+		day = PRE_DAYS[i]
+		for k in range(len(dfori.index)-day):
+		    models[i].ix[k, str(day) + 'plus0'] = dfori.ix[k,cols[1]]
+		    for j in range(day):
+		        models[i].ix[k, str(day) + 'plus' + str(j+1)] = dfori.ix[k+j+1,cols[1]]
+	return models
 
-def create_models(PRE_DAYS):
+def create_models(path,PRE_DAYS):
 
-	path = os.path.dirname(os.path.abspath('__file__'))
+	# path = os.path.dirname(os.path.abspath('__file__'))
 
 	'''
 	120视为半年24周
 	'''
 
 	#,80,100,120,240,360
-	dfori = pd.read_csv(path + '/csvdata/tegang.csv', encoding = 'gbk')
+	dfori = pd.read_csv(path, encoding = 'gbk')
 	cols = list(dfori.columns)
 	cols_len = len(cols)
 
@@ -47,7 +106,7 @@ def create_models(PRE_DAYS):
 	'''
 
 	dfori[cols[0]] = dfori[cols[0]].map(lambda x : str(x))
-	dfori[cols[0]] = pd.to_datetime(dfori[cols[0]])
+	dfori[cols[0]] = dfori[cols[0]].map(lambda x : datetime.datetime.strptime(x, '%Y%m%d'))
 
 
 	'''
