@@ -353,6 +353,17 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue,module_nam
 function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
 
     var myChart = echarts.init(document.getElementById('main4'));
+    //console.log(data);
+    //console.log(data[0]);
+    //console.log(data[0].name);
+    //console.log(data[0].value);
+    if (data[0].name == 'timeline'){
+        timeline = data[0].value;
+        timelineValue = data[1].value;
+    }else{
+        timeline = data[1].value;
+        timelineValue = data[0].value;
+    }
 
     option = {
     title : {
@@ -361,70 +372,51 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
         x:'center'
     },
     tooltip : {
-        trigger: 'item',
-        formatter : function (params) {
-            var date = new Date(params.value[0]);
-            data = date.getFullYear() + '-'
-                   + (date.getMonth() + 1) + '-'
-                   + date.getDate() + ' ';
-            return data + '<br/>'
-                   + params.value[1];
-        }
+        trigger: 'axis', 
+        // formatter : function (params) {
+        //         //console.log(params);
+        //         //console.log(params[0].name);
+        //         //console.log(params[0].value);
+        //         return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value + unite
+        //     }
     },
-    toolbox: {
+    toolbox: {   //这个不用改
         show : true,
         feature : {
-            //mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            //restore : {show: true},
+            //dataView : {show: true, readOnly: false},
             saveAsImage : {show: true}
         }
     },
-    dataZoom: {
+    dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
         show: true,
-        start : 70
+        start :50,
+        end :100 
     },
     legend : {
         orient: 'vertical',
         x:'left',
         data : [tradeNo]
     },
-    grid: {
+    grid: {  //这个不用改，图所占区域竖直方向长度
         y2: 80
     },
-    xAxis : [
+    xAxis : [   //这个不用改
         {
-            type : 'time',
-            splitNumber:10
+            type : 'category',
+            boundaryGap : false,
+            data : timeline
         }
     ],
-    yAxis : [
+    yAxis : [ //这个不用改
         {
             type : 'value'
         }
     ],
     series : [
         {
-            name: 'series1',
+            name: tradeNo,
             type: 'line',
-            showAllSymbol: true,
-            symbolSize: function (value){
-                return Math.round(value[2]/10) + 2;
-            },
-            data: (function () {
-                var d = [];
-                var len = 0;
-                var now = new Date();
-                var value;
-                while (len++ < 200) {
-                    d.push([
-                        new Date(2014, 9, 1, 0, len * 10000),
-                        (Math.random()*30).toFixed(2) - 0,
-                        (Math.random()*100).toFixed(2) - 0
-                    ]);
-                }
-                return d;
-            })()
+            data:timelineValue
         }
     ]
 };

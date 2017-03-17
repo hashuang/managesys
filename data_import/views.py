@@ -697,7 +697,23 @@ def time(request):
 		except Exception as ex:
 			print(ex)
 
-
+# #从数据库动态加载钢种
+# def getAllTradeNo_time(request):
+# 	sqlVO={}
+# 	sqlVO["db_name"]="l2own"
+# 	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
+# 	print(sqlVO["sql"])
+# 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+# 	frame=DataFrame(scrapy_records)
+# 	#print(frame['GK_NO'])
+# 	contentVO={
+# 		'title':'测试',
+# 		'state':'success'
+# 	}
+# 	grape=[ele for ele in frame['GK_NO']]
+# 	#print(grape)
+# 	contentVO['result']=grape
+# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 
 def ha(request):

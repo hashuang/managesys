@@ -47,6 +47,8 @@ urlpatterns = [
     url(r'^space',views.space),
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
+    # #自动加载钢种
+    # url(r'^getGrape',views.getAllTradeNo_time),
     #ha
     url(r'^ha', views.ha),
     url(r'^num',views.num),
