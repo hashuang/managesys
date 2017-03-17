@@ -23,6 +23,7 @@ from collections import defaultdict
 from math import ceil
 from os.path import join
 
+from QinggangManageSys.settings import MAIN_OUTFIT_BASE
 
 
 from .models import ContentPost
@@ -40,7 +41,8 @@ def home(request):
 	# the_abstract = get_object_or_404(ContentPost, title="abstract")
 	# contentVO["abstract"] = the_abstract
 	# contentVO["state"] = "success"
-	return render(request,'data_import/index.html',contentVO)
+	print(MAIN_OUTFIT_BASE)
+	return render(request, MAIN_OUTFIT_BASE + 'index.html',contentVO)
 
 #用户登录
 def user_login(request):
@@ -62,7 +64,7 @@ def user_login(request):
 		contentVO['state']='success'
 		return HttpResponseRedirect("/index")
 	print(contentVO['state'])
-	return render(request,'data_import/login.html',contentVO)
+	return render(request, MAIN_OUTFIT_BASE + 'login.html',contentVO)
 
 #用户注册
 def user_register(request):
@@ -88,7 +90,7 @@ def user_register(request):
 				contentVO['state'] = 'success'
 				return HttpResponseRedirect('/login')
 	print(contentVO['state'])
-	return render(request,'data_import/register.html',contentVO)
+	return render(request, MAIN_OUTFIT_BASE + 'register.html',contentVO)
 
 #用户登出
 def user_logout(request):
@@ -118,7 +120,7 @@ def modify_password(request):
 			user.save()
 			contentVO['state'] = 'success'
 	print(contentVO['state'])
-	return render(request,'data_import/modify_password.html',contentVO)
+	return render(request, MAIN_OUTFIT_BASE + 'modify_password.html',contentVO)
 
 
 #重置密码
@@ -247,7 +249,7 @@ def upload_file(request):
 			util.import_multikey_file(filepath,models.TransRelationMultikey,procedurename)
 		else:
 			util.batch_import_data(filepath,models.TransRelation,procedurename)
-	return render(request,'data_import/form.html')
+	return render(request, MAIN_OUTFIT_BASE + 'form.html')
 
 def handle_uploaded_file(f):
 	filename=f._name
@@ -268,7 +270,7 @@ def delete_records(request):
 	else:
 		records_sqlVO=util.create_delete_records_sqlVO(procedurename,models.TransRelation._meta.db_table)
 	result=models.BaseManage().direct_execute_query_sqlVO(records_sqlVO)
-	return render(request,'data_import/form.html')
+	return render(request, MAIN_OUTFIT_BASE + 'form.html')
 
 def ana_data_lack(request):
 	if request.method == 'POST':
@@ -314,7 +316,7 @@ def ana_data_lack(request):
 
 
 def success(request):
-	return render(request,'data_import/success.html')
+	return render(request, MAIN_OUTFIT_BASE + 'success.html')
 
 def ajaxtest(request):
 	filepath=BASE_DIR +"\\data_import\\static\\libs\\echarts\\map\\"
@@ -485,7 +487,7 @@ def data_import(request):
 			import_by_multikey(procedurename)
 		else:
 			import_by_single(procedurename)
-	return render(request,'data_import/import.html',{'title':"导入结果"})
+	return render(request, MAIN_OUTFIT_BASE + 'import.html',{'title':"导入结果"})
 
 '''
 {'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)', 
@@ -591,46 +593,23 @@ def echarts(request):
 	print('echarts示例')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
-	return render(request,'data_import/echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
+	return render(request, MAIN_OUTFIT_BASE + 'echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
-def Wushu(x):
-    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
-    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    return x[(x<U)&(x>L)]
-from . import hashuang    	
 
-def num(request):
-	print("分析结果绘图")
-	bookno=request.POST.get("bookno").upper();
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	# print(bookno)
-	# print(scrapy_records[:5])
-	contentVO={
-		'title':'分析结果绘图',
-		'state':'success',
-	}
-	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
-	contentVO['result']=ana_result
-	contentVO['describe']=ana_describe
-	print(ana_describe)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-from . import zhuanlu	
-def lond_to(request):
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	ana_result={}
-	ana_result_two={}
-	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
-	#print("result:")
-	contentVO['procedure_names']=ana_result
-	#print(contentVO)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+# from . import zhuanlu	
+# def lond_to(request):
+# 	contentVO={
+# 		'title':'测试',
+# 		'state':'success'
+# 	}
+# 	ana_result={}
+# 	ana_result_two={}
+# 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
+# 	#print("result:")
+# 	contentVO['procedure_names']=ana_result
+# 	#print(contentVO)
+# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 
 

@@ -21,7 +21,7 @@ Restart nginx:
 sudo /etc/init.d/nginx restart  
 ```
 
-##fork代码并更新
+##fork代码并与原仓库保持同步（即将原仓库的更新合并到本地仓库）
 ```
 git  remote -v  
 git remote add upstream  (rpo you fork from)  
