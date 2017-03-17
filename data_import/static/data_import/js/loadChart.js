@@ -353,10 +353,10 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue,module_nam
 function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
 
     var myChart = echarts.init(document.getElementById('main4'));
-    //console.log(data);
-    //console.log(data[0]);
-    //console.log(data[0].name);
-    //console.log(data[0].value);
+    console.log(data);
+    console.log(data[0]);
+    console.log(data[0].name);
+    console.log(data[0].value);
     if (data[0].name == 'timeline'){
         timeline = data[0].value;
         timelineValue = data[1].value;
