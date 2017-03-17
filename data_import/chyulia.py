@@ -277,7 +277,7 @@ def fluctuation(request):
 def getGrape(request):
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
+	sqlVO["sql"]="select SPECIFICATION  from pro_bof_his_allfields group by SPECIFICATION order by count(*) DESC";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	frame=DataFrame(scrapy_records)
@@ -286,7 +286,7 @@ def getGrape(request):
 		'title':'测试',
 		'state':'success'
 	}
-	grape=[ele for ele in frame['GK_NO']]
+	grape=[ele for ele in frame['SPECIFICATION']]
 	#print(grape)
 	contentVO['result']=grape
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
@@ -482,6 +482,7 @@ def probability_normal(request):
 	offset_value=request.POST.get("offset_value");#偏离值
 	# offset_value=float(offset_value_temp[1:-1])/100
 	actual_value=float(request.POST.get("actual_value"))#实际值
+	coloum_number=int(request.POST.get("coloum_number"))#定义概率直方图的柱状个数
 	print(heat_no,bookno,actual_value);
 	# print(scrapy_records[1:5])
 
@@ -532,7 +533,7 @@ def probability_normal(request):
 		if(clean.max==clean.min()):
 			bc=1
 		else:	
-			bc=(clean.max()-clean.min())/50
+			bc=(clean.max()-clean.min())/coloum_number
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
