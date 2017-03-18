@@ -54,7 +54,8 @@ def num_describe(scrapy_records,bookno):
 		value = scrapy_records[i].get(bookno,None)
 		if value != None :
 			scrapy_records[i][bookno] = float(value)			
-	frame=DataFrame(scrapy_records)	
+	frame=DataFrame(scrapy_records)
+	print(frame[1:5])	
 	df=frame.sort_values(by=bookno)
 	dfr=df[df>0].dropna(how='any')
 	#print(dfr['1622324'])
@@ -167,7 +168,7 @@ def multi_analy(request):
 		sentence_time="and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'"
 	else:
 		sentence_time=''
-	sentence="SELECT HEAT_NO,"+bookno+",MSG_DATE_PLAN FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	#sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE "+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
 	print('sql语句：')
 	print(sentence)
@@ -207,13 +208,6 @@ def getB(s):
         else:
             data.append(a1[1][:-1])
     return data	
-#def vaild(lis,ivalue_valid,data):
-    #for i in range(len(lis)):
-        #shu=lis[i]
-        #shua=float(shu)
-        #shub=round(shua,ivalue_valid)
-        #data.append(shub)
-    #return data 
 def union_section(section_point,sections):#拼接区间
     for i in range(len(section_point)):
         section=None
@@ -423,4 +417,34 @@ def w_fluc_quality(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/m_fluc_quality.html')
+#统计分析按表结构加载下拉框	
+from . import zhuanlu	
+def lond_to(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result_two={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
+	#print("result:")
+	contentVO['procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def ha(request):
+	print('转炉数据清洗')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
+def lond_to_B(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	ana_result={}
+	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
+	contentVO['procedure_names']=ana_result
+	#print(contentVO)
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')		
+
 

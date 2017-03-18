@@ -600,44 +600,21 @@ def echarts(request):
 		return HttpResponseRedirect("/login")
 	return render(request, MAIN_OUTFIT_BASE + 'echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
-def Wushu(x):
-    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
-    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    return x[(x<U)&(x>L)]
-from . import hashuang    	
 
-def num(request):
-	print("分析结果绘图")
-	bookno=request.POST.get("bookno").upper();
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS"
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	# print(bookno)
-	# print(scrapy_records[:5])
-	contentVO={
-		'title':'分析结果绘图',
-		'state':'success',
-	}
-	ana_result,ana_describe=hashuang.num_describe(scrapy_records,bookno)
-	contentVO['result']=ana_result
-	contentVO['describe']=ana_describe
-	print(ana_describe)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-from . import zhuanlu	
-def lond_to(request):
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	ana_result={}
-	ana_result_two={}
-	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
-	#print("result:")
-	contentVO['procedure_names']=ana_result
-	#print(contentVO)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+# from . import zhuanlu	
+# def lond_to(request):
+# 	contentVO={
+# 		'title':'测试',
+# 		'state':'success'
+# 	}
+# 	ana_result={}
+# 	ana_result_two={}
+# 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
+# 	#print("result:")
+# 	contentVO['procedure_names']=ana_result
+# 	#print(contentVO)
+# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 
 

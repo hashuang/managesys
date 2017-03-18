@@ -5,7 +5,7 @@ from . import fluc_chyulia
 from . import hashuang
 from . import steelprice
 from . import qualityzhuanlu
-from . import flu_quality
+from . import fluc_quality
 
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
@@ -49,29 +49,32 @@ urlpatterns = [
     url(r'^space',views.space),
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
+
     #ha
-    url(r'^ha', views.ha),#加载转炉数据清洗界面
-    url(r'^lond_to',views.lond_to),#参数初始化1-4
+    #显示统计分析页面
+    url(r'^ha', hashuang.ha),
+    #按表结构加载下拉框
+    url(r'^lond_to',hashuang.lond_to),
     url(r'^no_lond_to',hashuang.no_lond_to),
-    url(r'^paihao_getGrape',hashuang.paihao_getGrape),
     url(r'^little_lond_to',hashuang.little_lond_to),
-    url(r'^num',views.num),#未加筛选条件的数据分析
-    url(r'^zong_analy_ha',hashuang.multi_analy),#添加筛选条件综合分析
+    #转炉统计分析综合条件筛选
+    url(r'^zong_analy_ha',hashuang.multi_analy),
+    #加载钢种
+    url(r'^paihao_getGrape',hashuang.paihao_getGrape),
+    #统计分析方法
     url(r'^describe_ha',hashuang.describe_ha),
     #质量回溯
+    #加载单炉次质量回溯页面（product_quality.html）
     url(r'^product_quality',hashuang.product_quality),
-    url(r'^heat_no_quality',hashuang.heat_no_quality),
-    url(r'^liquid_ele',hashuang.liquid_ele),
-    url(r'^zhengtai_ele',hashuang.zhengtai_ele),
-    url(r'^one_product_quality', qualityzhuanlu.quality_zhuanlu),
     #同时计算正态分布和概率分布
     url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
     url(r'^m_quality',qualityzhuanlu.cost),
-    url(r'^s_quality',qualityzhuanlu.produce),   
+    #单炉次原因追溯   
     url(r'^q_max_influence',qualityzhuanlu.max_influence),
-    #多炉次波动率
-    url(r'^w_flu_quality',hashuang.w_fluc_quality),
-    url(r'^s_fluc_quality',flu_quality.fluc_produce),
+    #比较多炉次波动率计算(m_fluc_qulity.html)
+    url(r'^w_fluc_quality',hashuang.w_fluc_quality),
+    #波动率原因追溯
+    url(r'^s_fluc_quality',fluc_quality.fluc_produce),
 
     #钢铁价格预测
     #price-predict
@@ -101,8 +104,7 @@ urlpatterns = [
     url(r'^fluc_produce',fluc_chyulia.fluc_produce),
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
-    #url(r'^zong_analy_ha',hashuang.multi_analy),
-    #url(r'^paihao_getGrape',hashuang.paihao_getGrape)
+
     
 
     
