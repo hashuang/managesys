@@ -702,36 +702,52 @@ def max_influence(request):
 	#将待匹配的字段名设置为参数
 	#field='MIRON_WGT'
 	result=[]
-	#读取回归系数文件
-	with open('data_import/regression_all_EN1.csv','r') as csvfile:
-	# with open('data_import/test.csv','r') as csvfile:
-	    reader = csv.reader(csvfile)
-	    rows= [row for row in reader]
-	aa = np.array(rows)
-	aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
-	for aaa in aa:
-		if(aaa[0]==field):
-			result.append(aaa)
-		# elif(aaa[1]==field):
-		# 	temp=aaa[0]
-		# 	aaa[0]=aaa[1]
-		# 	aaa[1]=temp
-			# result.append(aaa)
-	    # fout.write("%s\n" % aaa)  
-	result1 = np.array(result)#转变为numpy数组格式
-	length_result1=len(result1)
-	print("长度"+str(length_result1))
-	print(result1)#根据回归系数大小排序结果
-	print("------------------")
+	#从数据库读取回归系数文件
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	print(scrapy_records)
+	length_result1=len(scrapy_records)
+
 	xasis_fieldname=[]#字段英文名字数组
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(result1[i][1])
-		regression_coefficient.append(result1[i][2])
-		str_sql=str_sql+','+result1[i][1]
-	print(str_sql)
-	prime_cost='1634230'
+		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
+		regression_coefficient.append(scrapy_records[i].get('COF', None))
+		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
+	# #读取回归系数文件
+	# with open('data_import/regression_all_EN1.csv','r') as csvfile:
+	# # with open('data_import/test.csv','r') as csvfile:
+	#     reader = csv.reader(csvfile)
+	#     rows= [row for row in reader]
+	# aa = np.array(rows)
+	# aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
+	# for aaa in aa:
+	# 	if(aaa[0]==field):
+	# 		result.append(aaa)
+	# 	# elif(aaa[1]==field):
+	# 	# 	temp=aaa[0]
+	# 	# 	aaa[0]=aaa[1]
+	# 	# 	aaa[1]=temp
+	# 		# result.append(aaa)
+	#     # fout.write("%s\n" % aaa)  
+	# result1 = np.array(result)#转变为numpy数组格式
+	# length_result1=len(result1)
+	# print("长度"+str(length_result1))
+	# print(result1)#根据回归系数大小排序结果
+	# print("------------------")
+	# xasis_fieldname=[]#字段英文名字数组
+	# regression_coefficient=[]#字段回归系数值数组
+	# str_sql=''
+	# for i in range(length_result1):
+	# 	xasis_fieldname.append(result1[i][1])
+	# 	regression_coefficient.append(result1[i][2])
+	# 	str_sql=str_sql+','+result1[i][1]
+	# print(str_sql)
+	# prime_cost='1634230'
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
