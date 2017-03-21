@@ -50,6 +50,9 @@ urlpatterns = [
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
 
+    # #自动加载钢种
+    # url(r'^getGrape',views.getAllTradeNo_time),
+
     #ha
     #显示统计分析页面
     url(r'^ha', hashuang.ha),
@@ -85,14 +88,11 @@ urlpatterns = [
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
-    url(r'^cost',chyulia.cost),
-    url(r'^produce',chyulia.produce),
+    url(r'^cost_produce',chyulia.cost_produce),
     #自动加载钢种
     url(r'^getGrape',chyulia.getGrape),
     #跳转到波动率页面fluctuation.html
     url(r'^fluctuation$',chyulia.fluctuation),
-    #多条件综合筛选(chen.html)
-    url(r'^multi_analy',chyulia.multi_analy),
     #单炉次原因追溯
     url(r'^max_influence',chyulia.max_influence),
     #定期更新数据库转炉字段统计值
@@ -100,8 +100,7 @@ urlpatterns = [
     #同时计算正态分布和概率分布
     url(r'^probability_normal',chyulia.probability_normal), 
     #比较总体的波动率计算(fluctuation.html)
-    url(r'^fluc_cost',fluc_chyulia.fluc_cost),
-    url(r'^fluc_produce',fluc_chyulia.fluc_produce),
+    url(r'^fluc_cost_produce',fluc_chyulia.fluc_cost_produce),
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
 
