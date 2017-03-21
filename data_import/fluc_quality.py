@@ -450,6 +450,7 @@ def vaild(lis,ivalue_valid,data):
 from . import zhuanlu
 def fluc_influence(request):
 	print("Enter fluc_influence")
+	print("哈爽")
 	field=request.POST.get("field");#字段英文名
 	offset_value=request.POST.get("offset_value");#一定时间范围波动率的偏离程度，
 	sentence_select=request.POST.get("sentence_select");

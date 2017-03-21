@@ -695,6 +695,7 @@ def probability_distribution(request):
 #影响因素追溯
 from . import zhuanlu
 def max_influence(request):
+	print("哈爽")
 	print("Enter max_influence")
 	field=request.POST.get("field");
 	offset_value=request.POST.get("offset_value");#炉次字段的偏离程度，
@@ -747,7 +748,7 @@ def max_influence(request):
 	# 	regression_coefficient.append(result1[i][2])
 	# 	str_sql=str_sql+','+result1[i][1]
 	# print(str_sql)
-	# prime_cost='1634230'
+	prime_cost='1634230'
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
