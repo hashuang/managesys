@@ -41,17 +41,18 @@ function drawHistoryPriceBrokenLineChart(data){
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     }
-function drawPredictBrokenLineChart(data){
-    var myChart = echarts.init(document.getElementById('predict_figure'));
+function drawPredictBrokenLineChart(data,figure_name){
+    var myChart = echarts.init(document.getElementById(figure_name));
+    if(figure_name == "predict_figure")figure_name="钢材";
     option = {
         title: {
-            text: '预测图'
+            text: figure_name + '预测图'
         },
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data:['真实值','预测值']
+            data:['真实值','预测值','评分：'+data.score]
         },
         grid: {
             left: '3%',
@@ -105,6 +106,10 @@ function history_query(){
         success: function(data) {
             console.log(data);
             drawHistoryPriceBrokenLineChart(data);
+            var json1 = {1:'9',2:'3',3:'1'};
+            $.each(json1,function(name,value) {
+                alert(value);
+            });
         }
     })
 }
@@ -129,8 +134,25 @@ function predict_query(){
             console.log("404");
         },
         success: function(data) {
+            $("#figures").empty();
             console.log(data);
-            drawPredictBrokenLineChart(data.result.elm)
+            var pridict_result_json = data.result
+            var len = 0;
+            for(var item in pridict_result_json)len++;
+            alert(len);
+            var num = 0;
+            var figures = $("#figures")
+
+            $.each(pridict_result_json,function(name,value) {
+                if(num ==0){
+                    figure_name = "predict_figure";
+                    drawPredictBrokenLineChart(value,figure_name)
+                }
+                    
+                figures.append("<div id='"+ name +"' style='width: 500px;height:400px;'></div>")
+                drawPredictBrokenLineChart(value,name)
+            });
+
         }
     })
 }

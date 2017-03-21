@@ -966,7 +966,9 @@ width : 731px !important ;
 	transition : all 0.4s 0s ease;
 }
 
-
+#protfolio_sec {
+	height : 2000px;
+}
 #protfolio_sec ul.filter {
 	color : #2e2e2e;
 }
@@ -995,6 +997,7 @@ width : 731px !important ;
 	margin-left : 100px;
 	margin-bottom : 10px;
 	width : 1200px;
+	height:auto;
 }
 #protfolio_sec .single-portfolio:hover .img_hoverlay {
 display : block;
