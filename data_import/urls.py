@@ -80,6 +80,7 @@ urlpatterns = [
     #price-predict
     url(r'^steelprice$',steelprice.steelprice),#加载价格预测界面，并初始化参数
     url(r'^price_history$', steelprice.price_history),#价格历史数据
+   
     url(r'^price_predict$', steelprice.price_predict),#价格预测
     #chen
     #显示chen页面

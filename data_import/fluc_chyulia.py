@@ -14,7 +14,7 @@ from scipy.stats import norm
 
 #总体波动率分析(fluctuation.html)
 def fluc_cost(request):
-	print("enter whole_analy!")
+	# print("enter fluc_cost!")
 	# fieldname=request.POST.get("fieldname").upper();#字段名
 	SPECIFICATION=request.POST.get("SPECIFICATION");#钢种
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");#班次
@@ -25,10 +25,10 @@ def fluc_cost(request):
 	history_time1=request.POST.get("history_time1");
 	history_time2=request.POST.get("history_time2");
 	############################为测试方便暂时将数据写死
-	time1='2016-01-22';
-	time2='2016-04-14';
-	history_time1='2016-01-01';
-	history_time2='2017-03-09';
+	# time1='2016-01-22';
+	# time2='2016-04-14';
+	# history_time1='2016-01-01';
+	# history_time2='2017-03-09';
 	############################
 	if SPECIFICATION !='blank':
 		sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
@@ -66,11 +66,16 @@ def fluc_cost(request):
 	sentence_history="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	sentence_selecthistory=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 
+	time={
+		'time1':time1,
+		'time2':time2,
+		'history_time1':history_time1,
+		'history_time2':history_time2
+	}
 	contentVO={
 		'title':'测试',
 		'state':'success',
-		'time1':time1,
-		'time2':time2
+		'time':time
 	}
 	xasis_fieldname_ch=['铁水重量','耗氧量','生铁','废钢总和']
 	xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','COLDPIGWGT','SCRAPWGT_COUNT']
@@ -83,7 +88,13 @@ def fluc_cost(request):
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	# print('len(scrapy_records)',len(scrapy_records))
+
+
 	ana_describe=calaulate_describe(scrapy_records,xasis_fieldname)
+	if ana_describe['sign']==1:
+		contentVO['state']='failure_current'
+		return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 	# print('-----------------------ana_describe',ana_describe)
 
 	fluc_ratio=[]#存储各相关性字段的在当前的波动率
@@ -101,7 +112,11 @@ def fluc_cost(request):
 	sqlVO_history["sql"]=sentence_history
 	print(sqlVO_history["sql"])
 	scrapy_records_history=models.BaseManage().direct_select_query_sqlVO(sqlVO_history)
+
 	ana_describe_history=calaulate_describe(scrapy_records_history,xasis_fieldname)
+	if ana_describe['sign']==1:
+		contentVO['state']='failure_history'
+		return HttpResponse(json.dumps(contentVO),content_type='application/json')
 	# print('----------------------------ana_describe_history',ana_describe_history)
 
 	fluc_ratio_history=[]#存储各相关性字段的在当前的波动率
@@ -124,8 +139,8 @@ def fluc_cost(request):
 
 	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
 	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
-	fluc_ratiolist=["%.4f"%(n) for n in list(fluc_ratio)]
-	fluc_ratio_historylist=["%.4f"%(n) for n in list(fluc_ratio_history)]
+	fluc_ratiolist=["%.5f"%(n) for n in list(fluc_ratio)]
+	fluc_ratio_historylist=["%.5f"%(n) for n in list(fluc_ratio_history)]
 	contentVO['fieldname_ch']=xasis_fieldname_ch
 	contentVO['fieldname_en']=xasis_fieldname
 	# contentVO['ana_result']=ana_result
@@ -134,8 +149,9 @@ def fluc_cost(request):
 	# contentVO['ana_describe_history']=ana_describe_history
 	contentVO['fluc_ratio']=fluc_ratiolist#标准偏差，即变异系数
 	contentVO['fluc_ratio_history']=fluc_ratio_historylist#标准偏差，即变异系数
-	contentVO['offset_result']=offset_resultlist#偏离程度
 	contentVO['qualitative_offset_result']=qualitative_offset_result#偏离程度的定性判断
+	contentVO['offset_result']=offset_result#偏离程度（小数）
+	contentVO['offset_result_cent']=offset_resultlist#偏离程度(百分数)
 
 	contentVO['sentence_select']=sentence_select
 	contentVO['sentence_selecthistory']=sentence_selecthistory
@@ -154,7 +170,7 @@ def fluc_cost(request):
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 def fluc_produce(request):
-	print("enter whole_analy!")
+	# print("enter fluc_produce!")
 	# fieldname=request.POST.get("fieldname").upper();#字段名
 	SPECIFICATION=request.POST.get("SPECIFICATION");#钢种
 	OPERATESHIFT=request.POST.get("OPERATESHIFT");#班次
@@ -165,10 +181,10 @@ def fluc_produce(request):
 	history_time1=request.POST.get("history_time1");
 	history_time2=request.POST.get("history_time2");
 	############################为测试方便暂时将数据写死
-	time1='2016-01-22';
-	time2='2016-04-14';
-	history_time1='2016-01-01';
-	history_time2='2017-03-09';
+	# time1='2016-01-22';
+	# time2='2016-04-14';
+	# history_time1='2016-01-01';
+	# history_time2='2017-03-09';
 	############################
 	if SPECIFICATION !='blank':
 		sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
@@ -215,10 +231,6 @@ def fluc_produce(request):
 	contentVO={
 		'title':'测试',
 		'state':'success',
-		'time1':time1,
-		'time2':time2,
-		'history_time1':history_time1,
-		'history_time2':history_time2,
 		'time':time
 	}
 	xasis_fieldname_ch=['钢水','LDG','钢渣']
@@ -248,7 +260,13 @@ def fluc_produce(request):
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	# print('len(scrapy_records)',len(scrapy_records))
+	
+	
 	ana_describe=calaulate_describe(scrapy_records,xasis_fieldname)
+	if ana_describe['sign']==1:#对于查询结果无数据的情况
+		contentVO['state']='failure_current'
+		return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 	# print('-----------------------ana_describe',ana_describe)
 
 	fluc_ratio=[]#存储各相关性字段的在当前的波动率
@@ -266,7 +284,11 @@ def fluc_produce(request):
 	sqlVO_history["sql"]=sentence_history
 	print(sqlVO_history["sql"])
 	scrapy_records_history=models.BaseManage().direct_select_query_sqlVO(sqlVO_history)
+	
 	ana_describe_history=calaulate_describe(scrapy_records_history,xasis_fieldname)
+	if ana_describe['sign']==1:
+		contentVO['state']='failure_history'
+		return HttpResponse(json.dumps(contentVO),content_type='application/json')
 	# print('----------------------------ana_describe_history',ana_describe_history)
 
 	fluc_ratio_history=[]#存储各相关性字段的在当前的波动率
@@ -289,8 +311,8 @@ def fluc_produce(request):
 
 	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
 	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
-	fluc_ratiolist=["%.4f"%(n) for n in list(fluc_ratio)]
-	fluc_ratio_historylist=["%.4f"%(n) for n in list(fluc_ratio_history)]
+	fluc_ratiolist=["%.5f"%(n) for n in list(fluc_ratio)]
+	fluc_ratio_historylist=["%.5f"%(n) for n in list(fluc_ratio_history)]
 	contentVO['fieldname_ch']=xasis_fieldname_ch
 	contentVO['fieldname_en']=xasis_fieldname
 	# contentVO['ana_result']=ana_result
@@ -307,16 +329,6 @@ def fluc_produce(request):
 	contentVO['sentence_selecthistory']=sentence_selecthistory
 	print("contentVO",contentVO)
 
-	#time_test='2015/11/30 22:45:45'
-	#string转datetime
-	#d= datetime.datetime.strptime(time1,'%Y-%m-%d')
-	#d1= datetime.datetime.strptime(time_test,'%Y/%m/%d %H:%M:%S')
-	#datetime转string
-	#str_time=d.strftime('%Y-%m-%d %H:%M:%S')
-	#print(d)
-	#print(d1)
-	#print(d<d1)
-	#print(str_time)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 #对偏离程度进行定性判断：高，偏高，正常范围，偏低，低，极端异常
@@ -468,68 +480,6 @@ def num_describe(scrapy_records,bookno):
 	#contentVO['describe']=ana_describe
 	return ana_result,ana_describe
 
-#仅进行数据清洗，并计算describe参数（可以是任意个字段），不计算概率分布和正态分布
-def calaulate_describe(scrapy_records,fieldname):
-	# print(scrapy_records[1:5])
-	ana_describe={}
-	ana_describe['shuxing']=['count','mean','std','min','25%','50%','75%','max']
-	print('fieldname',fieldname)
-	for bookno in fieldname:
-		print('计算字段：',bookno)
-		ivalue_i=[]
-		for n in range(len(scrapy_records)):
-			ivalue = scrapy_records[n].get(bookno,None)
-			if ivalue !=None and ivalue !=0:
-				 ivalue=ivalue
-				 ivalue_b=str(ivalue)
-				 ivalue_valid=ivalue_num(ivalue_b)#小数位数
-				 ivalue_i.append(ivalue_valid)
-				 ivalue_i.sort(reverse=True)
-		ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
-		# print(ivalue_valid)		
-		for i in range(len(scrapy_records)):
-			value = scrapy_records[i].get(bookno,None)
-			if value != None :
-				scrapy_records[i][bookno] = float(value)			
-		frame=DataFrame(scrapy_records)	
-		df_single=frame[['HEAT_NO',bookno]]
-		# print('df_single',df_single)
-		df=df_single.sort_values(by=bookno)
-		dfr=df[df>0].dropna(how='any')
-		# print('清洗前的字段',dfr[bookno])
-
-		cleanbook=Wushu(dfr[bookno])
-		# print('清洗后的字段',cleanbook)
-		minbook=cleanbook["minbook"]
-		maxbook=cleanbook["maxbook"]	
-		if(minbook==maxbook):#不符合正态分布规律，不进行五数分析
-			print("no")
-			clean=dfr[bookno]		
-		else:
-			print("yes")
-			clean=cleanbook["result"]				
-		# print("minbook")
-		# print(minbook)
-		# print("maxbook")
-		# print(maxbook)
-		# print(type(clean))
-
-		describe=clean.describe()
-		# print(describe)
-
-		# desx=[ele for ele in describe.index]
-		desy=[ele for ele in describe]
-
-		d4_data=[]
-		desy1=vaild(desy,ivalue_valid,d4_data)
-
-		#desy1内容依次为count、mean、std、min、25%、50%、75%、max
-		#计算波动率：标准差/期望
-
-		# ana_describe['scopeb']=desx
-		ana_describe[bookno]=desy1
-	return ana_describe
-
 #去括号取左侧的数（计算概率分布时需要用到）
 def getA(s):
     s0 = list(s)
@@ -563,7 +513,7 @@ def union_section(section_point,sections):
             sections.append(section)
     return sections 
 
-#判断有效位数
+#判断有效小数位数
 def ivalue_num(num):
     a=str(num)
     if(a.isdigit()):
@@ -627,6 +577,11 @@ def fluc_influence(request):
 		str_sql=str_sql+','+result1[i][1]
 	# print(str_sql)
 
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+
 	#计算当前时间区间的字段波动率-------------------------------------------------------------------------------------------------
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
@@ -634,11 +589,20 @@ def fluc_influence(request):
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	print('len(scrapy_records)',len(scrapy_records))
+
+	# try:#对于查询结果无数据的情况
 	ana_describe=calaulate_describe(scrapy_records,xasis_fieldname)
+	# except:
+	# 	contentVO['state']='failure_current'
+		# return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 	# print('-----------------------ana_describe',ana_describe)
 
 	fluc_ratio=[]#存储各相关性字段的在当前的波动率
 	for i in range(length_result1):
+		if ana_describe['state'][xasis_fieldname[i]]=='wrong':
+			fluc_ratio.append('wrong')
+			continue
 		describe=[ele for ele in ana_describe[xasis_fieldname[i]]]
 		#value接受计算完成的字段波动率值
 		value=describe[2]/describe[1]
@@ -652,11 +616,20 @@ def fluc_influence(request):
 	sqlVO_history["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no>'150000' "+sentence_selecthistory
 	print(sqlVO_history["sql"])
 	scrapy_records_history=models.BaseManage().direct_select_query_sqlVO(sqlVO_history)
+
+	# try:
 	ana_describe_history=calaulate_describe(scrapy_records_history,xasis_fieldname)
+	# except:
+	# 	contentVO['state']='failure_history'
+		# return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
 	# print('----------------------------ana_describe_history',ana_describe_history)
 
 	fluc_ratio_history=[]#存储各相关性字段的在当前的波动率
 	for i in range(length_result1):
+		if ana_describe_history['state'][xasis_fieldname[i]]=='wrong':
+			fluc_ratio_history.append('wrong')
+			continue
 		describe=[ele for ele in ana_describe_history[xasis_fieldname[i]]]
 		#value接收计算完成的字段波动率值：标准差/期望
 		value=describe[2]/describe[1]
@@ -667,18 +640,15 @@ def fluc_influence(request):
 	#计算偏离程度
 	offset_result=[]
 	for i in range(length_result1):
+		if fluc_ratio[i]=='wrong' or fluc_ratio_history[i]=='wrong':
+			offset_result.append('wrong')
+			continue
 		try:
 			#当fluc_ratio_history[i]=0时，计算公式将会报错，此时表明历史数据是没有波动率的，因此偏离程度相当于无穷
 			temp=(fluc_ratio[i]-fluc_ratio_history[i])/fluc_ratio_history[i]
 		except:
 			temp=99999999
 		offset_result.append(temp)
-
-
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
 
 	print(xasis_fieldname)
 	print("偏离程度")
@@ -688,9 +658,9 @@ def fluc_influence(request):
 	regression_coefficient_result=[]#字段回归系数值数组
 	offset_result_final=[]#偏离程度值
 	#即字段偏离高，则正相关应对应偏高，负相关应对应偏低
-	if float(offset_value[0:-1])>=0:#读取偏离程度的值，由于前端偏离程度表示为百分比，例如12.6%。因此截取12.6来判断其正负
+	if float(offset_value)>=0:#读取偏离程度的值，如果前端偏离程度表示为百分比，例如12.6%。则需要截取12.6来判断其正负：offset_value[0:-1]
 		for i in range(length_result1):
-			if offset_result[i]==None or xasis_fieldname[i]=='NB':#由于数据清洗的问题，暂且将NB字段如此处理，因为NB字段的所有数据均相同，导致数据清洗时将所有数据都清除了
+			if offset_result[i]==None or xasis_fieldname[i]=='NB' or offset_result[i]=='wrong':#由于数据清洗的问题，暂且将NB字段如此处理，因为NB字段的所有数据均相同，导致数据清洗时将所有数据都清除了
 				continue
 			if float(regression_coefficient[i]) * float(offset_result[i]) >=0:
 				xasis_fieldname_result.append(xasis_fieldname[i])
@@ -698,15 +668,17 @@ def fluc_influence(request):
 				offset_result_final.append(offset_result[i])
 	else:
 		for i in range(length_result1):
-			if offset_result[i]==None or xasis_fieldname[i]=='NB':
+			if offset_result[i]==None or xasis_fieldname[i]=='NB'or offset_result[i]=='wrong':
 				continue
 			if float(regression_coefficient[i]) * float(offset_result[i]) <=0:
 				xasis_fieldname_result.append(xasis_fieldname[i])
 				regression_coefficient_result.append(regression_coefficient[i])
 				offset_result_final.append(offset_result[i])
+				
 	contentVO['xasis_fieldname']=xasis_fieldname_result#回归系数因素英文字段名
 	contentVO['regression_coefficient']=regression_coefficient_result#字段回归系数值
 	contentVO['offset_result']=offset_result_final#回归系数因素字段偏离值
+	contentVO['offset_result_cent']=["%.2f%%"%(n*100) for n in list(offset_result_final)]
 	contentVO['offset_number']=len(xasis_fieldname_result)#回归系数最大因素所取字段个数
 	print("字段名字")
 	print(xasis_fieldname_result)
@@ -724,3 +696,76 @@ def fluc_influence(request):
 	print(En_to_Ch_result)
 	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+#仅进行数据清洗，并计算describe参数（可以是任意个字段），不计算概率分布和正态分布
+def calaulate_describe(scrapy_records,fieldname):
+	# print(scrapy_records[1:5])
+	ana_describe={}
+	ana_describe['shuxing']=['count','mean','std','min','25%','50%','75%','max']
+	state={}#存储各个字段的状态
+	sign=0#标志位，表示是否出现无数据状态
+	print('fieldname',fieldname)
+	for bookno in fieldname:
+		print('计算字段：',bookno)
+		state[bookno]='normal'#初始为正常
+		ivalue_i=[]
+		# print('len(scrapy_records)',len(scrapy_records))
+		for n in range(len(scrapy_records)):
+			ivalue = scrapy_records[n].get(bookno,None)
+			if ivalue !=None and ivalue !=0:
+				 ivalue=ivalue
+				 ivalue_b=str(ivalue)
+				 ivalue_valid=ivalue_num(ivalue_b)#小数位数
+				 ivalue_i.append(ivalue_valid)
+				 ivalue_i.sort(reverse=True)
+		if ivalue_i==[]:#若字段为空，表示该字段没有数据
+			state[bookno]='wrong'#若出现问题，将状态改为wrong
+			sign=1
+			continue
+		ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
+		# print(ivalue_valid)		
+		for i in range(len(scrapy_records)):
+			value = scrapy_records[i].get(bookno,None)
+			if value != None :
+				scrapy_records[i][bookno] = float(value)			
+		frame=DataFrame(scrapy_records)	
+		df_single=frame[['HEAT_NO',bookno]]
+		# print('df_single',df_single)
+		df=df_single.sort_values(by=bookno)
+		dfr=df[df>0].dropna(how='any')
+		# print('清洗前的字段',dfr[bookno])
+
+		cleanbook=Wushu(dfr[bookno])
+		# print('清洗后的字段',cleanbook)
+		minbook=cleanbook["minbook"]
+		maxbook=cleanbook["maxbook"]	
+		if(minbook==maxbook):#不符合正态分布规律，不进行五数分析
+			print("no")
+			clean=dfr[bookno]		
+		else:
+			print("yes")
+			clean=cleanbook["result"]				
+		# print("minbook")
+		# print(minbook)
+		# print("maxbook")
+		# print(maxbook)
+		# print(type(clean))
+
+		describe=clean.describe()
+		# print(describe)
+
+		# desx=[ele for ele in describe.index]
+		desy=[ele for ele in describe]
+
+		d4_data=[]
+		desy1=vaild(desy,ivalue_valid,d4_data)
+
+		#desy1内容依次为count、mean、std、min、25%、50%、75%、max
+		#计算波动率：标准差/期望
+
+		# ana_describe['scopeb']=desx
+		ana_describe[bookno]=desy1
+	ana_describe['state']=state#用于详细表示各个字段的数据情况，筛选条件下的无数据表示为wrong，正常情况表示为normal
+	ana_describe['sign']=sign#用于表征是否出现了字段的无数据现象
+	# print('state',state)
+	return ana_describe

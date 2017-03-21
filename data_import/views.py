@@ -23,10 +23,14 @@ from collections import defaultdict
 from math import ceil
 from os.path import join
 
-from QinggangManageSys.settings import MAIN_OUTFIT_BASE
-
-
+from QinggangManageSys.settings import MAIN_OUTFIT_BASE,LOGGING
 from .models import ContentPost
+
+import logging
+import logging.config
+
+# logging.config.dictConfig(LOGGING)
+logger = logging.getLogger('django')
 
 exclude_posts = ("shares","abstract")
 
@@ -41,7 +45,7 @@ def home(request):
 	# the_abstract = get_object_or_404(ContentPost, title="abstract")
 	# contentVO["abstract"] = the_abstract
 	# contentVO["state"] = "success"
-	print(MAIN_OUTFIT_BASE)
+	logger.debug(MAIN_OUTFIT_BASE)
 	return render(request, MAIN_OUTFIT_BASE + 'index.html',contentVO)
 
 #用户登录
