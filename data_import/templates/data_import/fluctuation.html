@@ -42,8 +42,8 @@
         <div>
         起始时间：<input id="datepicker-example7-start-history" type="text">
         终止时间：<input id="datepicker-example7-end-history" type="text">
-        <button onclick='fluc_cost()' id='click1'>成本投入</button>
-        <button onclick='fluc_produce()' id='click2'>成本产出</button>
+        <button onclick="fluc_cost_produce('cost',this)" id='click1'>成本投入</button>
+        <button onclick="fluc_cost_produce('produce',this)" id='click2'>成本产出</button>
     </div>
 </form>
     <br>
@@ -58,9 +58,10 @@
             </table>
         </div> 
     </div>
-    <p><strong>转炉工序多炉次整体成本追溯</strong></p>
+    <div id='cause_area'>
+    <p><strong>转炉工序多炉次整体成本追溯结果：</strong></p>
     <textarea id="cause_txt" style="width: 900px;height:150px;"></textarea>
-
+    </div>
 
 
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
@@ -69,7 +70,7 @@
 <link rel="stylesheet" href="/static/data_import/css/default.css" type="text/css">
 <script type="text/javascript"> 
 
-	function fluc_cost(){
+	function fluc_cost_produce(a,obj){
         var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
         var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
         var OPERATECREW = $("#OPERATECREW").val();//班别
@@ -93,8 +94,8 @@
 		console.log(time1,time2)
             $.ajax({
             type: "post",
-            url:  "/fluc_cost",
-            data: {'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station,'time1':time1,'time2':time2,'fieldname':fieldname,'history_time1':history_time1,'history_time2':history_time2},
+            url:  "/fluc_cost_produce",
+            data: {'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station,'time1':time1,'time2':time2,'fieldname':fieldname,'history_time1':history_time1,'history_time2':history_time2,'nature':a},
             error: function() {
                 alert("发生错误!");
             },
@@ -112,61 +113,13 @@
                     $('#main1').append('！！注：当前筛选条件下'+data.time.history_time1+'至'+data.time.history_time2+'的历史时间区间内无数据！');
                 }
                 else{
-                    drawBarChart_cost_fluc(data);
+                    drawBarChart_fluc(data);
                 }
                 // myChart_main1.hideLoading();
                 // myChart_main2.hideLoading();
             }
         })
     }; 
-
-    function fluc_produce(){
-        var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
-        var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
-        var OPERATECREW = $("#OPERATECREW").val();//班别
-        var station = $("#station").val();//工位
-        var fieldname = $("#flu_field").find("option:selected").val();//字段名
-        var time1 = $('#datepicker-example7-start').val();//计算波动率的时间范围起始时间
-        var time2 = $('#datepicker-example7-end').val();//计算波动率的时间范围终止时间
-        var history_time1 = $('#datepicker-example7-start-history').val();//对比历史波动率的时间范围起始时间
-        var history_time2 = $('#datepicker-example7-end-history').val();//对比历史波动率的时间范围终止时间
-        var myChart_main1 = echarts.init(document.getElementById('main1'));
-        // var myChart_main2 = echarts.init(document.getElementById('main2'));
-        $("#txt").empty();
-        $("#cause_txt").empty();//清除文本内容
-        myChart_main1.showLoading({
-                    text: "图表数据正在努力加载..."
-                });
-        console.log(time1,time2)
-            $.ajax({
-            type: "post",
-            url:  "/fluc_produce",
-            data: {'SPECIFICATION':SPECIFICATION,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station,'time1':time1,'time2':time2,'fieldname':fieldname,'history_time1':history_time1,'history_time2':history_time2},
-            error: function() {
-                alert("发生错误！");
-            },
-            success: function(data) {
-                // alert(data.state);
-                if(data.state=='failure_current'){
-                    // alert('当前筛选条件下'+data.time.time1+'至'+data.time.time2+'的时间区间内无数据！');
-                    $('#main1').empty();
-                    $('#main1').append('！！注：当前筛选条件下'+data.time.time1+'至'+data.time.time2+'的时间区间内无数据！');
-                }
-                else if(data.state=='failure_history'){
-                    // alert('当前筛选条件下'+data.time.history_time1+'至'+data.time.history_time2+'的历史时间区间内无数据！');
-                    $('#main1').empty();
-                    $('#main1').append('！！注：当前筛选条件下'+data.time.history_time1+'至'+data.time.history_time2+'的历史时间区间内无数据！');
-                }
-                else{
-                    drawBarChart_cost_fluc(data);
-                }
-                
-                // myChart_main1.hideLoading();
-                // myChart_main2.hideLoading();
-            }
-        })
-    }; 
-
 
     //初始化时间控件
     $(document).ready(function() {
@@ -219,7 +172,7 @@
         };
 
 
-    function drawBarChart_cost_fluc(result){
+    function drawBarChart_fluc(result){
         var myChart = echarts.init(document.getElementById('main1'));
         var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#eeeeee', '#3397c9','#f39646','#e02222'];
             // 指定图表的配置项和数据
@@ -351,6 +304,7 @@
             $("#cause_txt").empty();//清除文本内容
 
             $("#cause_txt").append('  经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result_cent[index]+'，即相当于波动率变小，时间范围内数值趋于稳定。\n');
+            $("#cause_area").show();
             return
                 
         }
@@ -388,6 +342,7 @@
                         $("#cause_txt").append('     No.'+(i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result_cent[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
                     }
                 }  
+                $("#cause_area").show();
             }
         })
 
@@ -399,6 +354,7 @@
     $(function(){
             loadOption_chen();
             loadGrape_chen();
+            $("#cause_area").hide();
         })
 </script>
 
