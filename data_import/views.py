@@ -596,23 +596,6 @@ def echarts(request):
 	return render(request, MAIN_OUTFIT_BASE + 'echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
 
-
-# from . import zhuanlu	
-# def lond_to(request):
-# 	contentVO={
-# 		'title':'测试',
-# 		'state':'success'
-# 	}
-# 	ana_result={}
-# 	ana_result_two={}
-# 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
-# 	#print("result:")
-# 	contentVO['procedure_names']=ana_result
-# 	#print(contentVO)
-# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-
-
 from data_import.liusinuo.main import main
 def space(request):
 	print('请求主页')
@@ -679,18 +662,4 @@ def time(request):
 
 
 
-def ha(request):
-	print('转炉数据清洗')
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect("/login")
-	return render(request,'data_import/hashuang.html',{'title':"青特钢大数据项目组数据管理"})
-def lond_to_B(request):
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	ana_result={}
-	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
-	contentVO['procedure_names']=ana_result
-	#print(contentVO)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+d
