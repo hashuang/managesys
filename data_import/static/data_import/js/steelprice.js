@@ -94,7 +94,7 @@ function history_query(){
     var history_begin =$("#history_begin").val();
     var history_end =$("#history_end").val();
     var params = {"history_begin":history_begin,"history_end":history_end}
-    console.log(params);
+    console.log(JSON.stringify(params));
     $.ajax({
         type: "post",
         url:  "/price_history",
