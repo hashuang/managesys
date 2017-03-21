@@ -665,5 +665,3 @@ def time(request):
 
 
 
-
-d
