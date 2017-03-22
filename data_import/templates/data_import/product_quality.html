@@ -10,7 +10,6 @@
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>钢水含量</button>
-    <!-- <button onclick='produce()' id='click3'>产出产品分析结果</button> -->
 </div>
 
 <div style="width:1600px">
@@ -37,47 +36,7 @@
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
 <script type="text/javascript"> 
-    //定期更新数据库中表结构表中的期望等参数值
-    function updatevalue(){
-        $.ajax({
-        type: "post",
-        url:  "/updatevalue",
-        data: {},
-        error: function() {
-            alert("发生错误！");
-        },
-        success: function(data) {
-            alert(data.state);
-        }
-     })
-    }
-    //多条件综合筛选
-    function multi_analy(){
-        var bookno = $("#bookno2").val();//字段，需要转化为大写
-        var gk_no = $("#gk_no1").val();//钢种,不用转化为大写
-        var OPERATESHIFT = $("#OPERATESHIFT").val();//班次
-        var OPERATECREW = $("#OPERATECREW").val();//班别
-        var station = $("#station").val();//工位
-        alert("gk_no:"+gk_no+"\nOPERATESHIFT:"+OPERATESHIFT+"\nOPERATECREW:"+OPERATECREW+"\nstation:"+station+"\nbookno:"+bookno);
-        $.ajax({
-            type: "post",
-            url:  "/multi_analy",
-            data: {'bookno':bookno,'gk_no':gk_no,'OPERATESHIFT':OPERATESHIFT,'OPERATECREW':OPERATECREW,'station':station},
-            error: function() {
-                alert("发生错误，可能是无该筛选条件下的数据！");
-            },
-            success: function(data) {
-                //alert("multi_analy");
-                alert(data.state);
-                //alert(data.result);
-                //alert(data.result.xname)
-                //alert(data.result.yvalue)
-                drawBarChart2(data.result)
-            }
-         })
-    }
-
-    //成本消耗
+    //质量含量
     function cost(){
         var prime_analyse = $("#prime_analyse").val();
         console.log(prime_analyse)
@@ -96,70 +55,12 @@
             }
         })
     };   
-    //产品产出
-    function produce(){
-        var prime_analyse = $("#prime_analyse").val();
-        console.log(prime_analyse)
-        $.ajax({
-            type: "post",
-            url:  "/produce",
-            data: {'prime_produce':prime_analyse},
-            error: function() {
-                alert("错误！！");
-            },
-            success: function(data) {
-                //alert(data.result)
-                //alert(data.result.xname)
-                //alert(data.result.yvalue)
-                // alert(data.result.offset_result[0]);
-                $("#offset1").val(data.result.offset_result[0]);
-                drawBarChart_produce(data.result);
-            }
-        })
-    };  
 
-    //回归系数因素追溯及其偏离程度
-    function retrospectfactor(field,offset_value){
-        // var prime_analyse = $("#prime_analyse").val();
-        // console.log(prime_analyse)
-        // var offset_value = $("#offset").val();//以铁水重量为例，读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
-        // field='MIRON_WGT';
-        // var offset_value = $("#offset1").val();//读取炉次字段的偏离值，传递给后台用来定性判断其偏离程度
-        // field='TOTAL_SLAB_WGT';
-        $.ajax({
-            type: "post",
-            url:  "/q_max_influence",
-            data: {'field':field,'offset_value':offset_value},
-            error: function() {
-                alert("错误！！");
-            },
-            success: function(data) {
-                //alert(data.result)
-                // alert("success");
-                // alert(data.offset_number);//字段个数
-                // alert(data.xasis_fieldname);//字段英文名数组
-                // alert(data.offset_result);//字段偏离程度
-                // alert(data.En_to_Ch_result);//字段中文名
-                // alert(data.regression_coefficient);
-                $("#txt").empty();//清除表格内容
-                var content='';
-                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
-                for (var i=0;i<data.offset_number;i++){
-                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
-                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
-
-                }
-                alert(content);
-                   
-                
-            }
-        })
-    };
-
-    // 条形图（投入）与loadChart_chen.js中的drawBarChart相同(多Y轴)
+    
+    // 条形图（含量）
     function drawBarChart_cost(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#3397c9','#f39646','#e02222'];
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
@@ -173,7 +74,7 @@
                     //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         trigger:'item',
                         formatter: function (params){
-                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
+                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+ '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
                             return res;
 
                      }
@@ -270,7 +171,7 @@
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
-                            color: colors[3]
+                            color: colors[4]
                         }
                     },
                 },
@@ -284,7 +185,7 @@
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
-                            color: colors[1]
+                            color: colors[5]
                         }
                     },
                 },
@@ -298,24 +199,10 @@
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
-                            color: colors[2]
+                            color: colors[6]
                         }
                     },
                 },
-                // {
-                //     type: 'value',
-                //     name: 'S',
-                //     min: 0,
-                //     max: 0.0180,
-                //     position: 'left',
-                //     offset: -680,
-                //     splitLine:{show: false},//去除网格线
-                //     axisLine: {
-                //         lineStyle: {
-                //             color: colors[3]
-                //         }
-                //     },
-                // },
                 ],
                 series: [{
                     name: 'C',
@@ -435,23 +322,6 @@
                         }
                     }
                 },
-                // {
-                //     name:'S',
-                //     type:'bar',
-                //     barWidth : 80,
-                //     barGap: '100%',
-                //     barCategoryGap:'60%',
-                //     barMinHeight:10,
-                //     yAxisIndex: 4,
-                //     data:[result.yvalue[4]],
-                //     itemStyle: {
-                //         normal: {
-                //             label : {
-                //                 show: true, position: 'top'
-                //             }
-                //         }
-                //     }
-                // },
                 ]
             };
 
@@ -470,281 +340,7 @@
             myChart.setOption(option);
             // 使用刚指定的配置项和数据显示图表。
     };
-
-    // 条形图（产出）（多Y轴）
-    function drawBarChart_produce(result){
-        var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
-            // 指定图表的配置项和数据
-            var option = {
-                color:colors,
-                title: {
-                    text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
-                    x:'center'
-                },
-                tooltip: {
-                    // trigger: 'axis',
-                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                    //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                        trigger:'item',
-                        formatter: function (params){
-                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                          
-                            return res;
-
-                     }
-                },
-                toolbox: {
-                    feature: {
-                        dataView: {show: true, readOnly: false},
-                        restore: {show: true},
-                        saveAsImage: {show: true}
-                        }
-                },
-                legend: {
-                    data:['']
-                },
-                xAxis: {
-                    type: 'category',
-                    axisTick: {
-                    alignWithLabel: true
-                    },
-                    data: ['单炉次字段']
-                },
-                yAxis: [{
-                    type: 'value',
-                    name: '钢水(Kg)',
-                    min: 0,
-                    max: 105000,
-                    position: 'left',
-                    offset:0,
-                    splitLine:{show: false},//去除网格线
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[0]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} Kg'
-                    // }
-                },
-                {
-                    type: 'value',
-                    name: '转炉煤气(NM3)',
-                    min: 0,
-                    max: 12000,
-                    position: 'left',
-                    offset: -250,
-                    splitLine:{show: false},//去除网格线
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[1]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} NM3'
-                    // }
-                },
-                {
-                    type: 'value',
-                    name: '钢渣(Kg)',
-                    min: 0,
-                    max: 22000,
-                    position: 'right',
-                    splitLine:{show: false},//去除网格线
-                    offset: 0,
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[2]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} Kg'
-                    // }
-                }
-                ],
-                series: [{
-                    name: '钢水重量',
-                    type: 'bar',
-                    barWidth : 100,//柱条（K线蜡烛）宽度
-                    barGap: '100%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
-                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
-                    data: [result.yvalue[0]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'转炉煤气',
-                    type:'bar',
-                    barWidth : 100,
-                    barGap: '100%',
-                    barCategoryGap:'60%',
-                    barMinHeight:10,
-                    yAxisIndex: 1,
-                    data:[result.yvalue[1]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'钢渣',
-                    type:'bar',
-                    barWidth : 100,
-                    barGap: '100%',
-                    barCategoryGap:'60%',
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.yvalue[2]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                }
-                ]
-            };
-
-            var ecConfig = echarts.config;
-            myChart.on('click', function (params) {
-            if (typeof params.seriesIndex != 'undefined') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                fieldname_chinese=result.xname[params.seriesIndex];
-                fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
-            }
-            console.log(params);
-            });
-
-            myChart.setOption(option);
-            // 使用刚指定的配置项和数据显示图表。
-    };
-
-    // 正态分布画图
-    //与loadChart_chen.js中的drawBarChart_norm相同
-    function drawBarChart_norm(result){
-        var myChart = echarts.init(document.getElementById('main2'));
-        //var bookname=document.getElementById('bookno1')
-            // 指定图表的配置项和数据
-            var option = {
-                title: {
-                    //text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
-                    text: bookno = result.fieldname_chinese+result.fieldname+'的正态分布',//+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
-                    x:'center'
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                     }
-                },
-                legend: {
-                    data:['']
-                },
-                xAxis: [
-                    {
-                        data: result.normx,
-                        axisLabel :{  
-                                //interval:0,//横轴信息全部显示
-                                //rotate: 60//60度角倾斜显示  
-                            } 
-                    },
-                    {
-                        type : 'category',
-                        axisLine: {show:false},
-                        axisTick: {show:false},
-                        axisLabel: {show:false},
-                        splitArea: {show:false},
-                        splitLine: {show:false},
-                        data : ['Line','Bar','Scatter','K','Map']
-                    }
-                ],
-                yAxis: {
-                    name:'密度'
-                },
-                series: [{
-                    name: '',
-                    type: 'bar',
-                    data: result.normy,
-                    markPoint: {
-                        itemStyle : {
-                             normal: {
-                                 color:'#1e90ff'
-                             }
-                         },
-                        data:[
-                                // {type : 'max', name: '最大值'},
-                                // {type : 'min', name: '最小值'},
-                                {name : '位置点'+'偏离程度'+result.offset_value, value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
-                                //{name : '测试点1', value : result.singleheat, xAxis: '97840.0000', yAxis: '0.0003'}
-                        ]
-                    },
-                    // markLine: {
-                    //     name:'炉次号'+result.fieldname+'的标线'
-                    //     itemStyle : {
-                    //         normal: {
-                    //             color:'#1e90ff'
-                    //         }
-                    //     },
-                    //     data:[
-                    //             [
-                    //             {name: '标线1起点', value: result.singleheat, xAxis: result.singleheat, yAxis: 0},
-                    //             {name: '标线1终点', xAxis: result.singleheat, yAxis: 0.3}
-                    //             ]
-                    //            ] 
-                        
-                    // }
-                    // itemStyle: {
-                    //         normal: {
-                    //         //color: 'tomato',
-                    //         //barBorderColor: 'tomato',
-                    //         barBorderWidth: 6,
-                    //         barBorderRadius:0,
-                    //         label : {
-                    //             show: true, position: 'top'
-                    //         }
-                    //     }
-                    // }
-
-                },
-                  {
-                    name: '',
-                    type: 'line',
-                    data: result.normy
-                }
-                ]
-
-            };
-
-        var ecConfig = echarts.config;
-        myChart.on('click', function (params) {
-            // if (typeof params.seriesIndex != 'undefined') {
-            if (params.componentType == 'markPoint') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                offset_value=result.offset_value;//读取偏离值
-                fieldname_english=result.fieldname;//读取字段英文名字
-                retrospectfactor(fieldname_english,offset_value);
-            }
-            console.log(params);
-            });
-
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-
-    }
-
+    
     //正态分布+概率分布
     function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value){
         var field1 = $("#prime_analyse").val();//炉次号
@@ -903,36 +499,133 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
 
+    };
+    //回归系数因素追溯及其偏离程度
+    function retrospectfactor(field,offset_value){
+        var prime_analyse = $("#prime_analyse").val();
+        $.ajax({
+            type: "post",
+            url:  "/q_max_influence",
+            data: {'field':field,'offset_value':offset_value,
+            'prime_analyse':prime_analyse},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result)
+                // alert("success");
+                // alert(data.offset_number);//字段个数
+                // alert(data.xasis_fieldname);//字段英文名数组
+                // alert(data.offset_result);//字段偏离程度
+                // alert(data.En_to_Ch_result);//字段中文名
+                // alert(data.regression_coefficient);
+                $("#txt").empty();//清除表格内容
+                var content='';
+                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                for (var i=0;i<data.offset_number;i++){
+                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
+                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+
+                }
+                alert(content);
+                   
+                
+            }
+        })
+    };
+    // 正态分布画图
+    function drawBarChart_norm(result){
+        var myChart = echarts.init(document.getElementById('main2'));
+        //var bookname=document.getElementById('bookno1')
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    //text: bookno = bookname.options[bookname.selectedIndex].text+result.fieldname+'的正态分布'+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                    text: bookno = result.fieldname_chinese+result.fieldname+'的正态分布',//+result.singleheat+','+result.singleheat_value+','+result.normy[result.singleheat_index],
+                    x:'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                     }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: [
+                    {
+                        data: result.normx,
+                        axisLabel :{  
+                                //interval:0,//横轴信息全部显示
+                                //rotate: 60//60度角倾斜显示  
+                            } 
+                    },
+                    {
+                        type : 'category',
+                        axisLine: {show:false},
+                        axisTick: {show:false},
+                        axisLabel: {show:false},
+                        splitArea: {show:false},
+                        splitLine: {show:false},
+                        data : ['Line','Bar','Scatter','K','Map']
+                    }
+                ],
+                yAxis: {
+                    name:'密度'
+                },
+                series: [{
+                    name: '',
+                    type: 'bar',
+                    data: result.normy,
+                    markPoint: {
+                        itemStyle : {
+                             normal: {
+                                 color:'#1e90ff'
+                             }
+                         },
+                        data:[
+                                // {type : 'max', name: '最大值'},
+                                // {type : 'min', name: '最小值'},
+                                {name : '位置点'+'偏离程度'+result.offset_value, value : result.singleheat, xAxis: result.singleheat_value, yAxis: result.normy[result.singleheat_index]},
+                                
+                        ]
+                    },
+
+                },
+                  {
+                    name: '',
+                    type: 'line',
+                    data: result.normy
+                }
+                ]
+
+            };
+
+        var ecConfig = echarts.config;
+        myChart.on('click', function (params) {
+            // if (typeof params.seriesIndex != 'undefined') {
+            if (params.componentType == 'markPoint') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                offset_value=result.offset_value;//读取偏离值
+                fieldname_english=result.fieldname;//读取字段英文名字
+                retrospectfactor(fieldname_english,offset_value);
+            }
+            console.log(params);
+            });
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
     }
 
-    //自动加载钢种
-    function loadGrape_chen(){ 
-        $.ajax({
-        type: "POST",
-        dataType:"json",
-        url: "/getGrape" ,
-        data: {'greet':'hello'},
-        success: function(data){
-            //alert(data.result);
-            //alert(data.result.length);
-            pnames=data.result;
-            $(".gangzhong_name").append("<option value='blank' selected =\"selected\"></option>");
-            for(var pname in pnames){
-                console.log(pnames[pname]) 
-                $(".gangzhong_name").append("<option value='"+pnames[pname]+"'>"+pnames[pname]+"</option>");
-            }
-        },
-        error: function () {
-            alert("error");
-            }
-         });
-        };
         
-    //初始化
-    $(function(){
-            loadOption_chen();
-            loadGrape_chen();
+    // //初始化
+    // $(function(){
+    //         loadOption_chen();
+    //         loadGrape_chen();
 
-        })
+    //     })
 </script>
 {% endblock %}

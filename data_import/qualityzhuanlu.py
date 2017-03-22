@@ -86,7 +86,7 @@ def union_section(section_point,sections):
             sections.append(section)
     return sections 
 
-#计算投入料分布
+#计算转炉含量
 def cost(request):
 	print('你好')
 	#print("cost_success")
@@ -748,7 +748,8 @@ def max_influence(request):
 	# 	regression_coefficient.append(result1[i][2])
 	# 	str_sql=str_sql+','+result1[i][1]
 	# print(str_sql)
-	prime_cost='1634230'
+	# prime_cost='1634230'
+	prime_cost=request.POST.get("prime_analyse");
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
