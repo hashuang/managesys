@@ -282,6 +282,7 @@ function predict_query(){
             console.log("404");
         },
         success: function(data) {
+            $("#waitwarning").addClass("hide");
             $("#figures").empty();
             $("#protfolio_sec").height(protfolio_sec_height);
             var pridict_result_json = data.result;
@@ -304,6 +305,7 @@ function predict_query(){
             });
         }
     })
+
 }
 $(function(){
 
