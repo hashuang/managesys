@@ -57,6 +57,7 @@ def price_history(request):
 	contentVO['price'] = prices.get('price',None)
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
 
+
 def price_predict(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
@@ -94,7 +95,15 @@ def price_predict(request):
 		elif types[i] == "linear_regression":
 			logger.debug(types[i])
 			result = elm_(models_data[0],0.3)
-			models_result["LR"] = result
+			models_result["linear_regression"] = result
+		elif types[i] == "BP":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.1)
+			models_result["BP"] = result
+		elif types[i] == "random_forest":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.15)
+			models_result["random_forest"] = result
 	contentVO={
 		'title':'钢材价格预测',
 		'state':'success'
