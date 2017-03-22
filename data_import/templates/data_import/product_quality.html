@@ -4,9 +4,16 @@
 <script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
 {% endblock pagejs %}
 {% block content %}
-
-<h2>青钢转炉质量分析</h2>
+<h5><a href='/ha'>转炉数据统计分析</a></h5>
+<h5><a href='/w_fluc_quality'>转炉多炉次质量回溯</a></h5>
+<h2>转炉单炉次质量分析回溯</h2>
 <div>
+    <!-- 隐藏域 -->
+    <input type="hidden" name="hidden_inform1" id='hidden_inform1'> 
+    <input type="hidden" name="hidden_inform2" id='hidden_inform2'> 
+    <input type="hidden" name="hidden_inform3" id='hidden_inform3'> 
+    <input type="hidden" name="hidden_inform4" id='hidden_inform4'> 
+
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>钢水含量</button>
@@ -16,7 +23,18 @@
 <div id="main1"  style="float:left;width:1400px;height:500px"></div>
 <div id="main2"  style="float:left;width:800px;height:500px"></div>
 <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
+<div id='coloum_div' style="float:left;width:300px;height:50px">
+    <!-- 改变柱状个数 -->
+    <lebel>选择直方图柱状数目：</lebel>
+    <select name='change_column' id='change_column' onChange="change_column()">
+        <option value='7'>7</option> 
+        <option value='14'>14</option> 
+        <option value='21'>21 </option> 
+        <option value='50' selected="selected">50 </option> 
+  </select> 
+</div>  
 </div>
+
 <p></p>
 <div>
     <!--table用来放置因素追溯的分析结果-->
@@ -36,6 +54,15 @@
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
 <script type="text/javascript"> 
+     //改变概率直方分布的柱状个数
+    function change_column(){
+        var fieldname_english = $("#hidden_inform1").val();
+        var fieldname_chinese = $("#hidden_inform2").val();
+        var actual_value = $("#hidden_inform3").val();
+        var offset_value = $("#hidden_inform4").val();
+        probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value);
+
+    }
     //质量含量
     function cost(){
         var prime_analyse = $("#prime_analyse").val();
@@ -333,6 +360,10 @@
                 fieldname_chinese=result.xname[params.seriesIndex];
                 fieldname_english=result.xEnglishname[params.seriesIndex];
                 probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                $("#hidden_inform1").val(fieldname_english);//字段英文名
+                $("#hidden_inform2").val(fieldname_chinese);//字段中文名
+                $("#hidden_inform3").val(params.value);//实际值
+                $("#hidden_inform4").val(result.offset_result[params.seriesIndex]);//偏离程度
             }
             console.log(params);
             });
@@ -348,23 +379,18 @@
         //var field2 = $("#bookno1").find("option:selected").val();
         var fieldname_english=fieldname_english;//字段英文名
         var fieldname_chinese=fieldname_chinese;//字段中文名
-        console.log(field1,fieldname_english,fieldname_chinese);
+        var coloum_number = $("#change_column").val();//柱状图个数
+        console.log(field1,fieldname_english,fieldname_chinese,coloum_number);
             $.ajax({
             type: "post",
             url:  "/probability_distribution",
-            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value},
+            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value,'coloum_number':coloum_number},
             error: function() {
                 alert("404");
             },
             success: function(data) {
-                // alert("enter probability_distribution");
-                //概率分布
-                // alert(data.ana_result['scope']);
-                // alert(data.ana_result['num']);
-                //正态分布
-                // alert(data.normal_result['normx']);
-                // alert(data.normal_result['normy']);
                 probability_distribution_picture(data);
+                $("#coloum_div").show();
 
             }
         })
@@ -621,11 +647,12 @@
     }
 
         
-    // //初始化
-    // $(function(){
-    //         loadOption_chen();
-    //         loadGrape_chen();
+    //初始化
+    $(function(){
+            // loadOption_chen();
+            // loadGrape_chen();
+            $("#coloum_div").hide();
 
-    //     })
+        })
 </script>
 {% endblock %}

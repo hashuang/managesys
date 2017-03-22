@@ -516,7 +516,8 @@ def probability_distribution(request):
 	offset_value=request.POST.get("offset_value");#偏离值
 	# offset_value=float(offset_value_temp[1:-1])/100
 	actual_value=float(request.POST.get("actual_value"))#实际值
-	print(heat_no,bookno,actual_value);
+	coloum_number=int(request.POST.get("coloum_number"))
+	print(heat_no,bookno,actual_value,coloum_number);
 	# print(scrapy_records[1:5])
 
 	#进行数据库查询
@@ -567,7 +568,7 @@ def probability_distribution(request):
 		if(clean.max==clean.min()):
 			bc=1
 		else:	
-			bc=(clean.max()-clean.min())/50
+			bc=(clean.max()-clean.min())/coloum_number
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
