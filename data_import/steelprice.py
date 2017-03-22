@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*
 import json
+import logging
 
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,6 +13,7 @@ from data_import.steelpriceTools.pre_config import steel_type,predict_method,tim
 '''
 预测相关方法在steelpriceTools文件夹中
 '''
+logger = logging.getLogger('django')
 
 media_root = settings.MEDIA_ROOT
 data_root = media_root + '/files/data/'
@@ -19,12 +21,12 @@ data_root = media_root + '/files/data/'
 def steelprice(request):
 	if not request.user.is_authenticated():	
 		return HttpResponseRedirect("/login")
-	print(media_root)
+	logger.debug(media_root)
 	'''
 	加载钢材种类，及可选的预测方法
 	'''
-	print(steel_type)
-	print(predict_method)
+	logger.debug(steel_type)
+	logger.debug(predict_method)
 	contentVO={
 		'title':'钢材价格预测',
 		'state':'success'
@@ -45,7 +47,7 @@ def price_history(request):
 	path = data_root + 'tegang.csv'
 	prices = get_history_price(path,history_begin,history_end)
 
-	# print(type(prices.get('price',None)[0]))
+	logger.debug(type(prices.get('price',None)[0]))
 
 	contentVO={
 		'title':'钢材历史价格',
@@ -54,6 +56,7 @@ def price_history(request):
 	contentVO['timeline'] = prices.get('timeline',None)
 	contentVO['price'] = prices.get('price',None)
 	return HttpResponse(json.dumps(contentVO), content_type='application/json')
+
 
 def price_predict(request):
 	if not request.user.is_authenticated():
@@ -67,7 +70,7 @@ def price_predict(request):
 		typestr =	request.POST.get('typestr', '')
 		if typestr != "":
 			types = typestr.split(',')
-			print(types)
+			logger.debug(types)
 	'''
 	根据参数选择模型
 	结果返回预测数据时间跨度，预测值，真实值，score值
@@ -78,14 +81,29 @@ def price_predict(request):
 	path = data_root + 'tegang.csv'
 	PRE_DAYS = [5]
 	models_data = create_single_model(path,PRE_DAYS)
-	print(len(models_data))
+	logger.debug(len(models_data))
 	models_result = {}
 	for i in range(len(types)):
-		print(types[i])
 		if types[i] == "elm":
-			print(types[i])
+			logger.debug(types[i])
 			result = elm_(models_data[0],0.4)
 			models_result["elm"] = result
+		elif types[i] == "svm":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.2)
+			models_result["svm"] = result
+		elif types[i] == "linear_regression":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.3)
+			models_result["linear_regression"] = result
+		elif types[i] == "BP":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.1)
+			models_result["BP"] = result
+		elif types[i] == "random_forest":
+			logger.debug(types[i])
+			result = elm_(models_data[0],0.15)
+			models_result["random_forest"] = result
 	contentVO={
 		'title':'钢材价格预测',
 		'state':'success'

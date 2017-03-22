@@ -1,5 +1,7 @@
 function drawHistoryPriceBrokenLineChart(data){
         var myChart = echarts.init(document.getElementById('history_figure'));
+        var line_mark = data.timeline[1000];
+        console.log(line_mark);
         option = {
             title: {
                 text: '钢材价格走势折线图'
@@ -24,34 +26,63 @@ function drawHistoryPriceBrokenLineChart(data){
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
-                data: data.timeline
+                data: data.timeline,
             },
             yAxis: {
-                type: 'value'
+                type: 'value',
+                axisLabel : {
+                    formatter: '¥{value} '
+                },
+                splitLine: {
+                    show: true
+                }
             },
             series: [
                 {
                     name:'特钢价格历史走势',
                     type:'line',
                     stack: '总量',
-                    data: data.price
+                    data: data.price,
+                    markLine : {
+                        lineStyle: {
+                            normal: {
+                                type: 'solid'
+                            }
+                        },
+                        data : [
+                            {type : 'average', name: '平均值'},
+                            [
+                                {coord: ['2016-05-1', 3000]},{coord: ['2016-05-31', 3000]}
+                            ]
+                        ]
+                    },
                 },
-            ]
+            ],
         };
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     }
-function drawPredictBrokenLineChart(data){
-    var myChart = echarts.init(document.getElementById('predict_figure'));
+function drawPredictBrokenLineChart(data,figure_name,method){
+    if(figure_name != "predict_figure"){
+        figure_name = method;
+    }
+    var pridict_result_json = {
+        "linear_regression":"线性回归",
+        "random_forest":"随机森林",
+        "elm":"超限学习机elm",
+        "svm":"支持向量机svm",
+        "BP":"BP神经网络",
+    }
+    var myChart = echarts.init(document.getElementById(figure_name));
     option = {
         title: {
-            text: '预测图'
+            text: pridict_result_json[method] + '预测图'
         },
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data:['真实值','预测值']
+            data:['真实值','预测值','评分：'+data.score]
         },
         grid: {
             left: '3%',
@@ -77,18 +108,28 @@ function drawPredictBrokenLineChart(data){
                 name:'真实值',
                 type:'line',
                 stack: '总量',
-                data:data.true_value
+                data:[]
             },
             {
                 name:'预测值',
                 type:'line',
                 stack: '总量',
-                data:data.predict_value
+                data:[]
             },
         ]
     };
     // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
+    if (option && typeof option === "object") {
+        var startTime = +new Date();
+        var true_his = data.true_value.slice(0,-300)
+        var predict_new = data.predict_value.slice(-300)
+        var fill_his = Array(predict_new.length).fill('-')
+        var fill_new = Array(true_his.length).fill('-')
+        option.series[0].data = true_his.concat(fill_his) ;
+        option.series[1].data = fill_new.concat(predict_new);
+        myChart.setOption(option, true);
+    }
+    
 }
 function history_query(){
     var history_begin =$("#history_begin").val();
@@ -108,6 +149,116 @@ function history_query(){
         }
     })
 }
+
+function drawBrokenLineChart(data,figure_name){
+    var myChart = echarts.init(document.getElementById(figure_name));
+    option = {
+        title: {
+            text: '折线图堆叠'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一','周二','周三','周四','周五','周六','周日']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name:'邮件营销',
+                type:'line',
+                stack: '总量',
+                data:[120, 132, 101, 134, 90, 230, 210]
+            },
+            {
+                name:'联盟广告',
+                type:'line',
+                stack: '总量',
+                data:[220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name:'视频广告',
+                type:'line',
+                stack: '总量',
+                data:[150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name:'直接访问',
+                type:'line',
+                stack: '总量',
+                data:[320, 332, 301, 334, 390, 330, 320]
+            },
+            {
+                name:'搜索引擎',
+                type:'line',
+                stack: '总量',
+                data:[820, 932, 901, 934, 1290, 1330, 1320]
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+var protfolio_sec_height = $("#protfolio_sec").height()
+
+function layouttest(){
+    /*
+    * 测试动态布局
+    */
+    $("#figures").empty();
+    $("#protfolio_sec").height(protfolio_sec_height);
+    var pridict_result_json = {
+        "linear_regression":"线性回归",
+        "random_forest":"随机森林",
+        "elm":"超限学习机elm",
+        "svm":"支持向量机svm",
+        "BP":"BP神经网络",
+    }
+    var selected_rs = {}
+    var types = typestr.split(',');
+    for(var key in types){
+        index = types[key];
+        selected_rs[index] = pridict_result_json[index];
+    }
+    
+
+    console.log(selected_rs);
+    console.log(pridict_result_json);
+    var len = 0;
+    for(var item in selected_rs)len++;
+    console.log(len);
+    var num = 0;
+    $.each(selected_rs,function(name,value) {
+        if(num ==0){
+            figure_name = "predict_figure";
+            drawPredictBrokenLineChart(value,figure_name,name);
+            num = num + 1;
+        }
+        $("#protfolio_sec").height($("#protfolio_sec").height() + 400);
+        $("#figures").append("<div id='"+ name +"' style='width: 500px;height:400px;'></div>")
+        drawPredictBrokenLineChart(value,"",name);
+    });
+}
 function predict_query(){
     var steelType = $("#steel_type").val();
     console.log(steelType);
@@ -121,6 +272,7 @@ function predict_query(){
     console.log(typestr);
     var params = {"steelType":steelType,"typestr":typestr,"timeScale":timeScale}
     console.log(params);
+
     $.ajax({
         type: "post",
         url:  "/price_predict",
@@ -129,8 +281,26 @@ function predict_query(){
             console.log("404");
         },
         success: function(data) {
-            console.log(data);
-            drawPredictBrokenLineChart(data.result.elm)
+            $("#figures").empty();
+            $("#protfolio_sec").height(protfolio_sec_height);
+            var pridict_result_json = data.result;
+            console.log(pridict_result_json);
+            var len = 0;
+            for(var item in pridict_result_json)len++;
+            console.log(len);
+            var num = 0;
+            $.each(pridict_result_json,function(name,value) {
+                if(num ==0){
+                    figure_name = "predict_figure";
+                    drawPredictBrokenLineChart(value,figure_name,name);
+                    num = num + 1;
+                }else{
+                    $("#protfolio_sec").height($("#protfolio_sec").height() + 400);
+                    $("#figures").append("<div id='"+ name +"' style='width: 500px;height:400px;'></div>")
+                    drawPredictBrokenLineChart(value,"",name);
+                }
+                
+            });
         }
     })
 }

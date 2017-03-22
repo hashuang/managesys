@@ -948,9 +948,9 @@ width : 355px !important ;
 .single_cnt_m {
 width : 731px !important ;
 }
+
 #data_sec {
 	margin-top: 100px;
-	height: 100%;
 }
 
 #logo_header {
@@ -998,4 +998,10 @@ width : 731px !important ;
 }
 #protfolio_sec .single-portfolio:hover .img_hoverlay {
 display : block;
+}
+
+#protfolio_sec #figures {
+	height:auto;
+	float: left;
+	position : relative;
 }
