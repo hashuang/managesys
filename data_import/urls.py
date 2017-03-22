@@ -78,6 +78,7 @@ urlpatterns = [
     url(r'^w_fluc_quality',hashuang.w_fluc_quality),
     #波动率原因追溯
     url(r'^s_fluc_quality',fluc_quality.fluc_produce),
+    url(r'^b_fluc_influence',fluc_quality.fluc_influence),
 
     #钢铁价格预测
     #price-predict

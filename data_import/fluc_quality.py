@@ -25,12 +25,12 @@ def fluc_produce(request):
 	time2=request.POST.get("time2");
 	history_time1=request.POST.get("history_time1");
 	history_time2=request.POST.get("history_time2");
-	############################为测试方便暂时将数据写死
-	time1='2016-01-22';
-	time2='2016-04-14';
-	history_time1='2016-01-01';
-	history_time2='2017-03-09';
-	############################
+	#为测试方便暂时将数据写死
+	# time1='2016-01-22';
+	# time2='2016-04-14';
+	# history_time1='2016-01-01';
+	# history_time2='2017-03-09';
+	
 	if SPECIFICATION !='blank':
 		sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
 	else:
