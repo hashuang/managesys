@@ -260,6 +260,7 @@ function layouttest(){
     });
 }
 function predict_query(){
+    $("#waitwarning").removeClass("hide");
     var steelType = $("#steel_type").val();
     console.log(steelType);
     var timeScale = $("#time_scale").val();

@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpRespons
 
 from data_import.steelpriceTools.data_cleaning import get_history_price,create_single_model
 from data_import.steelpriceTools.ExtremeLM import elm_
-from data_import.steelpriceTools.pre_config import steel_type,predict_method,time_scale
+from data_import.steelpriceTools.pre_config import steel_type,predict_method,time_scale,INFO,WARNING
 
 '''
 预测相关方法在steelpriceTools文件夹中
@@ -34,6 +34,8 @@ def steelprice(request):
 	contentVO["steel_type"] = steel_type
 	contentVO["predict_method"] = predict_method
 	contentVO['time_scale'] = time_scale
+	contentVO['info'] = INFO
+	contentVO['warning'] = WARNING
 	return render(request,'data_import/steelprice.html',contentVO)
 
 
