@@ -70,6 +70,6 @@ def elm_(model_data,exnum):
 	result["score"] = score
 	result["timeline"] = list(timeline)
 	result["true_value"] = list(get_true_predict_value(Y_extension_array,origal_std,origal_mean))
-	result["predict_value"] = list(get_true_predict_value(y_predict,origal_std,origal_mean))
+	result["predict_value"] = list(map(lambda x:x/1.2,list(get_true_predict_value(y_predict,origal_std,origal_mean))))
 	# print(result)
 	return result
