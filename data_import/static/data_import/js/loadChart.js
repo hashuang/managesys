@@ -408,8 +408,9 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
         }
     },
     dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
-        show: true,
+
         start :0,
+
         end :100 
     },
     legend : {

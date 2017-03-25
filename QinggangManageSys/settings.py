@@ -159,7 +159,95 @@ STATIC_ROOT = choose_settings.STATIC_ROOT
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = choose_settings.STATIC_URL
-
+'''
+配置logging模块
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard':{
+            'format':'%(asctime)s[(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:(funcName)s]-%(message)s'
+            },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.FileHandler',
+        #     'filename': MEDIA_ROOT + '/logs/debug.log',
+        # },
+        # 'mail_admins': {
+        #     'level': 'ERROR',
+        #     'class': 'django.utils.log.AdminEmailHandler',
+        #     'include_html': True,
+        # },
+        # 'default': {
+        #     'level':'INFO',
+        #     'class':'logging.handlers.RotatingFileHandler',
+        #     'filename': MEDIA_ROOT + '/logs/all.log',                #日志输出文件
+        #     'maxBytes': 1024*1024*5,                  #文件大小
+        #     'backupCount': 5,                         #备份份数
+        #     'formatter':'simple',                   #使用哪种formatters日志格式
+        # },
+        # 'error': {
+        #     'level':'ERROR',
+        #     'class':'logging.handlers.RotatingFileHandler',
+        #     'filename': MEDIA_ROOT + '/logs/error.log',
+        #     'maxBytes':1024*1024*5,
+        #     'backupCount': 5,
+        #     'formatter':'standard',
+        # },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        # 'request_handler': {
+        #     'level':'DEBUG',
+        #     'class':'logging.handlers.RotatingFileHandler',
+        #     'filename': MEDIA_ROOT + '/logs/script.log',
+        #     'maxBytes': 1024*1024*5,
+        #     'backupCount': 5,
+        #     'formatter':'standard',
+        # },
+        # 'scprits_handler': {
+        #     'level':'DEBUG',
+        #     'class':'logging.handlers.RotatingFileHandler',
+        #     'filename':MEDIA_ROOT + '/logs/script.log',
+        #     'maxBytes': 1024*1024*5,
+        #     'backupCount': 5,
+        #     'formatter':'standard',
+        # }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        # 'django.request': {
+        #     'handlers': ['request_handler'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        #     },
+        # 'scripts': {
+        #     'handlers': ['scprits_handler'],
+        #     'level': 'INFO',
+        #     'propagate': False
+        # },
+        # 'blog.views': {
+        #     'handlers': ['default', 'error'],
+        #     'level': 'DEBUG',
+        #     'propagate': True
+        # },
+    },
+}
 '''
 custom settings
 '''

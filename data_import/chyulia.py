@@ -12,111 +12,54 @@ import csv
 from decimal import *
 #from . import hashuang
 
-#多条件筛选：可自由选择要进行筛选的条件(chen.html)
-def multi_analy(request):
-	print("multi_analy")
-	bookno=request.POST.get("bookno").upper();
-	gk_no=request.POST.get("gk_no");
-	OPERATESHIFT=request.POST.get("OPERATESHIFT");
-	OPERATECREW=request.POST.get("OPERATECREW");
-	station=request.POST.get("station");
-	if gk_no !='blank':
-		sentence_gk_no= " and gk_no='"+gk_no+"'"
-	else:
-		sentence_gk_no=''
-	if OPERATESHIFT !='blank':
-		sentence_OPERATESHIFT=" and OPERATESHIFT='"+OPERATESHIFT+"'"
-	else:
-		sentence_OPERATESHIFT=''
-	if OPERATECREW !='blank':
-		sentence_OPERATECREW=" and OPERATECREW='"+OPERATECREW+"'"
-	else:
-		sentence_OPERATECREW=''
-	if station !='blank':
-		sentence_station=" and station='"+station+"'"
-	else:
-		sentence_station=''
-	sentence="SELECT HEAT_NO,"+bookno+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_gk_no+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station
-	#print(sentence)
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]=sentence
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	print(scrapy_records[:5])
-	contentVO={
-		'title':'测试',
-		'state':'success',
-	}
-	ana_result,ana_describe=num_describe(scrapy_records,bookno)
-	contentVO['result']=ana_result
-	contentVO['describe']=ana_describe
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-#去括号取左侧的数（计算概率分布时需要用到）
-def getA(s):
-    s0 = list(s)
-    data = []
-    for a in s0:
-        a1 = a.split(',')
-        if len(a1)==1:
-            data.append(a1[0][1:])
-        else:
-            data.append(a1[0][1:])
-    return data
-
-#去括号取右侧的数（计算概率分布时需要用到）    
-def getB(s):
-    s0 = list(s)
-    data = []
-    for a in s0:
-        a1 = a.split(',')
-        if len(a1)==1:
-            data.append(a1[1][:-1])
-        else:
-            data.append(a1[1][:-1])
-    return data	
-
-#拼接区间（计算概率分布时需要用到） 
-def union_section(section_point,sections):
-    for i in range(len(section_point)):
-        section=None
-        if i<len(section_point)-1:
-            section='('+str(section_point[i])+','+str(section_point[i+1])+']'
-            sections.append(section)
-    return sections 
-
-#计算投入料分布
-def cost(request):
-	#print("cost_success")
-	prime_cost=request.POST.get("prime_cost");
-	#print(prime_cost)
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
-	#print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-
-	#heat_no=[ele for ele in frame.HEAT_NO]
-	#miron_wgt=[ele for ele in frame['MIRON_WGT']]
-	#desx=[ele for ele in describe.index]
-	#desy=[ele for ele in describe]
+#计算投入/输出产品分布
+def cost_produce(request):
+	print("enter cost_produce")
+	heat_no=request.POST.get("heat_no");
+	# print(heat_no)
+	nature=request.POST.get("nature");#区别是cost还是produce
+	# print('nature',nature)
 	contentVO={
 		'title':'测试',
 		'state':'success'
 	}
+	if nature=='cost':
+		xaxis=['铁水重量','耗氧量','生铁','废钢总和']
+		xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','COLDPIGWGT','SCRAPWGT_COUNT']
+		danwei=['Kg','NM3','Kg','Kg']
+	else:
+		xaxis=['钢水','LDG','钢渣']
+		xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
+		danwei=['Kg','NM3','Kg']
+	
 
-	xaxis=['铁水重量','耗氧量','生铁','废钢总和']
-	xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','COLDPIGWGT','SCRAPWGT_COUNT']
+#对任意个数字段进行字符串拼接
+	field_sql=''
+	for i in range(len(xasis_fieldname)):
+		field_sql=field_sql+',nvl('+xasis_fieldname[i]+',0) as '+xasis_fieldname[i]
 
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	# sqlVO["sql"]="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
+	sqlVO["sql"]="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO='"+heat_no+"'";
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	
+	# for i in range(len(xasis_fieldname)):
+	# 	value = scrapy_records[0].get(xasis_fieldname[i],None)
+	# 	if value != None :
+	# 		scrapy_records[0][xasis_fieldname[i]] = float(value)
+	# frame=DataFrame(scrapy_records)
+	# yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
+
+	yaxis=[]#存放单炉次的字段值
 	for i in range(len(xasis_fieldname)):
 		value = scrapy_records[0].get(xasis_fieldname[i],None)
 		if value != None :
-			scrapy_records[0][xasis_fieldname[i]] = float(value)
-	frame=DataFrame(scrapy_records)
+			yaxis.append(float(value))
+		else:
+			yaxis.append(value)
 
-	yaxis=[frame.MIRON_WGT[0],frame.SUM_BO_CSM[0],frame.COLDPIGWGT[0],frame.SCRAPWGT_COUNT[0]]
-	danwei=['Kg','NM3','Kg','Kg']
 	print('xasis_fieldname',xasis_fieldname)
 	print('yaxis',yaxis)
 	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
@@ -125,54 +68,7 @@ def cost(request):
 	print('offset_result',offset_result)
 	print('offset_resultlist',offset_resultlist)
 	ana_result={}
-	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
-	ana_result['xname']=xaxis#字段中文名字
-	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
-	ana_result['danwei']=danwei#字段的数值单位
-	ana_result['yvalue']=yaxis#该炉次字段的实际值
-	ana_result['attribute']='成本投入量'
-	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
-	ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
-	contentVO['result']=ana_result
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-#计算输出产品分布
-def produce(request):
-	print("success")
-	prime_produce=request.POST.get("prime_produce");
-	print(prime_produce)
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_produce+"'";
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	value = scrapy_records[0].get('TOTAL_SLAB_WGT',None)
-	if value != None :
-		scrapy_records[0]['TOTAL_SLAB_WGT'] = float(value)
-	value1 = scrapy_records[0].get('LDG_TOTAL_SLAB_WGT',None)
-	if value1 != None :
-		scrapy_records[0]['LDG_TOTAL_SLAB_WGT'] = float(value1)	
-	value2 = scrapy_records[0].get('STEEL_SLAG',None)
-	if value2 != None :
-		scrapy_records[0]['STEEL_SLAG'] = float(value2)	
-	frame=DataFrame(scrapy_records)
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	xaxis=['钢水','LDG','钢渣']
-	xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
-	yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
-	danwei=['Kg','NM3','Kg']
-	print('xasis_fieldname',xasis_fieldname)
-	print('yaxis',yaxis)
-	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
-	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
-	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
-	print('offset_result',offset_result)
-	print('offset_resultlist',offset_resultlist)
-	ana_result={}
-	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
+	ana_result['heat_no']=heat_no#炉次号
 	ana_result['xname']=xaxis#字段中文名字
 	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
 	ana_result['danwei']=danwei#字段的数值单位
@@ -242,233 +138,6 @@ def qualitative_offset(offset_result):
 				qualitative_offset_result.append('低')		
 	return  qualitative_offset_result
 
-#计算单炉次字段值
-def single_heat(heat_no,fieldname):
-	print("success")
-	print(heat_no,fieldname)
-	sqlVO1={}
-	sqlVO1["db_name"]="l2own"
-	sqlVO1["sql"]="SELECT HEAT_NO,nvl("+fieldname+",0) as field FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
-	print(sqlVO1["sql"])
-	scrapy_records1=models.BaseManage().direct_select_query_sqlVO(sqlVO1)
-	value = scrapy_records1[0].get('field',None)
-	if value != None :
-		scrapy_records1[0]['field'] = float(value)
-	frame1=DataFrame(scrapy_records1)
-	yaxis=frame1.FIELD[0]
-	return yaxis
-
-
-
-#请求chen.html页面
-def chen(request):
-	#print('请求主页')
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect("/login")
-	return render(request,'data_import/chen.html',{'title':"青特钢大数据项目组数据管理"})
-
-#跳转波动率fluctuation.html页面
-def fluctuation(request):
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect("/login")
-	return render(request,'data_import/fluctuation.html')
-
-#从数据库动态加载钢种
-def getGrape(request):
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	frame=DataFrame(scrapy_records)
-	#print(frame['GK_NO'])
-	contentVO={
-		'title':'测试',
-		'state':'success'
-	}
-	grape=[ele for ele in frame['GK_NO']]
-	#print(grape)
-	contentVO['result']=grape
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-#进行五数分析法
-def Wushu(x):
-    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
-    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
-    result=x[(x<U)&(x>L)]
-    wushu_clean={}
-    wushu_clean["minbook"]=L
-    wushu_clean["maxbook"]=U
-    wushu_clean["result"]=result
-    return wushu_clean
-
-#数据清洗+计算概率分布（画概率直方图）
-def num_describe(scrapy_records,bookno):
-	print(scrapy_records[1:5])
-	ivalue_i=[]
-	for n in range(len(scrapy_records)):
-		ivalue = scrapy_records[n].get(bookno,None)
-		if ivalue !=None and ivalue !=0:
-			 ivalue=ivalue
-			 ivalue_b=str(ivalue)
-			 ivalue_valid=ivalue_num(ivalue_b)#小数位数
-			 ivalue_i.append(ivalue_valid)
-			 ivalue_i.sort(reverse=True)
-	ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
-	print(ivalue_valid)		
-	for i in range(len(scrapy_records)):
-		value = scrapy_records[i].get(bookno,None)
-		if value != None :
-			scrapy_records[i][bookno] = float(value)			
-	frame=DataFrame(scrapy_records)	
-	df=frame.sort_values(by=bookno)
-	dfr=df[df>0].dropna(how='any')
-	#print(dfr['1622324'])
-	#print(dfr[bookno].dtype)
-	cleanbook=Wushu(dfr[bookno])
-	minbook=cleanbook["minbook"]
-	maxbook=cleanbook["maxbook"]	
-	if(minbook==maxbook):#不符合正态分布规律
-		print("no")
-		clean=dfr[bookno]		
-	else:
-		print("yes")
-		clean=cleanbook["result"]				
-	print("minbook")
-	print(minbook)
-	print("maxbook")
-	print(maxbook)
-	print(type(clean))
-	if clean is not None:
-		if(clean.max==clean.min()):
-			bc=1
-		else:	
-			bc=(clean.max()-clean.min())/7
-		bcq=math.ceil(bc*1000)/1000
-		print(bcq)
-		try:
-			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
-			end=pd.value_counts(section,sort=False)/clean.count()
-			describe=clean.describe()
-		except ValueError as e:
-		 	print(e)
-	numx=[ele for ele in end.index]
-	#numy=[ele for ele in end]
-	desx=[ele for ele in describe.index]
-	desy=[ele for ele in describe]
-	print(numx)
-	print(describe)
-	#contentVO={
-		#'title':'测试',
-		#'state':'success'
-	#}
-	s1=pd.Series(numx)
-	d1=getA(s1)
-	d2=getB(s1)
-	d1_data=[]
-	d2_data=[]
-	#d3_data=[]
-	d4_data=[]
-	d1_valid=vaild(d1,ivalue_valid,d1_data)
-	for i in range(len(d1_valid)):
-		if d1_valid[i]<0:
-			d1_valid[i]=0
-	d2_valid=vaild(d2,ivalue_valid,d2_data)
-	numx1=list(set(d1_valid).union(set(d2_valid)))
-	numx2=sorted(numx1)
-	# print("numx2:")
-	# print(numx2)
-	sections=[]
-	numx3=union_section(numx2,sections)
-	cut1=pd.cut(clean,numx2)
-	end1=pd.value_counts(cut1,sort=False)/clean.count()
-	numy=[ele for ele in end1]
-	# print("end1:")
-	# print(end1)
-	#numy1=vaild(numy,ivalue_valid,d3_data)
-	numy1=["%.6f"%(n) for n in numy]
-	desy1=vaild(desy,ivalue_valid,d4_data)
-	print("x轴:")
-	print(numx3)
-	print("y轴:")
-	print(numy1)
-	ana_result={}
-	ana_result['scope']=numx3
-	#print(ana_result['scope'])
-	ana_result['num']=numy1
-	#contentVO['result']=ana_result
-	ana_describe={}
-	ana_describe['scopeb']=desx
-	ana_describe['numb']=desy1
-	#contentVO['describe']=ana_describe
-	return ana_result,ana_describe
-
-#判断有效位数
-def ivalue_num(num):
-    a=str(num)
-    if(a.isdigit()):
-        ivalue_valid=0
-    else:
-        ivalue_valid=len(a.split('.')[1])
-    return  ivalue_valid   
-
-#取有效位数
-def vaild(lis,ivalue_valid,data):
-    for i in range(len(lis)):
-        shu=lis[i]
-        if ivalue_valid==0:
-            shua=int(float(shu))
-            data.append(shua)
-        else:    
-            shua=float(shu)
-            shub=round(shua,ivalue_valid)
-            data.append(shub)
-    return data 
-
-#数据清洗+计算正态分布（画正态分布图）
-#与num_describe的区别是，进行数据清洗并计算正态分布，而不进行概率直方图区间计算
-from scipy.stats import norm
-def data_clean(scrapy_records,bookno):
-	print("data_clean:"+bookno);
-	if bookno=='"AS"':
-		bookno=bookno.split('"')[1]
-	for i in range(len(scrapy_records)):
-		value = scrapy_records[i].get(bookno,None)
-		if value != None :
-			scrapy_records[i][bookno] = float(value)
-	frame=DataFrame(scrapy_records)	#可能有多列数据
-	frame_formal=frame[['HEAT_NO',bookno]]
-	#print(frame[bookno])
-	df=frame.sort_values(by=bookno)
-	dfr=df[df>0].dropna(how='any')
-	#print(dfr[bookno].dtype)
-	clean=Wushu(dfr[bookno])
-	if bookno=="NB":
-		print(clean)
-	#print("clean",clean)
-	#平均值/期望值
-	dataclean_result={}
-	avg_value=np.mean(clean)
-	print("期望值",avg_value)
-	#标准差
-	std_value=np.std(clean)
-	print("标准差",std_value)
-	#方差
-	var_value=np.var(clean)
-	print("方差",var_value)
-	#normx,normy=Norm_dist(avg_value,var_value)
-	print("min",clean.min())
-	print("max",clean.max())
-	aa=(clean.max()-clean.min())/50
-	normx = np.arange(clean.min(),clean.max(),aa)  
-	normy = norm.pdf(normx,avg_value,std_value)
-	dataclean_result['clean_min']=clean.min()
-	dataclean_result['clean_max']=clean.max()
-	dataclean_result['avg_value']=avg_value#期望值
-	dataclean_result['std_value']=std_value#标准差
-	dataclean_result['normx']=normx#x轴取样点
-	dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
-	return dataclean_result
 
 #同时计算概率分布和正态分布
 from scipy.stats import norm
@@ -482,6 +151,7 @@ def probability_normal(request):
 	offset_value=request.POST.get("offset_value");#偏离值
 	# offset_value=float(offset_value_temp[1:-1])/100
 	actual_value=float(request.POST.get("actual_value"))#实际值
+	coloum_number=int(request.POST.get("coloum_number"))#定义概率直方图的柱状个数
 	print(heat_no,bookno,actual_value);
 	# print(scrapy_records[1:5])
 
@@ -532,7 +202,7 @@ def probability_normal(request):
 		if(clean.max==clean.min()):
 			bc=1
 		else:	
-			bc=(clean.max()-clean.min())/50
+			bc=(clean.max()-clean.min())/coloum_number
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
@@ -644,50 +314,283 @@ def probability_normal(request):
 	print('contentVO',contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 	
+#进行五数分析法
+def Wushu(x):
+    L=np.percentile(x,25)-1.5*(np.percentile(x,75)-np.percentile(x,25))
+    U=np.percentile(x,75)+1.5*(np.percentile(x,75)-np.percentile(x,25))
+    result=x[(x<U)&(x>L)]
+    wushu_clean={}
+    wushu_clean["minbook"]=L
+    wushu_clean["maxbook"]=U
+    wushu_clean["result"]=result
+    return wushu_clean
+
+#去括号取左侧的数（计算概率分布时需要用到）
+def getA(s):
+    s0 = list(s)
+    data = []
+    for a in s0:
+        a1 = a.split(',')
+        if len(a1)==1:
+            data.append(a1[0][1:])
+        else:
+            data.append(a1[0][1:])
+    return data
+
+#去括号取右侧的数（计算概率分布时需要用到）    
+def getB(s):
+    s0 = list(s)
+    data = []
+    for a in s0:
+        a1 = a.split(',')
+        if len(a1)==1:
+            data.append(a1[1][:-1])
+        else:
+            data.append(a1[1][:-1])
+    return data	
+
+#拼接区间（计算概率分布时需要用到） 
+def union_section(section_point,sections):
+    for i in range(len(section_point)):
+        section=None
+        if i<len(section_point)-1:
+            section='('+str(section_point[i])+','+str(section_point[i+1])+']'
+            sections.append(section)
+    return sections 
+
+  #判断有效位数
+def ivalue_num(num):
+    a=str(num)
+    if(a.isdigit()):
+        ivalue_valid=0
+    else:
+        ivalue_valid=len(a.split('.')[1])
+    return  ivalue_valid   
+
+#取有效位数
+def vaild(lis,ivalue_valid,data):
+    for i in range(len(lis)):
+        shu=lis[i]
+        if ivalue_valid==0:
+            shua=int(float(shu))
+            data.append(shua)
+        else:    
+            shua=float(shu)
+            shub=round(shua,ivalue_valid)
+            data.append(shub)
+    return data 
+
+#数据清洗+计算概率分布（画概率直方图）
+def num_describe(scrapy_records,bookno):
+	print(scrapy_records[1:5])
+	ivalue_i=[]
+	for n in range(len(scrapy_records)):
+		ivalue = scrapy_records[n].get(bookno,None)
+		if ivalue !=None and ivalue !=0:
+			 ivalue=ivalue
+			 ivalue_b=str(ivalue)
+			 ivalue_valid=ivalue_num(ivalue_b)#小数位数
+			 ivalue_i.append(ivalue_valid)
+			 ivalue_i.sort(reverse=True)
+	ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
+	print(ivalue_valid)		
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(bookno,None)
+		if value != None :
+			scrapy_records[i][bookno] = float(value)			
+	frame=DataFrame(scrapy_records)	
+	df=frame.sort_values(by=bookno)
+	dfr=df[df>0].dropna(how='any')
+	#print(dfr['1622324'])
+	#print(dfr[bookno].dtype)
+	cleanbook=Wushu(dfr[bookno])
+	minbook=cleanbook["minbook"]
+	maxbook=cleanbook["maxbook"]	
+	if(minbook==maxbook):#不符合正态分布规律
+		print("no")
+		clean=dfr[bookno]		
+	else:
+		print("yes")
+		clean=cleanbook["result"]				
+	print("minbook")
+	print(minbook)
+	print("maxbook")
+	print(maxbook)
+	print(type(clean))
+	if clean is not None:
+		if(clean.max==clean.min()):
+			bc=1
+		else:	
+			bc=(clean.max()-clean.min())/7
+		bcq=math.ceil(bc*1000)/1000
+		print(bcq)
+		try:
+			section=pd.cut(clean,math.ceil((clean.max()-clean.min())/bcq))
+			end=pd.value_counts(section,sort=False)/clean.count()
+			describe=clean.describe()
+		except ValueError as e:
+		 	print(e)
+	numx=[ele for ele in end.index]
+	#numy=[ele for ele in end]
+	desx=[ele for ele in describe.index]
+	desy=[ele for ele in describe]
+	print(numx)
+	print(describe)
+	#contentVO={
+		#'title':'测试',
+		#'state':'success'
+	#}
+	s1=pd.Series(numx)
+	d1=getA(s1)
+	d2=getB(s1)
+	d1_data=[]
+	d2_data=[]
+	#d3_data=[]
+	d4_data=[]
+	d1_valid=vaild(d1,ivalue_valid,d1_data)
+	for i in range(len(d1_valid)):
+		if d1_valid[i]<0:
+			d1_valid[i]=0
+	d2_valid=vaild(d2,ivalue_valid,d2_data)
+	numx1=list(set(d1_valid).union(set(d2_valid)))
+	numx2=sorted(numx1)
+	# print("numx2:")
+	# print(numx2)
+	sections=[]
+	numx3=union_section(numx2,sections)
+	cut1=pd.cut(clean,numx2)
+	end1=pd.value_counts(cut1,sort=False)/clean.count()
+	numy=[ele for ele in end1]
+	# print("end1:")
+	# print(end1)
+	#numy1=vaild(numy,ivalue_valid,d3_data)
+	numy1=["%.6f"%(n) for n in numy]
+	desy1=vaild(desy,ivalue_valid,d4_data)
+	print("x轴:")
+	print(numx3)
+	print("y轴:")
+	print(numy1)
+	ana_result={}
+	ana_result['scope']=numx3
+	#print(ana_result['scope'])
+	ana_result['num']=numy1
+	#contentVO['result']=ana_result
+	ana_describe={}
+	ana_describe['scopeb']=desx
+	ana_describe['numb']=desy1
+	#contentVO['describe']=ana_describe
+	return ana_result,ana_describe
+
+
+
+#数据清洗+计算正态分布（画正态分布图）
+#与num_describe的区别是，进行数据清洗并计算正态分布，而不进行概率直方图区间计算
+from scipy.stats import norm
+def data_clean(scrapy_records,bookno):
+	print("data_clean:"+bookno);
+	if bookno=='"AS"':
+		bookno=bookno.split('"')[1]
+	for i in range(len(scrapy_records)):
+		value = scrapy_records[i].get(bookno,None)
+		if value != None :
+			scrapy_records[i][bookno] = float(value)
+	frame=DataFrame(scrapy_records)	#可能有多列数据
+	frame_formal=frame[['HEAT_NO',bookno]]
+	#print(frame[bookno])
+	df=frame.sort_values(by=bookno)
+	dfr=df[df>0].dropna(how='any')
+	#print(dfr[bookno].dtype)
+	clean=Wushu(dfr[bookno])
+	if bookno=="NB":
+		print(clean)
+	#print("clean",clean)
+	#平均值/期望值
+	dataclean_result={}
+	avg_value=np.mean(clean)
+	print("期望值",avg_value)
+	#标准差
+	std_value=np.std(clean)
+	print("标准差",std_value)
+	#方差
+	var_value=np.var(clean)
+	print("方差",var_value)
+	#normx,normy=Norm_dist(avg_value,var_value)
+	print("min",clean.min())
+	print("max",clean.max())
+	aa=(clean.max()-clean.min())/50
+	normx = np.arange(clean.min(),clean.max(),aa)  
+	normy = norm.pdf(normx,avg_value,std_value)
+	dataclean_result['clean_min']=clean.min()
+	dataclean_result['clean_max']=clean.max()
+	dataclean_result['avg_value']=avg_value#期望值
+	dataclean_result['std_value']=std_value#标准差
+	dataclean_result['normx']=normx#x轴取样点
+	dataclean_result['normy']=normy#正态分布取样点对应的Y轴取值
+	return dataclean_result
+
+
 #影响因素追溯
 from . import zhuanlu
 def max_influence(request):
 	print("Enter max_influence")
+	heat_no=request.POST.get("heat_no");
 	field=request.POST.get("field");
 	offset_value=request.POST.get("offset_value");#炉次字段的偏离程度，
 	print(field)
 	#将待匹配的字段名设置为参数
 	#field='MIRON_WGT'
 	result=[]
-	#读取回归系数文件
-	with open('data_import/regression_all_EN1.csv','r') as csvfile:
-	# with open('data_import/test.csv','r') as csvfile:
-	    reader = csv.reader(csvfile)
-	    rows= [row for row in reader]
-	aa = np.array(rows)
-	aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
-	for aaa in aa:
-		if(aaa[0]==field):
-			result.append(aaa)
-		# elif(aaa[1]==field):
-		# 	temp=aaa[0]
-		# 	aaa[0]=aaa[1]
-		# 	aaa[1]=temp
-			# result.append(aaa)
-	    # fout.write("%s\n" % aaa)  
-	result1 = np.array(result)#转变为numpy数组格式
-	length_result1=len(result1)
-	print("长度"+str(length_result1))
-	print(result1)#根据回归系数大小排序结果
-	print("------------------")
+
+	#从数据库读取回归系数文件
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	print(scrapy_records)
+	length_result1=len(scrapy_records)
+
 	xasis_fieldname=[]#字段英文名字数组
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(result1[i][1])
-		regression_coefficient.append(result1[i][2])
-		str_sql=str_sql+','+result1[i][1]
-	print(str_sql)
-	prime_cost='1634230'
+		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
+		regression_coefficient.append(scrapy_records[i].get('COF', None))
+		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
+	# print(len(scrapy_records))
+	# print(xasis_fieldname)
+	# print(regression_coefficient)
+
+
+	# #从csv文件读取回归系数文件
+	# with open('data_import/regression_all_EN1.csv','r') as csvfile:
+	# # with open('data_import/test.csv','r') as csvfile:
+	#     reader = csv.reader(csvfile)
+	#     rows= [row for row in reader]
+	# aa = np.array(rows)
+	# aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
+	# for aaa in aa:
+	# 	if(aaa[0]==field):
+	# 		result.append(aaa)
+ 
+	# result1 = np.array(result)#转变为numpy数组格式
+	# length_result1=len(result1)
+	# print("长度"+str(length_result1))
+	# print(result1)#根据回归系数大小排序结果
+	# print("------------------")
+	# xasis_fieldname=[]#字段英文名字数组
+	# regression_coefficient=[]#字段回归系数值数组
+	# str_sql=''
+	# for i in range(length_result1):
+	# 	xasis_fieldname.append(result1[i][1])
+	# 	regression_coefficient.append(result1[i][2])
+	# 	str_sql=str_sql+','+result1[i][1]
+	# print(str_sql)
+
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
-	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	#将查询所得值全部转变为float格式（动态，适用于不同个数的xasis_fieldname长度）
@@ -699,8 +602,8 @@ def max_influence(request):
 		else:
 			scrapy_records[0][xasis_fieldname[i]] = 0#将空值None暂时以0填充
 		yaxis.append(value)
-	frame=DataFrame(scrapy_records)
-	print("frame",frame)
+	# frame=DataFrame(scrapy_records)
+	# print("frame",frame)
 	# for i in range(length_result1):
 	# 	yaxis.append(frame[xasis_fieldname[i]][0])
 	# yaxis=[frame[xasis_fieldname[0]][0],frame[xasis_fieldname[1]][0],frame[xasis_fieldname[2]][0],frame[xasis_fieldname[3]][0],frame[xasis_fieldname[4]][0]]
@@ -753,6 +656,54 @@ def max_influence(request):
 	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 	
+#计算单炉次字段值
+def single_heat(heat_no,fieldname):
+	print("success")
+	print(heat_no,fieldname)
+	sqlVO1={}
+	sqlVO1["db_name"]="l2own"
+	sqlVO1["sql"]="SELECT HEAT_NO,nvl("+fieldname+",0) as field FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
+	print(sqlVO1["sql"])
+	scrapy_records1=models.BaseManage().direct_select_query_sqlVO(sqlVO1)
+	value = scrapy_records1[0].get('field',None)
+	if value != None :
+		scrapy_records1[0]['field'] = float(value)
+	frame1=DataFrame(scrapy_records1)
+	yaxis=frame1.FIELD[0]
+	return yaxis
+
+#请求chen.html页面
+def chen(request):
+	#print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/chen.html',{'title':"青特钢大数据项目组数据管理"})
+
+#跳转波动率fluctuation.html页面
+def fluctuation(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/fluctuation.html')
+
+#从数据库动态加载钢种
+def getGrape(request):
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="select SPECIFICATION  from pro_bof_his_allfields group by SPECIFICATION order by count(*) DESC";
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	frame=DataFrame(scrapy_records)
+	#print(frame['GK_NO'])
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	grape=[ele for ele in frame['SPECIFICATION']]
+	#print(grape)
+	contentVO['result']=grape
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+
 
 #更新数据库转炉表结构期望等参数：updatevalue+Calculation_Parameters-----------------------------------------------------------------------------------------------------------------
 import cx_Oracle
@@ -793,21 +744,6 @@ def updatevalue(request):
 			pass
 		db.commit()
 
-	# for item in data:
-	#     for i in range(len(item)): 
-	#         str_item=str(item[i])
-	#         sql_str_temp=str_item[1:-1]
-	#         sql_str="insert into PRO_BOF_HIS_ALLSTRUCTURE values("+sql_str_temp+")"
-	#         print(sql_str)
-	#         try:
-	#              c.execute(sql_str)
-	#             # db.commit()
-	#         except:
-	#             print('insert PRO_BOF_HIS_ALLSTRUCTURE failed: ',i)
-	#             # print(sql_str)
-	#             pass
-	#         # print(i)
-	#         # print(item[i])
 	cur.close()
 	# db.commit()
 	db.close()

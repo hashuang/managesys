@@ -23,11 +23,19 @@ from collections import defaultdict
 from math import ceil
 from os.path import join
 
-from QinggangManageSys.settings import MAIN_OUTFIT_BASE
+from QinggangManageSys.settings import MAIN_OUTFIT_BASE,LOGGING
+from .models import ContentPost
+
+import logging
+import logging.config
 
 
 from .models import ContentPost
 from .liusinuo import mysql
+
+# logging.config.dictConfig(LOGGING)
+logger = logging.getLogger('django')
+
 
 exclude_posts = ("shares","abstract")
 
@@ -42,7 +50,7 @@ def home(request):
 	# the_abstract = get_object_or_404(ContentPost, title="abstract")
 	# contentVO["abstract"] = the_abstract
 	# contentVO["state"] = "success"
-	print(MAIN_OUTFIT_BASE)
+	logger.debug(MAIN_OUTFIT_BASE)
 	return render(request, MAIN_OUTFIT_BASE + 'index.html',contentVO)
 
 #用户登录
@@ -597,23 +605,6 @@ def echarts(request):
 	return render(request, MAIN_OUTFIT_BASE + 'echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
 
-
-# from . import zhuanlu	
-# def lond_to(request):
-# 	contentVO={
-# 		'title':'测试',
-# 		'state':'success'
-# 	}
-# 	ana_result={}
-# 	ana_result_two={}
-# 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
-# 	#print("result:")
-# 	contentVO['procedure_names']=ana_result
-# 	#print(contentVO)
-# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-
-
 from data_import.liusinuo.main import main
 def space(request):
 	print('请求主页')
@@ -677,6 +668,7 @@ def time(request):
 		except Exception as ex:
 			print(ex)
 
+
 #从数据库动态加载钢种
 def getAllTradeNo_time(request):
 	conn_mysql=mysql.MySQL();
@@ -717,3 +709,4 @@ def lond_to_B(request):
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+
