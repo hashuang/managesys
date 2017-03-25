@@ -27,6 +27,7 @@ from QinggangManageSys.settings import MAIN_OUTFIT_BASE
 
 
 from .models import ContentPost
+from .liusinuo import mysql
 
 exclude_posts = ("shares","abstract")
 
@@ -676,24 +677,30 @@ def time(request):
 		except Exception as ex:
 			print(ex)
 
-# #从数据库动态加载钢种
-# def getAllTradeNo_time(request):
-# 	sqlVO={}
-# 	sqlVO["db_name"]="l2own"
-# 	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
-# 	print(sqlVO["sql"])
-# 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-# 	frame=DataFrame(scrapy_records)
-# 	#print(frame['GK_NO'])
-# 	contentVO={
-# 		'title':'测试',
-# 		'state':'success'
-# 	}
-# 	grape=[ele for ele in frame['GK_NO']]
-# 	#print(grape)
-# 	contentVO['result']=grape
-# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+#从数据库动态加载钢种
+def getAllTradeNo_time(request):
+	conn_mysql=mysql.MySQL();
+	sql_getAllTradeNo = "select c.tradeNo from data_import_sales_orderno a,data_import_sales2_orderno_orderitem c where c.orderNo = a.orderNo group by c.tradeNo"
+	allTradeNo = conn_mysql.select(sql_getAllTradeNo)
+	print (allTradeNo)
 
+	# sqlVO={}
+	# sqlVO["db_name"]="l2own"
+	# sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
+	# print(sqlVO["sql"])
+	# scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)    #查询数据库
+	# frame=DataFrame(scrapy_records)
+	#print(frame['GK_NO'])
+
+	# contentVO={
+	# 	'title':'测试',
+	# 	'state':'success'
+	# }
+	# # grape=[ele for ele in frame['GK_NO']]
+	# #print(grape)
+	# contentVO['result']=allTradeNo
+	# return HttpResponse(json.dumps(contentVO),content_type='application/json')
+	return HttpResponse(json.dumps({'result':allTradeNo}),content_type='json')
 
 def ha(request):
 	print('转炉数据清洗')

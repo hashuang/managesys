@@ -178,17 +178,48 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 		conclusionPrint = conclusion.final_conclusion(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,module)
 		#print (dictionary)
 
-		dictionaryToList = [(key,dictionary[key]) for key in sorted(dictionary.keys())] #按key的大小排序
-		timeline = []
-		timelineValue = []
-		for key,value in dictionaryToList:
-			timeline.append(key)
-			timelineValue.append(value)
+		
+		newDictionary = {}
+		monthDictionary = {}
+		for key in dictionary:
+			#将 20160101 转换成 2016-01-01
+			newKey = str(str(key)[0:4] + "-" + str(key)[4:6] + "-" + str(key)[6:])
+			newDictionary[newKey] = dictionary[key]
+			#获取月数据
+			#if dictionary[key] != "总销量为0，无法计算退货率！":
+			if aspect != 3:
+				if str(str(key)[0:4] + "-" + str(key)[4:6]) in monthDictionary:
+
+					monthDictionary[str(str(key)[0:4] + "-" + str(key)[4:6])] += dictionary[key]
+				else:
+					monthDictionary[str(str(key)[0:4] + "-" + str(key)[4:6])] = dictionary[key]
+
+
 		dictionary2 = {}
-		dictionary2['timeline'] = timeline
-		dictionary2['timelineValue'] = timelineValue
-		print (dictionary2)
+		#dictionaryToList = [(key,dictionary[key]) for key in sorted(dictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+		#将每日数据存入
+		dictionaryToList_Day = [(key,newDictionary[key]) for key in sorted(newDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+		timeline_Day = []
+		timelineValue_Day = []
+		for key,value in dictionaryToList_Day:
+			timeline_Day.append(key)
+			timelineValue_Day.append(value)
+		dictionary2['timeline_Day'] = timeline_Day
+		dictionary2['timelineValue_Day'] = timelineValue_Day
 		#print (dictionary2)
+
+		#将每月数据存入
+		dictionaryToList_Month = [(key,monthDictionary[key]) for key in sorted(monthDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+		timeline_Month = []
+		timelineValue_month = []
+		for key,value in dictionaryToList_Month:
+			timeline_Month.append(key)
+			timelineValue_month.append(value)
+		dictionary2['timeline_Month'] = timeline_Month
+		dictionary2['timelineValue_month'] = timelineValue_month
+		#print (dictionary2)
+
+
 		
 		return dictionary2,conclusionPrint,module_name,aspect_name,unite,maxValue
 
