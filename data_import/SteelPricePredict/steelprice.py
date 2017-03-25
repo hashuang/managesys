@@ -8,7 +8,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, Http404
 
 from data_import.SteelPricePredict.data_cleaning import get_history_price,create_single_model
-from data_import.SteelPricePredict.ExtremeLM import elm_
 from data_import.SteelPricePredict.pre_config import steel_type,predict_method,time_scale,INFO,WARNING,model_classname
 import data_import.SteelPricePredict.PredictModels as PredictModels
 
@@ -64,14 +63,12 @@ def price_history(request):
 def init_models(modelname):
 	model = None
 	class_name =None
-	#通过表名反射相应的对象，获取表名
+	#通过类名反射相应的类，暂未实例化
 	try:
 		class_name = model_classname[modelname]
 		print(class_name)
 		try:
 			model = getattr(PredictModels,class_name)
-			print(model.__dict__)
-			model()
 		except:
 			print('init model ',class_name,' failed.')
 			print(sys.exc_info()[0])
