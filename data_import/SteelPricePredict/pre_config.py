@@ -29,4 +29,6 @@ model_classname = {
 	"elm":"ExtremeLM",
 	"svm":"SVM",
 	"BP":"BP",
+	"linear_regression":"LR",
+	"random_forest":"RandomForest",
 }
