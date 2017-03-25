@@ -1,15 +1,14 @@
-from time import time
-import csv
-from sklearn.cluster import k_means
+import math
+
 import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 
-from data_import.steelpriceTools.elm import ELMClassifier, ELMRegressor, GenELMClassifier, GenELMRegressor
-from data_import.steelpriceTools.random_layer import RandomLayer, MLPRandomLayer, RBFRandomLayer, GRBFRandomLayer
-from math import sqrt
-import math
+from data_import.SteelPricePredict.elm import ELMClassifier, ELMRegressor, GenELMClassifier, GenELMRegressor
+from data_import.SteelPricePredict.random_layer import RandomLayer, MLPRandomLayer, RBFRandomLayer, GRBFRandomLayer
+
+
 
 def get_true_predict_value(y_predict,origal_std,origal_mean):
 	row_num = y_predict.shape[0]
