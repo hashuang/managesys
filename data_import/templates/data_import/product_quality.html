@@ -36,18 +36,14 @@
 </div>
 
 <p></p>
-<div>
-    <!--table用来放置因素追溯的分析结果-->
+<!-- <div>
     <table id='txt' style="width: 900px;height:350px;border:45px;">
-<!--         <caption >因素追溯的分析结果</caption>
-        <tr> 
-        <th>序号</th>
-        <th>影响因素中文名</th>
-        <th>影响因素英文名</th>
-        <th>影响因素回归系数</th>
-        <th>影响因素偏离值</th>
-        </tr> -->
     </table>
+</div> -->
+<div id='cause_area'>
+   <!--table用来放置因素追溯的分析结果-->
+    <p><strong>转炉工序单炉次字段成本追溯结果：</strong></p>
+    <textarea id="cause_txt" style="width: 900px;height:150px;"></textarea>
 </div>
 <!-- <button onclick='updatevalue()' id='updatevalue'>定期更新数据库转炉字段统计值</button> -->
 
@@ -87,7 +83,7 @@
     // 条形图（含量）
     function drawBarChart_cost(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#3397c9','#f39646','#e02222'];
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#2367d9','#f39646','#e02222'];
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
@@ -545,18 +541,24 @@
                 // alert(data.offset_result);//字段偏离程度
                 // alert(data.En_to_Ch_result);//字段中文名
                 // alert(data.regression_coefficient);
-                $("#txt").empty();//清除表格内容
-                var content='';
-                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                // $("#txt").empty();//清除表格内容
+                // var content='';
+                // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                // for (var i=0;i<data.offset_number;i++){
+                //     content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
+                //     $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+                  $("#cause_txt").empty();//清除文本框内容
+                // $("#cause_txt").append('单炉次'+field+'字段因素追溯的分析结果:\n');
+                $("#cause_txt").append('经分析，'+prime_analyse+'炉次下的'+fieldname_chinese+'('+fieldname_english+')字段，偏离程度为'+offset_value+'。\n成本追溯分析结果如下(前五):\n');      
                 for (var i=0;i<data.offset_number;i++){
-                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
-                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+                    if (i < 5){
+                        $("#cause_txt").append('     原因'+(i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                    }
 
                 }
-                alert(content);
-                   
-                
-            }
+                $("#cause_area").show();//
+                //alert(content);
+                }
         })
     };
     // 正态分布画图
@@ -652,7 +654,7 @@
             // loadOption_chen();
             // loadGrape_chen();
             $("#coloum_div").hide();
-
+            $("#cause_area").hide();
         })
 </script>
 {% endblock %}
