@@ -184,8 +184,8 @@ function drawBarChart_cost_fluc(result){
             var option = {
                 color:colors,
                 title: {
-                    // text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的波动率计算',
-                    x:'center'
+                    text: '相同颜色条形图 左:波动率 右：对比历史波动率',
+                    x:'right'
                 },
                 tooltip: {
                         trigger:'item',
@@ -207,7 +207,7 @@ function drawBarChart_cost_fluc(result){
                 },
             
                 legend: {
-                    data:['波动率','对比历史波动率']
+                    data:['左：波动率','右：对比历史波动率']
                 },
                        
                 xAxis: [{
