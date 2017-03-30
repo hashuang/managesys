@@ -50,8 +50,10 @@ urlpatterns = [
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
 
+
     # #自动加载钢种
     # url(r'^getGrape',views.getAllTradeNo_time),
+
 
     #ha
     #显示统计分析页面
