@@ -832,7 +832,7 @@ def max_influence(request):
 	ana_result_score=zhuanlu.PRO_BOF_HIS_ALLFIELDS_SCORE
 	En_to_Ch_result_score=[]
 	for i in range(len(xasis_fieldname_result)):
-		En_to_Ch_result_score.append(ana_result[xasis_fieldname_result[i]])
+		En_to_Ch_result_score.append(ana_result_score[xasis_fieldname_result[i]])
 	print("带标记的中文字段")	
 	print(En_to_Ch_result_score)	
 
