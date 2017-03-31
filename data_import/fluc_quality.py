@@ -631,7 +631,10 @@ def fluc_influence(request):
 	print(regression_coefficient_result)
 	print("偏离程度")
 	print(offset_result_final)
-
+	offset_result_nature=simple_offset(offset_result_final)
+	print("简单定性判断")
+	print(offset_result_nature)
+	contentVO['offset_result_nature']=offset_result_nature
 	#查询转炉工序字段名中英文对照
 	ana_result={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
@@ -639,9 +642,55 @@ def fluc_influence(request):
 	for i in range(len(xasis_fieldname_result)):
 		En_to_Ch_result.append(ana_result[xasis_fieldname_result[i]])
 	print(En_to_Ch_result)
-	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
+	ana_result_score={}
+	ana_result_score=zhuanlu.PRO_BOF_HIS_ALLFIELDS_SCORE
+	En_to_Ch_result_score=[]
+	for i in range(len(xasis_fieldname_result)):
+		En_to_Ch_result_score.append(ana_result_score[xasis_fieldname_result[i]])
+	print("带标记的中文字段")	
+	print(En_to_Ch_result_score)
+
+	#取前5个权重最大的字段按操作顺序（表结构）进行排序
+	#中文字段与偏离程度合并，需联动排序
+	offset_result_final_maxfive=offset_result_final[0:5]
+	En_to_Ch_result_maxfive=En_to_Ch_result[0:5]
+	dicty=dict(zip(En_to_Ch_result_maxfive,offset_result_final_maxfive))
+	print('组合字段中文名和偏离程度')
+	print(dicty)
+
+	#按操作排序
+	a=[]
+	En_to_Ch_result_score=[]
+	xasis_fieldname_result_maxfive=xasis_fieldname_result[0:5]
+	for i in range(len(xasis_fieldname_result_maxfive)):
+		a.append(ana_result_score[xasis_fieldname_result_maxfive[i]])
+	# print('带标记的字段')
+	# print(a)
+	L=sorted(a,key=by_score)
+	for i in range(len(xasis_fieldname_result_maxfive)):
+		En_to_Ch_result_score.append(L[i][0])
+	print('操作排序后中文名')
+	print(En_to_Ch_result_score)
+
+	#联动排序偏离程度
+	offset_result_final_maxfive_order=[]
+	for i in range(len(En_to_Ch_result_score)):
+		offset_result_final_maxfive_order.append(dicty[En_to_Ch_result_score[i]])
+	print('按操作排序后字段偏离程度')
+	print(offset_result_final_maxfive_order)
+
+	pos=map(lambda x:abs(x),offset_result_final_maxfive_order)
+	posNum=["%.2f%%"%(n*100) for n in list(pos)]
+	print("格式化")
+	print(posNum)
+
+	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
+	contentVO['En_to_Ch_result_score']=En_to_Ch_result_score#按操作排序后字段中文名
+	contentVO['posNum']=posNum#按操作排序后偏离程度格式话
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def by_score(t):
+    return t[1]	
 def fluc_cost_pop(request):
 	# print("enter fluc_cost!")
 	# fieldname=request.POST.get("fieldname").upper();#字段名
@@ -700,7 +749,7 @@ def fluc_cost_pop(request):
 		'time':time
 	}
 	# if fluc_nature=='cost':
-	xasis_fieldname_ch=['C','SI','MN','P','S','重量','温度']
+	xasis_fieldname_ch=['钢水C含量','钢水SI含量','钢水MN含量','钢水P含量','钢水S含量','钢水重量','钢水温度']
 	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
 	# else:
 	# 	xasis_fieldname_ch=['钢水','LDG','钢渣']
@@ -813,3 +862,13 @@ def fluc_cost_pop(request):
 	#print(d<d1)
 	#print(str_time)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+	#对相关性字段展示做简单定性分析	正数为偏高负数为偏低
+def simple_offset(offset_result_final):
+	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
+	offset_result_nature=[]#相关字段定性分析
+	for i in range(len(offset_result_final)):
+		if float(offset_result_final[i]>0):
+			offset_result_nature.append('偏高')
+		else:
+			offset_result_nature.append('偏低')	
+	return  offset_result_nature	
