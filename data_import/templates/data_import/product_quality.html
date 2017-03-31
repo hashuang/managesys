@@ -12,7 +12,8 @@
     <input type="hidden" name="hidden_inform1" id='hidden_inform1'> 
     <input type="hidden" name="hidden_inform2" id='hidden_inform2'> 
     <input type="hidden" name="hidden_inform3" id='hidden_inform3'> 
-    <input type="hidden" name="hidden_inform4" id='hidden_inform4'> 
+    <input type="hidden" name="hidden_inform4" id='hidden_inform4'>
+    <input type="hidden" name="hidden_inform5" id='hidden_inform5'>
 
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
@@ -36,18 +37,14 @@
 </div>
 
 <p></p>
-<div>
-    <!--table用来放置因素追溯的分析结果-->
+<!-- <div>
     <table id='txt' style="width: 900px;height:350px;border:45px;">
-<!--         <caption >因素追溯的分析结果</caption>
-        <tr> 
-        <th>序号</th>
-        <th>影响因素中文名</th>
-        <th>影响因素英文名</th>
-        <th>影响因素回归系数</th>
-        <th>影响因素偏离值</th>
-        </tr> -->
     </table>
+</div> -->
+<div id='cause_area'>
+   <!--table用来放置因素追溯的分析结果-->
+    <p><strong>转炉工序单炉次字段成本追溯结果：</strong></p>
+    <textarea id="cause_txt" style="width: 900px;height:150px;"></textarea>
 </div>
 <!-- <button onclick='updatevalue()' id='updatevalue'>定期更新数据库转炉字段统计值</button> -->
 
@@ -60,7 +57,8 @@
         var fieldname_chinese = $("#hidden_inform2").val();
         var actual_value = $("#hidden_inform3").val();
         var offset_value = $("#hidden_inform4").val();
-        probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value);
+        var qualitative_offset_result= $("#hidden_inform5").val();
+        probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value,qualitative_offset_result);
 
     }
     //质量含量
@@ -87,7 +85,7 @@
     // 条形图（含量）
     function drawBarChart_cost(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#3397c9','#f39646','#e02222'];
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#2367d9','#f39646','#e02222'];
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
@@ -359,13 +357,15 @@
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
                 fieldname_chinese=result.xname[params.seriesIndex];
                 fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value,result.qualitative_offset_result[params.seriesIndex]);
                 $("#hidden_inform1").val(fieldname_english);//字段英文名
                 $("#hidden_inform2").val(fieldname_chinese);//字段中文名
                 $("#hidden_inform3").val(params.value);//实际值
                 $("#hidden_inform4").val(result.offset_result[params.seriesIndex]);//偏离程度
+                $("#hidden_inform5").val(result.qualitative_offset_result[params.seriesIndex]);//偏离程度定性判断
             }
             console.log(params);
+            console.log(result.qualitative_offset_result[params.seriesIndex])
             });
 
             myChart.setOption(option);
@@ -373,7 +373,8 @@
     };
     
     //正态分布+概率分布
-    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value){
+    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value,qualitative_offset_result){
+        // alert(qualitative_offset_result);
         var field1 = $("#prime_analyse").val();//炉次号
         //var field2 = $("#field2").val();//字段
         //var field2 = $("#bookno1").find("option:selected").val();
@@ -384,7 +385,7 @@
             $.ajax({
             type: "post",
             url:  "/probability_distribution",
-            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value,'coloum_number':coloum_number},
+            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value,'coloum_number':coloum_number,'qualitative_offset_result':qualitative_offset_result},
             error: function() {
                 alert("404");
             },
@@ -399,6 +400,7 @@
 
     //正态分布+概率分布画图
     function probability_distribution_picture(result){
+        // alert(result.qualitative_offset_result);
         var myChart = echarts.init(document.getElementById('main2'));
         //var bookname=document.getElementById('bookno1')
             // 指定图表的配置项和数据
@@ -516,10 +518,13 @@
                 //mes += '  seriesIndex : ' + param.seriesIndex;
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
                 offset_value=result.normal_result.offset_value;//读取偏离值
+                qualitative_offset_result=result.qualitative_offset_result;//读取定性判断
                 fieldname_english=result.normal_result.fieldname;//读取字段英文名字
-                retrospectfactor(fieldname_english,offset_value);
+
+                retrospectfactor(fieldname_english,offset_value,qualitative_offset_result);
             // }
             console.log(params);
+            console.log(fieldname_english)
             });
 
         // 使用刚指定的配置项和数据显示图表。
@@ -527,36 +532,28 @@
 
     };
     //回归系数因素追溯及其偏离程度
-    function retrospectfactor(field,offset_value){
+    function retrospectfactor(field,offset_value,qualitative_offset_result){
         var prime_analyse = $("#prime_analyse").val();
         $.ajax({
             type: "post",
             url:  "/q_max_influence",
             data: {'field':field,'offset_value':offset_value,
-            'prime_analyse':prime_analyse},
+            'prime_analyse':prime_analyse,'qualitative_offset_result':qualitative_offset_result},
             error: function() {
                 alert("错误！！");
             },
             success: function(data) {
-                //alert(data.result)
-                // alert("success");
-                // alert(data.offset_number);//字段个数
-                // alert(data.xasis_fieldname);//字段英文名数组
-                // alert(data.offset_result);//字段偏离程度
-                // alert(data.En_to_Ch_result);//字段中文名
-                // alert(data.regression_coefficient);
-                $("#txt").empty();//清除表格内容
-                var content='';
-                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                $("#cause_txt").empty();//清除文本框内容
+                $("#cause_txt").append('本炉次'+prime_analyse+'的钢水'+fieldname_chinese+qualitative_offset_result+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n');      
                 for (var i=0;i<data.offset_number;i++){
-                    content=content+(i+1)+" : "+data.En_to_Ch_result[i]+"; "+data.xasis_fieldname[i]+"; "+data.regression_coefficient[i]+"; "+data.offset_result[i]+"\n";
-                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>")
+                    if (i < 5){
+                        $("#cause_txt").append((i+1)+'、'+data.En_to_Ch_result_score[i]+data.offset_result_nature[i]+data.posNum[i]+'\n');
+                    }
 
                 }
-                alert(content);
-                   
-                
-            }
+                $("#cause_area").show();//
+                //alert(content);
+                }
         })
     };
     // 正态分布画图
@@ -652,7 +649,7 @@
             // loadOption_chen();
             // loadGrape_chen();
             $("#coloum_div").hide();
-
+            $("#cause_area").hide();
         })
 </script>
 {% endblock %}
