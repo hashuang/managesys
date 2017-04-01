@@ -358,7 +358,7 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
     //console.log(data[0].name);
     //console.log(data[0].value);
     //获取月/日的数据
-    for (var i=0;i<4;i++)
+    for (var i=0;i<10;i++)
     {
         if(data[i].name == 'timeline_Day'){
             timeline_Day = data[i].value;
@@ -366,18 +366,39 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
             timelineValue_Day = data[i].value;
         }else if (data[i].name == 'timeline_Month'){
             timeline_Month = data[i].value;
+        }else if (data[i].name == 'timelineValue_Month'){
+            timelineValue_Month = data[i].value;
+        }else if (data[i].name == 'timeline_Week'){
+            timeline_Week = data[i].value;
+        }else if(data[i].name == 'timelineValue_Week'){
+            timelineValue_Week = data[i].value;
+        }else if (data[i].name == 'timeline_15Day'){
+            timeline_15Day = data[i].value;
+        }else if(data[i].name == 'timelineValue_15Day'){
+            timelineValue_15Day = data[i].value;
+        }else if (data[i].name == 'timeline_20Day'){
+            timeline_20Day = data[i].value;
         }else{
-            timelineValue_month = data[i].value;
+            timelineValue_20Day = data[i].value;
         }
     }
 
     //月/日显示方式
-    if (showStyle == 1){
+    if (showStyle == 1){ //月
         timeline = timeline_Month;
-        timelineValue = timelineValue_month;
-    }else{
+        timelineValue = timelineValue_Month;
+    }else if(showStyle == 2){ //周
+        timeline = timeline_Week;
+        timelineValue = timelineValue_Week;
+    }else if(showStyle == 3){ //日
         timeline = timeline_Day;
         timelineValue = timelineValue_Day;
+    }else if(showStyle == 4){ //15天
+        timeline = timeline_15Day;
+        timelineValue = timelineValue_15Day;
+    }else { //20天
+        timeline = timeline_20Day;
+        timelineValue = timelineValue_20Day;
     }
 
     option = {

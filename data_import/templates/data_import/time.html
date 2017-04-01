@@ -47,6 +47,15 @@
 </div>
 <br>
 <div>
+    时间选取快捷按钮：
+    <button id="btnSelectDate_oneYear" onclick="SelectDate_default()" > 还原默认值 </button>
+    <button id="btnSelectDate_oneMonth" onclick="SelectDate_oneMonth()" > 近一月 </button>
+    <button id="btnSelectDate_threeMonth" onclick="SelectDate_threeMonth()" > 近三月 </button>
+    <button id="btnSelectDate_halfYear" onclick="SelectDate_halfYear()" > 近半年 </button>
+    <button id="btnSelectDate_oneYear" onclick="SelectDate_oneYear()" > 近一年 </button>
+</div>
+<br>
+<div>
     地点范围:
     <select name="select_space" id="select_space" class="xla_4" value = '中国范围内'>
         <option value="0" selected >--请选择--</option>
@@ -133,15 +142,7 @@
     </select><br>
 </div>
 <br>
-<div>
-   折线图展示方式： 
-    <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '月' style="display:inline;">
-       
-        <option value="1">月</option>
-        <option value="2">日</option>
-    </select>
-</div>
-<br>
+
 <div>
     钢种选择:
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45>45
@@ -149,6 +150,9 @@
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82DA>C82DA
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=60Si2Mn>60Si2Mn
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82A>C82A
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82D2>C82D2
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=ER50-6E>ER50-6E
+
 
     <br>
 
@@ -172,8 +176,20 @@ style="visibility: hidden;"
 -->
 
 <!--<h3> 输出 </h3>-->
+<div>
 <button id="btnDrawChart" >分析结果绘图</button>
+</div>
 <br>
+<div>
+   折线图展示方式： 
+    <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '月' style="display:inline;">
+        <option value="1">每月结果</option>
+        <option value="5">每20日结果</option>
+        <option value="4">每15日结果</option>
+        <option value="2">每7日结果</option>
+        <option value="3">每日结果</option>
+    </select>
+</div>
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
@@ -198,15 +214,24 @@ style="visibility: hidden;"
         } 
     }
 
-    //  select_aspect.onchange = function(){  //控制在选择地点范围后，选择细分的地点名称
-    //     if(this.value !='3'){ 
-    //         document.getElementById("select_showStyle").style.display = 'inline';
-    //     } else { 
-    //         document.getElementById("select_showStyle").style.display = 'none';
-    //     } 
-    // }
-
-
+    var data_save = {
+        result: null,
+        tradeNoNoNo: null,
+        aspect_name: null,
+        unite: null,
+        maxValue: null,
+        module_name: null,
+        sql_date1_: null,
+        sql_date2_: null,
+        dateChoose_name: null,
+        space_name: null,
+        showStyle: null
+    }
+ 
+    select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
+        //var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        drawTimeLineBar(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value);
+    }
 
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
@@ -214,8 +239,8 @@ style="visibility: hidden;"
         var aspect = $ ("#select_aspect").find("option:selected").val();
         var dateChoose = $ ("#select_time_choose").find("option:selected").val();
         var space = $ ("#select_space").find("option:selected").val();
-        var tradeNo = $ ("#select_trade").find("option:selected").val()
-        var showStyle = $ ("#select_showStyle").find("option:selected").val()
+        var tradeNo = $ ("#select_trade").find("option:selected").val();
+        var showStyle = $ ("#select_showStyle").find("option:selected").val();
         
         var sql_cust = ''
         var sql_date1_ = document.getElementById("select_date1").value
@@ -287,9 +312,19 @@ style="visibility: hidden;"
             }
         ).done(function(data) {
             console.log(JSON.stringify(data.result));
-            //alert (data.result[0].value);
+            //将所获取到的数据存入 data_save 里面
+            data_save.result = data.result;
+            data_save.tradeNoNoNo = tradeNoNoNo;
+            data_save.aspect_name = data.aspect_name;
+            data_save.unite = data.unite;
+            data_save.maxValue = data.maxValue;
+            data_save.module_name = data.module_name;
+            data_save.sql_date1_ = sql_date1_;
+            data_save.sql_date2_ = sql_date2_;
+            data_save.dateChoose_name = dateChoose_name;
+            data_save.space_name = space_name;
+            data_save.showStyle = showStyle;
             drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle);
-            console.log(module,aspect,dateChoose,space,tradeNoNoNo,sql_date1,sql_date2,sql_cust,space_name);
             //console.log(sql_date1)
             //console.log(data.unite)
             $("#txt").empty();
@@ -299,8 +334,215 @@ style="visibility: hidden;"
                 console.log("wrong");
             });
 
+
+
         
     });
+    
+
+
+    function day_formatter(day,month,year){  //格式化输出日期
+        if(day<10){
+           day="0"+day;
+        }
+        if(month<10){
+           month="0"+month;
+        }
+        var date = year+"-"+ month +"-"+day;
+        return date
+    }
+
+    function get_today(){ //获取今日的日期
+        var date = new Date(); 
+        var year = date.getFullYear();  //年
+        var month = date.getMonth()+1;   //月
+        var day = date.getDate();  //日
+        var hour = date.getHours();   //时
+        var minute = date.getMinutes();   //分
+        var second = date.getSeconds();  //秒
+
+        sql_date2 = day_formatter(day,month,year);
+        document.getElementById("select_date2").value = sql_date2;
+        var today = {
+            year:year,
+            month:month,
+            day:day,
+            sql_date2:sql_date2
+        };
+        //console.log(today);
+        return today
+    }
+
+    function SelectDate_default(){
+        document.getElementById("select_date1").value = '2016-01-01';
+        document.getElementById("select_date2").value = '2016-07-31';
+    }
+
+    function SelectDate_oneMonth(){
+        var today = get_today();
+        var newYear;
+        var newMonth;
+        var newDay;
+        var sql_date2;
+        var sql_date1;
+        //得到每月天数
+        var daysInMonth = new Array(0,31,28,31,30,31,30,31,31,30,31,30,31);
+        if(today.tear%4 == 0 && today.tear%100 != 0){ 
+            //闰年2月有29天
+           daysInMonth[2]= 29;
+       }
+        //得到上一月月份数 与 年份数
+        if (today.month == 1){
+            newMonth = 12;
+            newYear = today.year - 1
+        }else{
+            newMonth = today.month - 1
+            newYear = today.year
+        }
+        //得到上一月日期的 日
+        if(daysInMonth[newMonth] < today.day){
+            newDay = daysInMonth[newMonth];
+        }else{
+            newDay = today.day
+        }
+        //格式化输出
+        sql_date1 = day_formatter(newDay,newMonth,newYear);
+        //赋值给时间选择空间
+        document.getElementById("select_date1").value = sql_date1;
+
+        var oneMonth = {
+            year:newYear,
+            month:newMonth,
+            day:newDay,
+            sql_date1:sql_date1
+        };
+        console.log(oneMonth);
+        return oneMonth
+    }
+
+    function SelectDate_threeMonth(){
+        var today = get_today();
+        var newYear;
+        var newMonth;
+        var newDay;
+        var sql_date2;
+        var sql_date1;
+        //得到每月天数
+        var daysInMonth = new Array(0,31,28,31,30,31,30,31,31,30,31,30,31);
+        if(today.tear%4 == 0 && today.tear%100 != 0){ 
+            //闰年2月有29天
+           daysInMonth[2]= 29;
+       }
+        //得到上一月月份数 与 年份数
+        if (today.month == 1){
+            newMonth = 10;
+            newYear = today.year - 1
+        }else if (today.month == 2){
+            newMonth = 11;
+            newYear = today.year - 1
+        }else if (today.month == 3){
+            newMonth = 12;
+            newYear = today.year - 1
+        }else{
+            newMonth = today.month - 1
+            newYear = today.year
+        }
+        //得到上一月日期的 日
+        if(daysInMonth[newMonth] < today.day){
+            newDay = daysInMonth[newMonth];
+        }else{
+            newDay = today.day
+        }
+
+        sql_date1 = day_formatter(newDay,newMonth,newYear);
+        document.getElementById("select_date1").value = sql_date1;
+        // var oneMonth = {
+        //     year:newYear,
+        //     month:newMonth,
+        //     day:newDay,
+        //     sql_date1:sql_date1
+        // };
+        // console.log(oneMonth);
+        // return oneMonth
+    }
+
+    function SelectDate_halfYear(){
+        var today = get_today();
+        var newYear;
+        var newMonth;
+        var newDay;
+        var sql_date2;
+        var sql_date1;
+        //得到每月天数
+        var daysInMonth = new Array(0,31,28,31,30,31,30,31,31,30,31,30,31);
+        if(today.tear%4 == 0 && today.tear%100 != 0){ 
+            //闰年2月有29天
+           daysInMonth[2]= 29;
+       }
+        //得到上一月月份数 与 年份数
+        if (today.month == 1){
+            newMonth = 7;
+            newYear = today.year - 1
+        }else if (today.month == 2){
+            newMonth = 8;
+            newYear = today.year - 1
+        }else if (today.month == 3){
+            newMonth = 9;
+            newYear = today.year - 1
+        }else if (today.month == 4){
+            newMonth = 10;
+            newYear = today.year - 1
+        }else if (today.month == 5){
+            newMonth = 11;
+            newYear = today.year - 1
+        }else if (today.month == 6){
+            newMonth = 12;
+            newYear = today.year - 1
+        }else{
+            newMonth = today.month - 1
+            newYear = today.year
+        }
+        //得到上一月日期的 日
+        if(daysInMonth[newMonth] < today.day){
+            newDay = daysInMonth[newMonth];
+        }else{
+            newDay = today.day
+        }
+
+        sql_date1 = day_formatter(newDay,newMonth,newYear);
+        document.getElementById("select_date1").value = sql_date1;
+        // var oneMonth = {
+        //     year:newYear,
+        //     month:newMonth,
+        //     day:newDay,
+        //     sql_date1:sql_date1
+        // };
+        // console.log(oneMonth);
+        // return oneMonth
+    }
+
+    function SelectDate_oneYear(){
+        var today = get_today();
+        var newYear;
+        var newMonth;
+        var newDay;
+        var sql_date1;
+        //得到上一月月份数 与 年份数
+        newYear = today.year -1
+        newMonth = today.month 
+        newDay = today.day
+        //格式化输出日期
+        sql_date1 = day_formatter(newDay,newMonth,newYear);
+        document.getElementById("select_date1").value = sql_date1;
+        // var oneMonth = {
+        //     year:newYear,
+        //     month:newMonth,
+        //     day:newDay,
+        //     sql_date1:sql_date1
+        // };
+        // console.log(oneMonth);
+        // return oneMonth
+    }
 
     // //自动加载钢种
     // function loadOption_select_tradeNo(){ 
