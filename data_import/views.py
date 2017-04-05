@@ -29,8 +29,13 @@ from .models import ContentPost
 import logging
 import logging.config
 
+
+from .models import ContentPost
+from .liusinuo import mysql
+
 # logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('django')
+
 
 exclude_posts = ("shares","abstract")
 
@@ -600,23 +605,6 @@ def echarts(request):
 	return render(request, MAIN_OUTFIT_BASE + 'echarts_demo.html',{'title':"青特钢大数据项目组——echarts示例"})
 
 
-
-# from . import zhuanlu	
-# def lond_to(request):
-# 	contentVO={
-# 		'title':'测试',
-# 		'state':'success'
-# 	}
-# 	ana_result={}
-# 	ana_result_two={}
-# 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_S
-# 	#print("result:")
-# 	contentVO['procedure_names']=ana_result
-# 	#print(contentVO)
-# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-
-
 from data_import.liusinuo.main import main
 def space(request):
 	print('请求主页')
@@ -680,24 +668,31 @@ def time(request):
 		except Exception as ex:
 			print(ex)
 
-# #从数据库动态加载钢种
-# def getAllTradeNo_time(request):
-# 	sqlVO={}
-# 	sqlVO["db_name"]="l2own"
-# 	sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
-# 	print(sqlVO["sql"])
-# 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-# 	frame=DataFrame(scrapy_records)
-# 	#print(frame['GK_NO'])
-# 	contentVO={
-# 		'title':'测试',
-# 		'state':'success'
-# 	}
-# 	grape=[ele for ele in frame['GK_NO']]
-# 	#print(grape)
-# 	contentVO['result']=grape
-# 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
+#从数据库动态加载钢种
+def getAllTradeNo_time(request):
+	conn_mysql=mysql.MySQL();
+	sql_getAllTradeNo = "select c.tradeNo from data_import_sales_orderno a,data_import_sales2_orderno_orderitem c where c.orderNo = a.orderNo group by c.tradeNo"
+	allTradeNo = conn_mysql.select(sql_getAllTradeNo)
+	print (allTradeNo)
+
+	# sqlVO={}
+	# sqlVO["db_name"]="l2own"
+	# sqlVO["sql"]="select distinct gk_no from qg_user.PRO_BOF_HIS_ALLFIELDS order by gk_no";
+	# print(sqlVO["sql"])
+	# scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)    #查询数据库
+	# frame=DataFrame(scrapy_records)
+	#print(frame['GK_NO'])
+
+	# contentVO={
+	# 	'title':'测试',
+	# 	'state':'success'
+	# }
+	# # grape=[ele for ele in frame['GK_NO']]
+	# #print(grape)
+	# contentVO['result']=allTradeNo
+	# return HttpResponse(json.dumps(contentVO),content_type='application/json')
+	return HttpResponse(json.dumps({'result':allTradeNo}),content_type='json')
 
 def ha(request):
 	print('转炉数据清洗')
@@ -714,3 +709,4 @@ def lond_to_B(request):
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+

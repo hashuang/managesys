@@ -86,7 +86,7 @@ def union_section(section_point,sections):
             sections.append(section)
     return sections 
 
-#计算投入料分布
+#计算转炉含量
 def cost(request):
 	print('你好')
 	#print("cost_success")
@@ -107,7 +107,7 @@ def cost(request):
 		'state':'success'
 	}
 
-	xaxis=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
+	xaxis=['C含量','SI含量','MN含量','P含量','S含量','重量','温度']
 	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
 
 	for i in range(len(xasis_fieldname)):
@@ -126,6 +126,7 @@ def cost(request):
 	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
 	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
 	print('offset_result',offset_result)
+	print('qualitative_offset_result',qualitative_offset_result)
 	print('offset_resultlist',offset_resultlist)
 	ana_result={}
 	ana_result['heat_no']=frame.HEAT_NO[0]#炉次号
@@ -229,7 +230,7 @@ def qualitative_offset(offset_result):
 	qualitative_offset_result=[]
 	for i in range(len(offset_result)):
 		if abs(float(offset_result[i]))<=qualitative_standard[0]:
-			qualitative_offset_result.append('正常范围')
+			qualitative_offset_result.append('在正常范围')
 		elif abs(float(offset_result[i]))<=qualitative_standard[1]:
 			if float(offset_result[i])>0:#偏高
 				qualitative_offset_result.append('偏高')
@@ -514,9 +515,11 @@ def probability_distribution(request):
 	bookno=request.POST.get("fieldname_english").upper();#字段英文名
 	fieldname_chinese=request.POST.get("fieldname_chinese")#字段中文名
 	offset_value=request.POST.get("offset_value");#偏离值
+	qualitative_offset_result=request.POST.get("qualitative_offset_result");#定性判断
 	# offset_value=float(offset_value_temp[1:-1])/100
 	actual_value=float(request.POST.get("actual_value"))#实际值
-	print(heat_no,bookno,actual_value);
+	coloum_number=int(request.POST.get("coloum_number"))
+	print(heat_no,bookno,actual_value,coloum_number);
 	# print(scrapy_records[1:5])
 
 	#进行数据库查询
@@ -567,7 +570,7 @@ def probability_distribution(request):
 		if(clean.max==clean.min()):
 			bc=1
 		else:	
-			bc=(clean.max()-clean.min())/50
+			bc=(clean.max()-clean.min())/coloum_number
 		bcq=math.ceil(bc*1000)/1000
 		print(bcq)
 		try:
@@ -689,12 +692,14 @@ def probability_distribution(request):
 	final_result['ana_result']=ana_result#概率分布
 	final_result['ana_describe']=ana_describe
 	final_result['normal_result']=normal_result#正态分布
+	final_result['qualitative_offset_result']=qualitative_offset_result#定性判断
 	# return final_result
 	return HttpResponse(json.dumps(final_result),content_type='application/json')
 	
 #影响因素追溯
 from . import zhuanlu
 def max_influence(request):
+	print("哈爽")
 	print("Enter max_influence")
 	field=request.POST.get("field");
 	offset_value=request.POST.get("offset_value");#炉次字段的偏离程度，
@@ -702,36 +707,53 @@ def max_influence(request):
 	#将待匹配的字段名设置为参数
 	#field='MIRON_WGT'
 	result=[]
-	#读取回归系数文件
-	with open('data_import/regression_all_EN1.csv','r') as csvfile:
-	# with open('data_import/test.csv','r') as csvfile:
-	    reader = csv.reader(csvfile)
-	    rows= [row for row in reader]
-	aa = np.array(rows)
-	aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
-	for aaa in aa:
-		if(aaa[0]==field):
-			result.append(aaa)
-		# elif(aaa[1]==field):
-		# 	temp=aaa[0]
-		# 	aaa[0]=aaa[1]
-		# 	aaa[1]=temp
-			# result.append(aaa)
-	    # fout.write("%s\n" % aaa)  
-	result1 = np.array(result)#转变为numpy数组格式
-	length_result1=len(result1)
-	print("长度"+str(length_result1))
-	print(result1)#根据回归系数大小排序结果
-	print("------------------")
+	#从数据库读取回归系数文件
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	print(scrapy_records)
+	length_result1=len(scrapy_records)
+
 	xasis_fieldname=[]#字段英文名字数组
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(result1[i][1])
-		regression_coefficient.append(result1[i][2])
-		str_sql=str_sql+','+result1[i][1]
-	print(str_sql)
-	prime_cost='1634230'
+		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
+		regression_coefficient.append(scrapy_records[i].get('COF', None))
+		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
+	# #读取回归系数文件
+	# with open('data_import/regression_all_EN1.csv','r') as csvfile:
+	# # with open('data_import/test.csv','r') as csvfile:
+	#     reader = csv.reader(csvfile)
+	#     rows= [row for row in reader]
+	# aa = np.array(rows)
+	# aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
+	# for aaa in aa:
+	# 	if(aaa[0]==field):
+	# 		result.append(aaa)
+	# 	# elif(aaa[1]==field):
+	# 	# 	temp=aaa[0]
+	# 	# 	aaa[0]=aaa[1]
+	# 	# 	aaa[1]=temp
+	# 		# result.append(aaa)
+	#     # fout.write("%s\n" % aaa)  
+	# result1 = np.array(result)#转变为numpy数组格式
+	# length_result1=len(result1)
+	# print("长度"+str(length_result1))
+	# print(result1)#根据回归系数大小排序结果
+	# print("------------------")
+	# xasis_fieldname=[]#字段英文名字数组
+	# regression_coefficient=[]#字段回归系数值数组
+	# str_sql=''
+	# for i in range(length_result1):
+	# 	xasis_fieldname.append(result1[i][1])
+	# 	regression_coefficient.append(result1[i][2])
+	# 	str_sql=str_sql+','+result1[i][1]
+	# print(str_sql)
+	# prime_cost='1634230'
+	prime_cost=request.POST.get("prime_analyse");
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
@@ -764,6 +786,7 @@ def max_influence(request):
 	xasis_fieldname_result=[]#字段英文名字数组
 	regression_coefficient_result=[]#字段回归系数值数组
 	offset_result_final=[]#偏离程度值
+
 	#即字段偏离高，则正相关应对应偏高，负相关应对应偏低
 	if float(offset_value[0:-1])>=0:#读取隐藏域的值，由于隐藏域的偏离表示为百分比，例如12.6%。因此截取12.6来判断其正负
 		for i in range(length_result1):
@@ -792,15 +815,78 @@ def max_influence(request):
 	print("偏离程度")
 	print(offset_result_final)
 	#查询转炉工序字段名中英文对照
+	offset_result_nature=simple_offset(offset_result_final)#相关字段进行简单定性判断
+	print("简单定性判断")
+	print(offset_result_nature)
+	contentVO['offset_result_nature']=offset_result_nature
+
 	ana_result={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
 	En_to_Ch_result=[]
 	for i in range(len(xasis_fieldname_result)):
 		En_to_Ch_result.append(ana_result[xasis_fieldname_result[i]])
+	print("中文字段")	
 	print(En_to_Ch_result)
-	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+	ana_result_score={}
+	ana_result_score=zhuanlu.PRO_BOF_HIS_ALLFIELDS_SCORE
+	En_to_Ch_result_score=[]
+	for i in range(len(xasis_fieldname_result)):
+		En_to_Ch_result_score.append(ana_result_score[xasis_fieldname_result[i]])
+	print("带标记的中文字段")	
+	print(En_to_Ch_result_score)	
+
+	#取前5个权重最大的字段按操作顺序（表结构）进行排序
+	#中文字段与偏离程度合并，需联动排序
+	offset_result_final_maxfive=offset_result_final[0:5]
+	En_to_Ch_result_maxfive=En_to_Ch_result[0:5]
+	dicty=dict(zip(En_to_Ch_result_maxfive,offset_result_final_maxfive))
+	print('组合字段中文名和偏离程度')
+	print(dicty)
+
+	#按操作排序
+	a=[]
+	En_to_Ch_result_score=[]
+	xasis_fieldname_result_maxfive=xasis_fieldname_result[0:5]
+	for i in range(len(xasis_fieldname_result_maxfive)):
+		a.append(ana_result_score[xasis_fieldname_result_maxfive[i]])
+	# print('带标记的字段')
+	# print(a)
+	L=sorted(a,key=by_score)
+	for i in range(len(xasis_fieldname_result_maxfive)):
+		En_to_Ch_result_score.append(L[i][0])
+	print('操作排序后中文名')
+	print(En_to_Ch_result_score)
+
+    #联动排序偏离程度
+	offset_result_final_maxfive_order=[]
+	for i in range(len(En_to_Ch_result_score)):
+		offset_result_final_maxfive_order.append(dicty[En_to_Ch_result_score[i]])
+	print('按操作排序后字段偏离程度')
+	print(offset_result_final_maxfive_order)	
+    #联动排序偏离程度
+	# dictx=sorted(dicty.items(),key=lambda d:d in b )	
+	# print('联动排序')
+	# print(dictx)
+	# offset_result_final_maxfive_order=[dictx[i][1] for i in range(len(dictx))]#按操作排序后字段中文名
+	# xasis_fieldname_result_maxfive_order=[dictx[i][0] for i in range(len(dictx))]#按操作排序后字段偏离程度
+	# print('按操作排序后字段英文名')
+	# print(xasis_fieldname_result_maxfive_order)
 	
+	
+	pos=map(lambda x:abs(x),offset_result_final_maxfive_order)
+	posNum=["%.2f%%"%(n*100) for n in list(pos)]
+	print("格式化")
+	print(posNum)
+	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
+
+	#contentVO['offset_result_final_maxfive_order']=offset_result_final_maxfive_order#按操作排序后字段偏离程度
+	contentVO['En_to_Ch_result_score']=En_to_Ch_result_score#按操作排序后字段中文名
+	contentVO['posNum']=posNum#按操作排序后偏离程度格式话
+
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+def by_score(t):
+    return t[1]	
 
 #更新数据库转炉表结构期望等参数：updatevalue+Calculation_Parameters-----------------------------------------------------------------------------------------------------------------
 import cx_Oracle
@@ -925,3 +1011,13 @@ def Calculation_Parameters(fieldname,IF_FIVENUMBERSUMMARY):
 	dataclean_result['std_value']=std_value#标准差
 
 	return dataclean_result
+#对相关性字段展示做简单定性分析	正数为偏高负数为偏低
+def simple_offset(offset_result_final):
+	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
+	offset_result_nature=[]#相关字段定性分析
+	for i in range(len(offset_result_final)):
+		if float(offset_result_final[i]>0):
+			offset_result_nature.append('偏高')
+		else:
+			offset_result_nature.append('偏低')	
+	return  offset_result_nature	

@@ -4,8 +4,9 @@
 <script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
 {% endblock pagejs %}
 {% block content %}
-
-<h2>多炉次质量回溯--波动率分析</h2>
+<h5><a href='/ha'>转炉数据统计分析</a></h5>
+<h5><a href='/product_quality'>转炉单炉次质量回溯</a></h5>
+<h2>转炉多炉次质量回溯--波动率分析</h2>
 <form action="javascript:void(0)" method="post">
     <div><br>
          钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select><br><br>
@@ -48,22 +49,17 @@
         <div id="main1" style="float:left;width:1200px;height:450px"></div>
         <!-- <div id="main2" style="float:left;width:600px;height:450px">右</div> -->
         <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->  
-        <div id="main2" style="float:left;width:600px;height:450px">
-            <!--table用来放置因素追溯的分析结果-->
-            <table id='txt' style="width: 1200px;height:100px;border:0px;">
-            <!-- <caption >因素追溯的分析结果</caption>
-                <tr> 
-                <th>序号</th>
-                <th>影响因素中文名</th>
-                <th>影响因素英文名</th>
-                <th>影响因素回归系数</th>
-                <th>影响因素偏离值</th>
-                </tr> -->
+        <div id="main2" style="float:left;width:600px;height:50px">
+            <table id='txt' style="width: 1200px;height:20px;border:0px;">            
             </table>
         </div> 
+     </div>   
+    <div id='cause_area'>
+        <textarea id="cause_txt" style="width: 1200px;height:300px;border:0px"></textarea>
     </div>
+    
   <!--   <p><strong>转炉工序多炉次质量追溯</strong></p> -->
-    <textarea id="cause_txt" style="width: 1200px;height:100px;border:0px"></textarea>
+   
 
 
 
@@ -102,10 +98,20 @@ function fluc_produce(){
             },
             success: function(data) {
                 // alert("success!");
-                drawBarChart_cost_fluc(data);
-                // drawBarChart_cost_fluc2(data);
-                // myChart_main1.hideLoading();
-                // myChart_main2.hideLoading();
+                
+                if(data.state=='failure_current'){
+                    // alert('当前筛选条件下'+data.time.time1+'至'+data.time.time2+'的时间区间内无数据！');
+                    $('#main1').empty()
+                    $('#main1').append('！！注：当前筛选条件下'+data.time.time1+'至'+data.time.time2+'的时间区间内无数据！');
+                }
+                else if(data.state=='failure_history'){
+                    // alert('当前筛选条件下'+data.time.history_time1+'至'+data.time.history_time2+'的历史时间区间内无数据！');
+                    $('#main1').empty()
+                    $('#main1').append('！！注：当前筛选条件下'+data.time.history_time1+'至'+data.time.history_time2+'的历史时间区间内无数据！');
+                }
+                else{
+                    drawBarChart_cost_fluc(data);
+                }
             }
         })
     }; 
@@ -132,15 +138,20 @@ function fluc_produce(){
             $('#datepicker-example7-end-history').Zebra_DatePicker({
                 direction: 1
             });
+            //设置默认时间
+            $('#datepicker-example7-start').val('2016-01-22');
+            $('#datepicker-example7-end').val('2016-04-14');
+            $('#datepicker-example7-start-history').val('2016-01-01');
+            $('#datepicker-example7-end-history').val('2017-03-09');
         });
 
 
     //自动加载钢种
-    function loadGrape_chen(){ 
+    function loadGrape(){ 
         $.ajax({
         type: "POST",
         dataType:"json",
-        url: "/getGrape" ,
+        url: "/paihao_getGrape" ,
         data: {'greet':'hello'},
         success: function(data){
             //alert(data.result);
@@ -158,280 +169,6 @@ function fluc_produce(){
          });
         };
 
-// 条形图（投入）(多Y轴)(弃用)
-    function drawBarChart_cost_fluc2(result){
-        var myChart = echarts.init(document.getElementById('main1'));
-        
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
-        var barCategoryGap_value='5%';
-            // 指定图表的配置项和数据
-            var option = {
-                color:colors,
-                title: {
-                    // text: '在'+result.time1+'至'+result.time2+'时间范围内的波动率计算',
-                    x:'center'
-                },
-                tooltip: {
-                    // trigger: 'axis',
-                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                    //     type : 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-                        trigger:'item',
-                        formatter: function (params){
-                            var res = params.seriesNames;
-                            // var res = result.fieldname_ch[params.seriesIndex]+':</br>波动率实际值：'+params.value+'</br>波动率历史值：'+result.ana_describe_history[params.seriesIndex].numb[2]+ '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                        
-                            return res;
-                        }
-                     
-                },
-                toolbox: {
-                    show : true,
-                    feature: {
-                        dataView: {show: true, readOnly: false},
-                        restore: {show: true},
-                        saveAsImage: {show: true}
-                        }
-                },
-                legend: {
-                    data:['']
-                },
-                xAxis: [{
-                    type: 'category',
-                    axisTick: {
-                    alignWithLabel: true
-                    },
-                    data: ['转炉工序成本字段的总体分析']
-                },
-                ],
-                yAxis: [{
-                    type: 'value',
-                    name: '铁水重量',
-                    // min: 0,
-                    // max: 105000,
-                    position: 'left',
-                    offset:0,
-                    splitLine:{show: false},//去除网格线
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[0]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} Kg'
-                    // }
-                },
-                {
-                    type: 'value',
-                    name: '耗氧量',
-                    // min: 0,
-                    // max: 5000,
-                    position: 'left',
-                    offset: -150,
-                    splitLine:{show: false},//去除网格线
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[1]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} NM3'
-                    // }
-                },
-                {
-                    type: 'value',
-                    name: '生铁',
-                    // min: 0,
-                    // max: 2000,
-                    position: 'left',
-                    splitLine:{show: false},//去除网格线
-                    offset: -300,
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[2]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} Kg'
-                    // }
-                },
-                {
-                    type: 'value',
-                    name: '废钢总和',
-                    // min: 0,
-                    // max: 12000,
-                    position: 'left',
-                    offset: -450,
-                    splitLine:{show: false},//去除网格线
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[3]
-                        }
-                    },
-                    // axisLabel: {
-                    //     formatter: '{value} Kg'
-                    // }
-                }
-                ],
-                series: [{
-                    name: '铁水重量',
-                    type: 'bar',
-                    // barWidth : 50,//柱条（K线蜡烛）宽度
-                    // barGap: '1%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
-                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
-                    yAxisIndex: 0,
-                    data: [result.fluc_ratio[0]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name: '铁水重量',
-                    type: 'bar',
-                    // barWidth : 50,//柱条（K线蜡烛）宽度
-                    // barGap: '1%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
-                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
-                    yAxisIndex: 0,
-                    data: [result.fluc_ratio_history[0]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'耗氧量',
-                    type:'bar',
-                    // barWidth : 50,
-                    // barGap: '5%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 1,
-                    data:[result.fluc_ratio[1]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'耗氧量',
-                    type:'bar',
-                    // barWidth : 50,
-                    // barGap: '5%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 1,
-                    data:[result.fluc_ratio_history[1]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'生铁',
-                    type:'bar',
-                    // barWidth : 50,
-                    // barGap: '10%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.fluc_ratio[2]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                 {
-                    name:'生铁',
-                    type:'bar',
-                    // barWidth : 50,
-                    // barGap: '10%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.fluc_ratio_history[2]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'废钢总和',
-                    type:'bar',
-                    // barWidth : 70,
-                    // barGap: '80%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.fluc_ratio[3]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                 {
-                    name:'废钢总和',
-                    type:'bar',
-                    // barWidth : 70,
-                    // barGap: '80%',
-                    barCategoryGap:barCategoryGap_value,
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.fluc_ratio_history[3]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                }
-                ]
-            };
-
-            var ecConfig = echarts.config;
-            myChart.on('click', function (params) {
-            if (typeof params.dataIndex != 'undefined') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                // fieldname_chinese=result.fieldname_ch[params.seriesIndex];
-                // fieldname_english=result.fieldname_en[params.seriesIndex];
-                // probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
-
-                // offset_value=result.std_dev[params.dataIndex];//读取偏离值
-                // fieldname_english=result.fieldname_en[params.dataIndex];//读取字段英文名字
-                // retrospectfactor(fieldname_english,offset_value);
-        
-
-            }
-            console.log(params);
-            });
-
-            myChart.setOption(option);
-            // 使用刚指定的配置项和数据显示图表。
-
-    };
 
 function drawBarChart_cost_fluc(result){
         var myChart = echarts.init(document.getElementById('main1'));
@@ -440,15 +177,14 @@ function drawBarChart_cost_fluc(result){
             var option = {
                 color:colors,
                 title: {
-                    // text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的波动率计算',
-                    x:'center'
+                    text: '相同颜色条形图 左:波动率 右：对比历史波动率',
+                    x:'right'
                 },
                 tooltip: {
                         trigger:'item',
                          
                         formatter: function (params){
-                            var res = result.fieldname_ch[params.dataIndex]+'<br/>'+params.seriesName+'：'+params.value+ '<br/>偏离程度：'+result.offset_result_cent[params.dataIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.dataIndex];        
-                            // var res = result.fieldname_ch[params.seriesIndex]+':</br>波动率实际值：'+params.value+'</br>波动率历史值：'+result.ana_describe_history[params.seriesIndex].numb[2]+ '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
+                            var res = result.fieldname_ch[params.dataIndex]+'<br/>'+params.seriesName+'：'+params.value+ '<br/>偏离程度：'+result.offset_result_cent[params.dataIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.dataIndex];                                
                             return res;
 
                             }
@@ -464,7 +200,7 @@ function drawBarChart_cost_fluc(result){
                 },
             
                 legend: {
-                    data:['波动率','对比历史波动率']
+                    data:['左：波动率','右：对比历史波动率']
                 },
                        
                 xAxis: [{
@@ -543,41 +279,11 @@ function drawBarChart_cost_fluc(result){
             var ecConfig = echarts.config;
             myChart.on('click', function (params) {
             if (typeof params.seriesIndex != 'undefined') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                // fieldname_chinese=result.fieldname_ch[params.seriesIndex];
-                // fieldname_english=result.fieldname_en[params.seriesIndex];
-                // probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
-
-                // fieldname_en=result.fieldname_en[params.dataIndex];//读取字段英文名字
                 index=params.dataIndex;
                 retrospectfactor(result,index);
             }
             console.log(params);
             });
-
-            //动态循环
-            // var barGaps = ['30%', '-100%'];
-            // var loopIndex = 0;
-
-            // setInterval(function () {
-            //     var barGap = barGaps[loopIndex];
-
-            //     myChart.setOption({
-            //         xAxis: {
-            //             axisLabel: {
-            //                 formatter: 'barGap: \'' + barGap + '\''
-            //             }
-            //         },
-            //         series: [{
-            //             barGap: barGap
-            //         }]
-            //     });
-            //     loopIndex = (loopIndex + 1) % barGaps.length;
-
-            // }, 2000);
-
-
 
             myChart.setOption(option);
             // 使用刚指定的配置项和数据显示图表。
@@ -587,15 +293,27 @@ function drawBarChart_cost_fluc(result){
        //回归系数因素追溯及其偏离程度
     function retrospectfactor(result,index){
         var field = result.fieldname_en[index];//字段名
+        var field_ch = result.fieldname_ch[index];//中文名
         // var offset_value = result.offset_result[index];//偏离程度
         // var fluc_ratio = result.fluc_ratio[index];//波动率
+        // alert(result.fluc_ratio[index])
+        // alert(result.fluc_ratio_history[index])
+        if (result.offset_result[index]<=0){
+            $("#txt").empty();
+            $("#cause_txt").empty();//清除文本内容
+
+            $("#cause_txt").append(field_ch+'在检验时间范围'+result.time.time1+'至'+result.time.time2+'的波动率为'+result.fluc_ratio[index]+'，在对比时间范围'+result.time.history_time1+'至'+result.time.history_time2+'的波动率为'+result.fluc_ratio_history[index]+'，波动率变小，较稳定。\n');
+            $("#cause_area").show();
+            return
+                
+        }
         var txt = echarts.init(document.getElementById('txt'));
         txt.showLoading({
-                    text: "追溯结果正在努力计算中..."
+                    text: "追溯结果正在努力计算中...\n可能需要耗费一定时间..."
                 });
         $.ajax({
             type: "post",
-            url:  "/fluc_influence",
+            url:  "/b_fluc_influence",
             data: {'field':field,'offset_value':result.offset_result[index],'sentence_select':result.sentence_select,'sentence_selecthistory':result.sentence_selecthistory},
             error: function() {
                 alert("目前可能会是错误！！");
@@ -608,22 +326,24 @@ function drawBarChart_cost_fluc(result){
                 // alert(data.offset_result);//字段偏离程度
                 // alert(data.En_to_Ch_result);//字段中文名
                 // alert(data.regression_coefficient);
-                $("#txt").empty();//清除表格内容
+                // $("#txt").empty();//清除表格内容
                 $("#cause_txt").empty();//清除文本内容
 
-                $("#cause_txt").append('经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result[index]+'\n成本追溯所得字段影响因素分析如下:\n');
+                $("#cause_txt").append(field_ch+'在检验时间范围'+result.time.time1+'至'+result.time.time2+'的波动率为'+result.fluc_ratio[index]+'，在对比时间范围'+result.time.history_time1+'至'+result.time.history_time2+'的波动率为'+result.fluc_ratio_history[index]+',偏离度为'+result.offset_result_cent[index]+',\n通过数据的相关性分析发现，导致该问题的原因是:\n');
                 
-                $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
-
+                // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
+                $("#txt").empty();//清除表格内容
+                $("#txt").append('分析结果')
                 for (var i=0;i<data.offset_number;i++){
-                    $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
+                    // $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
 
                     if (i < 5){
-                        $("#cause_txt").append((i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                        $("#cause_txt").append((i+1)+'、'+data.En_to_Ch_result_score[i]+data.offset_result_nature[i]+data.posNum[i]+'\n');
                     }
                 }
-                
-            }
+
+             }   
+            
         })
     };
 
@@ -633,7 +353,7 @@ function drawBarChart_cost_fluc(result){
     //初始化
     $(function(){
             loadOption_chen();
-            loadGrape_chen();
+            loadGrape();
         })
 </script>
 

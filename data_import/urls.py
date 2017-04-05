@@ -3,7 +3,7 @@ from . import views
 from . import chyulia
 from . import fluc_chyulia
 from . import hashuang
-from . import steelprice
+from data_import.SteelPricePredict import steelprice
 from . import qualityzhuanlu
 from . import fluc_quality
 
@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^load_procedure_name$',views.load_procedure_name),
     url(r'^ana_data_lack$',views.ana_data_lack),
     url(r'^download_file$',views.download_file),
-    
+
     #重置密码
     url(r'^reset_password$',views.reset_password),
     url(r'^success$',views.success),
@@ -50,8 +50,10 @@ urlpatterns = [
     url(r'^time',views.time),
     url(r'^liusinuo',views.space),
 
+
     # #自动加载钢种
     # url(r'^getGrape',views.getAllTradeNo_time),
+
 
     #ha
     #显示统计分析页面
@@ -70,20 +72,21 @@ urlpatterns = [
     #加载单炉次质量回溯页面（product_quality.html）
     url(r'^product_quality',hashuang.product_quality),
     #同时计算正态分布和概率分布
-    url(r'^probability_distribution',qualityzhuanlu.probability_distribution), 
+    url(r'^probability_distribution',qualityzhuanlu.probability_distribution),
     url(r'^m_quality',qualityzhuanlu.cost),
-    #单炉次原因追溯   
+    #单炉次原因追溯
     url(r'^q_max_influence',qualityzhuanlu.max_influence),
     #比较多炉次波动率计算(m_fluc_qulity.html)
     url(r'^w_fluc_quality',hashuang.w_fluc_quality),
     #波动率原因追溯
-    url(r'^s_fluc_quality',fluc_quality.fluc_produce),
+    url(r'^s_fluc_quality',fluc_quality.fluc_cost_pop),
+    url(r'^b_fluc_influence',fluc_quality.fluc_influence),
 
     #钢铁价格预测
     #price-predict
     url(r'^steelprice$',steelprice.steelprice),#加载价格预测界面，并初始化参数
     url(r'^price_history$', steelprice.price_history),#价格历史数据
-   
+
     url(r'^price_predict$', steelprice.price_predict),#价格预测
     #chen
     #显示chen页面
@@ -98,7 +101,7 @@ urlpatterns = [
     #定期更新数据库转炉字段统计值
     url(r'^updatevalue',chyulia.updatevalue),
     #同时计算正态分布和概率分布
-    url(r'^probability_normal',chyulia.probability_normal), 
+    url(r'^probability_normal',chyulia.probability_normal),
     #比较总体的波动率计算(fluctuation.html)
     url(r'^fluc_cost_produce',fluc_chyulia.fluc_cost_produce),
     #波动率原因追溯
@@ -106,7 +109,7 @@ urlpatterns = [
     url(r'^test',chyulia.test),
     url(r'^analysis_tool$',chyulia.analysis_tool),
 
-    
 
-    
+
+
 ]

@@ -9,3 +9,4 @@ scipy
 pandas
 matplotlib
 sklearn
+cx_Oracle
