@@ -1,0 +1,37 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+
+<h2>青钢数据分析工具</h2>
+
+<table>
+	<tr>
+		<td>更新数据库转炉字段统计值: </td>
+		<td><button onclick='updatevalue()' id='updatevalue'>更新数据库转炉字段统计值</button></td>
+	</tr>
+	<tr>
+		<td>属性</td>
+		<td>按钮</td>
+	</tr>
+</table>
+
+
+<script type="text/javascript"> 
+    //定期更新数据库中表结构表中的期望等参数值(现已单独成文件，不放在整体程序中)
+    function updatevalue(){
+        $.ajax({
+        type: "post",
+        url:  "/updatevalue",
+        data: {},
+        error: function() {
+            alert("更新转炉参数发生错误！");
+        },
+        success: function(data) {
+            alert(data.state);
+        }
+     })
+    }
+</script>
+
+
+{% endblock %}
