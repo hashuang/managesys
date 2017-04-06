@@ -1,0 +1,95 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+{% block content %}
+
+<h2>青钢数据分析工具</h2>
+
+<table>
+	<tr>
+		<td>更新数据库转炉字段统计值: </td>
+		<td><button onclick='updatevalue()' id='updatevalue'>更新数据库转炉字段统计值</button></td>
+	</tr>
+	<tr>
+		<td>相关性分析</td>
+		<td><button onclick='rela()'>相关性分析</button></td>
+	</tr>
+	<tr>
+		<td>回归分析</td>
+		<td><button onclick='regression()'>回归分析</button></td>
+	</tr>
+	<tr>
+	<tr>
+		<td>分析结果报表</td>
+		<td><button onclick='report()'>结果汇总</button></td>
+		<td id="file_download"></td>
+	</tr>
+	<tr>
+		<td>属性</td>
+		<td>按钮</td>
+	</tr>
+</table>
+
+
+<script type="text/javascript">
+    //定期更新数据库中表结构表中的期望等参数值(现已单独成文件，不放在整体程序中)
+    function updatevalue(){
+        $.ajax({
+        type: "post",
+        url:  "/updatevalue",
+        data: {},
+        error: function() {
+            alert("更新转炉参数发生错误！");
+        },
+        success: function(data) {
+            alert(data.state);
+        }
+     })
+    }
+		function rela(){
+		  $.ajax({
+		        type: "post",
+		        url:  "/relation_ana",
+		        data: {},
+		        error: function() {
+		            console.log("404");
+		        },
+		        success: function(data) {
+		          console.log("realtion_ana success")
+		        }
+		    })
+		}
+		function regression(){
+		  $.ajax({
+		        type: "post",
+		        url:  "/regression_ana",
+		        data: {},
+		        error: function() {
+		            console.log("404");
+		        },
+		        success: function(data) {
+		          console.log("regression_ana success")
+		        }
+		    })
+		}
+		function report(){
+		  $.ajax({
+		        type: "post",
+		        url:  "/report",
+		        data: {},
+		        error: function() {
+		            console.log("404");
+		        },
+		        success: function(data) {
+		          console.log(data);
+							var filepath = data.filepath
+							var file = filepath.split('/')
+							var filename = file[file.length - 1]
+							$("#file_download").html("<a href="+data.filepath + ">"+ filename +"</a>")
+							alert("处理完成，请下载文件查看。")
+		        }
+		    })
+		}
+</script>
+
+
+{% endblock %}

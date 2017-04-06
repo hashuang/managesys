@@ -24,8 +24,8 @@ def cost_produce(request):
 		'state':'success'
 	}
 	if nature=='cost':
-		xaxis=['铁水重量','耗氧量','生铁','废钢总和']
-		xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','COLDPIGWGT','SCRAPWGT_COUNT']
+		xaxis=['铁水重量','耗氧量','废钢总和','生铁']
+		xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','SCRAPWGT_COUNT','COLDPIGWGT']
 		danwei=['Kg','NM3','Kg','Kg']
 	else:
 		xaxis=['钢水','LDG','钢渣']
@@ -73,7 +73,10 @@ def cost_produce(request):
 	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
 	ana_result['danwei']=danwei#字段的数值单位
 	ana_result['yvalue']=yaxis#该炉次字段的实际值
-	ana_result['attribute']='输出产品量'
+	if nature=='cost':
+		ana_result['attribute']='成本投入量'
+	else:
+		ana_result['attribute']='输出产品量'
 	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
 	ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
 	contentVO['result']=ana_result
@@ -97,7 +100,7 @@ def offset(xasis_fieldname,yaxis):
 		# print(temp_array)
 		# print(yaxis[i])
 		# print(isinstance(yaxis[i],float))#判断数据类型
-		for j in range (4):
+		for j in range (len(parameters)):
 			value = scrapy_records[0].get(parameters[j],None)
 			if value != None :
 				scrapy_records[0][parameters[j]] = float(value)
@@ -554,7 +557,7 @@ def max_influence(request):
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
+		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None).upper())
 		regression_coefficient.append(scrapy_records[i].get('COF', None))
 		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
 	# print(len(scrapy_records))
@@ -679,11 +682,25 @@ def chen(request):
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/chen.html',{'title':"青特钢大数据项目组数据管理"})
 
+#请求test.html页面
+def test(request):
+	#print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/test")
+	return render(request,'data_import/test.html',{'title':"青特钢大数据项目组数据管理"})
+
 #跳转波动率fluctuation.html页面
 def fluctuation(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	return render(request,'data_import/fluctuation.html')
+
+#analysis_tool.html页面
+def analysis_tool(request):
+	#print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	return render(request,'data_import/analysis_tool.html',{'title':"青特钢大数据项目组数据管理"})
 
 #从数据库动态加载钢种
 def getGrape(request):

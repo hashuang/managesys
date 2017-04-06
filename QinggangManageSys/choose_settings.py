@@ -42,9 +42,9 @@ if node in dev_machines:
         },
     }
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-    print(STATIC_ROOT)
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+    print(MEDIA_ROOT)
     MEDIA_URL = '/media/'
     STATICFILES_DIRS = (
         os.path.join(PROJECT_DIR, 'static'),
@@ -120,4 +120,3 @@ else:
     #         'LOCATION': '127.0.0.1:11211',
     #     }
     # }
-

@@ -273,7 +273,7 @@ def fluc_influence(request):
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
+		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None).upper())
 		regression_coefficient.append(scrapy_records[i].get('COF', None))
 		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
 	# print(len(scrapy_records))

@@ -23,11 +23,7 @@ class MySQL:
         self.__cur = self.__con.cursor()
 
 
-    def __del__( self ):
-        if self.__cur:
-            self.__cur.close()
-        if self.__con:
-            self.__con.close()
+    
 
     # return True if execute ok, False if error occurs
     def execute( self, sql ):
@@ -56,4 +52,3 @@ class MySQL:
 
 if __name__ == '__main__':
     sql = MySQL()
-
