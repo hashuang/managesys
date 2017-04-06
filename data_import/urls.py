@@ -6,7 +6,7 @@ from . import hashuang
 from data_import.SteelPricePredict import steelprice
 from . import qualityzhuanlu
 from . import fluc_quality
-
+from . import batchprocess
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
     url(r'^$', views.home),
@@ -105,7 +105,9 @@ urlpatterns = [
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
 
-
-
-
+    #添加工具类方法，之后处理为批处理事件
+    url(r'^tools$',batchprocess.load),
+    url(r'^relation_ana',batchprocess.relation_ana),
+    url(r'^regression_ana',batchprocess.regression_ana),
+    url(r'^report',batchprocess.report),
 ]
