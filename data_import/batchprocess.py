@@ -3,9 +3,10 @@ import json
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, Http404
-
-from openpyxl import Workbook
+import numpy as np
 import pandas as pd
+from sklearn import preprocessing, linear_model
+from openpyxl import Workbook
 
 from . import models
 
