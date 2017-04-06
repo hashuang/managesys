@@ -1020,4 +1020,93 @@ def simple_offset(offset_result_final):
 			offset_result_nature.append('偏高')
 		else:
 			offset_result_nature.append('偏低')	
-	return  offset_result_nature	
+	return  offset_result_nature
+def violent_ananlyse(request):
+	print("哈爽")
+	print("Enter max_influence")
+	field='C';
+	offset_value='40.35%';
+	#offset_value=request.POST.get("offset_value");#炉次字段的偏离程度，
+	print(field)
+	#将待匹配的字段名设置为参数
+	#field='MIRON_WGT'
+	result=[]
+	#从数据库读取回归系数文件
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT * FROM pro_bof_his_relation_cof where OUTPUTFIELD='"+field +"'order by abs(COF) desc"
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	print(scrapy_records)
+	length_result1=len(scrapy_records)
+
+	xasis_fieldname=[]#字段英文名字数组
+	regression_coefficient=[]#字段回归系数值数组
+	str_sql=''
+	for i in range(length_result1):
+		xasis_fieldname.append(scrapy_records[i].get('MIDDLEFIELD', None))
+		regression_coefficient.append(scrapy_records[i].get('COF', None))
+		str_sql=str_sql+','+scrapy_records[i].get('MIDDLEFIELD', None)
+	prime_cost='1634230';
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	# sqlVO["sql"]="SELECT HEAT_NO,nvl("+xasis_fieldname[0]+",0) as "+xasis_fieldname[0]+",nvl("+xasis_fieldname[1]+",0) as "+xasis_fieldname[1]+",nvl("+xasis_fieldname[2]+",0) as "+xasis_fieldname[2]+",nvl("+xasis_fieldname[3]+",0) as "+xasis_fieldname[3]+",nvl("+xasis_fieldname[4]+",0) as "+xasis_fieldname[4]+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_cost+"'";
+	print(sqlVO["sql"])
+	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	#将查询所得值全部转变为float格式（动态，适用于不同个数的xasis_fieldname长度）
+	yaxis=[]#各相关性字段的实际值
+	for i in range(length_result1):
+		value = scrapy_records[0].get(xasis_fieldname[i],None)
+		if value != None :
+			scrapy_records[0][xasis_fieldname[i]] = Decimal(value)
+		else:
+			scrapy_records[0][xasis_fieldname[i]] = 0#将空值None暂时以0填充
+		yaxis.append(value)
+	frame=DataFrame(scrapy_records)
+	print("frame",frame)	
+	print("yaxis",yaxis)
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	offset_result=offset(xasis_fieldname,yaxis)
+	print("xasis_fieldname",xasis_fieldname)
+	print("偏离程度")
+	print(offset_result)
+	xasis_fieldname_result=[]#字段英文名字数组
+	regression_coefficient_result=[]#字段相关系数值数组
+	offset_result_final=[]#偏离程度值
+
+	if float(offset_value[0:-1])>=0:#读取隐藏域的值，由于隐藏域的偏离表示为百分比，例如12.6%。因此截取12.6来判断其正负
+		for i in range(length_result1):
+			if offset_result[i]==None or xasis_fieldname[i]=='NB':#由于数据清洗的问题，暂且将NB字段如此处理，因为NB字段的所有数据均相同，导致数据清洗时将所有数据都清除了
+				continue
+			if float(regression_coefficient[i]) * float(offset_result[i]) >=0:
+				xasis_fieldname_result.append(xasis_fieldname[i])
+				regression_coefficient_result.append(regression_coefficient[i])
+				offset_result_final.append(offset_result[i])
+	else:
+		for i in range(length_result1):
+			if offset_result[i]==None or xasis_fieldname[i]=='NB':
+				continue
+			if float(regression_coefficient[i]) * float(offset_result[i]) <=0:
+				xasis_fieldname_result.append(xasis_fieldname[i])
+				regression_coefficient_result.append(regression_coefficient[i])
+				offset_result_final.append(offset_result[i])
+	contentVO['xasis_fieldname']=xasis_fieldname_result#相关系数因素英文字段名
+	contentVO['regression_coefficient']=regression_coefficient_result#字段相关系数值
+	contentVO['offset_result']=offset_result_final#相关系数因素字段偏离值
+	contentVO['offset_number']=len(xasis_fieldname_result)#相关系数最大因素所取字段个数
+	print("相关字段名")
+	print(xasis_fieldname_result)
+	print("相关系数")
+	print(regression_coefficient_result)
+	print("偏离程度")
+	print(offset_result_final)
+	xasis_fieldname_result_max=xasis_fieldname_result[0:8]
+	print(xasis_fieldname_result_max)
+
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+			
+
