@@ -110,8 +110,6 @@ urlpatterns = [
     url(r'^analysis_tool$',chyulia.analysis_tool),
 
     #添加工具类方法，之后处理为批处理事件
-    url(r'^tools$',batchprocess.load),
-    url(r'^relation_ana',batchprocess.relation_ana),
-    url(r'^regression_ana',batchprocess.regression_ana),
-    url(r'^report',batchprocess.report),
+    url(r'^relation_ana$',batchprocess.relation_ana),
+    url(r'^report$',batchprocess.report),
 ]
