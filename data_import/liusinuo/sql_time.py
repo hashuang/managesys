@@ -25,6 +25,10 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 	i = 0
 
 	time_dict = {}
+	# time_dict_day = {}
+	# time_dict_allDay = {}
+	rtn_sum_dict = {}
+	weight_sum_dict ={}
 	passOrNot = 0
 	tradeNo_rtn_reason_print = []
 	
@@ -147,6 +151,15 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 			#print ("退货原因：\t",tradeNo_rtn_rsn_list)
 			#print ("\n")
 			time_dict[sql_date] = rtn_rate
+			#每日的退货重量与总重量的结果存储起来
+			rtn_sum_dict[sql_date] = rtn_sum  #每日退货重量
+			weight_sum_dict[sql_date] = weight_sum  #每日总销量
+			# #每日结果存储起来
+			# time_dict_day['rtn_rate'] = rtn_rate
+			# time_dict_day['rtn_sum'] = rtn_sum
+			# time_dict_day['weight_sum'] = weight_sum
+			# #将每日结果存到一个大字典中
+			# time_dict_allDay[sql_date] = time_dict_day
 		else:
 			count = 0
 			tradeNo_rtn_reason_count_list = conn_mysql.select(sql_rtn_reason_count)
@@ -175,7 +188,17 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 		pass
 	#print (tradeNo_rtn_reason_print)
 	#print (passOrNot)
-	return time_dict,passOrNot,tradeNo_rtn_reason_print
+
+	#如果是退货率的话，需要存储每日的退货量与总销量，以保证后续计算结果正确
+	if aspect == 3:
+		time_dict_rtn = {} #将全部结果存储到同一个dictionary中
+		time_dict_rtn['time_dict'] = time_dict #最原始得到的退货率
+		time_dict_rtn['rtn_sum_dict'] = rtn_sum_dict #退货重量
+		time_dict_rtn['weight_sum_dict'] = weight_sum_dict #总销量
+		#print (time_dict_rtn)
+		return time_dict_rtn,passOrNot,tradeNo_rtn_reason_print
+	else:
+		return time_dict,passOrNot,tradeNo_rtn_reason_print
 	#return sql_wgt,sql_amt,sql_rtn,sql_rtn_reason,sql_rtn_reason_count
 
 

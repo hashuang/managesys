@@ -49,22 +49,15 @@
         <div id="main1" style="float:left;width:1200px;height:450px"></div>
         <!-- <div id="main2" style="float:left;width:600px;height:450px">右</div> -->
         <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->  
-        <div id="main2" style="float:left;width:600px;height:450px">
-            <table id='txt' style="width: 1200px;height:100px;border:0px;">
-             <textarea id="cause_txt" style="width: 1200px;height:300px;border:0px"></textarea>
-            <!--table用来放置因素追溯的分析结果-->
-            
-            <!-- <caption >因素追溯的分析结果</caption>
-                <tr> 
-                <th>序号</th>
-                <th>影响因素中文名</th>
-                <th>影响因素英文名</th>
-                <th>影响因素回归系数</th>
-                <th>影响因素偏离值</th>
-                </tr> -->
+        <div id="main2" style="float:left;width:600px;height:50px">
+            <table id='txt' style="width: 1200px;height:20px;border:0px;">            
             </table>
         </div> 
+     </div>   
+    <div id='cause_area'>
+        <textarea id="cause_txt" style="width: 1200px;height:300px;border:0px"></textarea>
     </div>
+    
   <!--   <p><strong>转炉工序多炉次质量追溯</strong></p> -->
    
 
@@ -184,8 +177,8 @@ function drawBarChart_cost_fluc(result){
             var option = {
                 color:colors,
                 title: {
-                    // text: '在'+result.time.time1+'至'+result.time.time2+'时间范围内的波动率计算',
-                    x:'center'
+                    text: '相同颜色条形图 左:波动率 右：对比历史波动率',
+                    x:'right'
                 },
                 tooltip: {
                         trigger:'item',
@@ -207,7 +200,7 @@ function drawBarChart_cost_fluc(result){
                 },
             
                 legend: {
-                    data:['波动率','对比历史波动率']
+                    data:['左：波动率','右：对比历史波动率']
                 },
                        
                 xAxis: [{
@@ -300,13 +293,16 @@ function drawBarChart_cost_fluc(result){
        //回归系数因素追溯及其偏离程度
     function retrospectfactor(result,index){
         var field = result.fieldname_en[index];//字段名
+        var field_ch = result.fieldname_ch[index];//中文名
         // var offset_value = result.offset_result[index];//偏离程度
         // var fluc_ratio = result.fluc_ratio[index];//波动率
+        // alert(result.fluc_ratio[index])
+        // alert(result.fluc_ratio_history[index])
         if (result.offset_result[index]<=0){
             $("#txt").empty();
             $("#cause_txt").empty();//清除文本内容
 
-            $("#cause_txt").append('  经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result_cent[index]+'，即波动率变小，较稳定。\n');
+            $("#cause_txt").append(field_ch+'在检验时间范围'+result.time.time1+'至'+result.time.time2+'的波动率为'+result.fluc_ratio[index]+'，在对比时间范围'+result.time.history_time1+'至'+result.time.history_time2+'的波动率为'+result.fluc_ratio_history[index]+'，波动率变小，较稳定。\n');
             $("#cause_area").show();
             return
                 
@@ -333,17 +329,19 @@ function drawBarChart_cost_fluc(result){
                 // $("#txt").empty();//清除表格内容
                 $("#cause_txt").empty();//清除文本内容
 
-                $("#cause_txt").append('经分析，字段'+field+'在'+result.time.time1+'至'+result.time.time2+'之间的波动率为'+result.fluc_ratio[index]+'，与'+result.time.history_time1+'至'+result.time.history_time2+'时间段内波动率相比，偏离程度为'+result.offset_result[index]+'\n成本追溯所得字段影响因素分析如下:\n');
+                $("#cause_txt").append(field_ch+'在检验时间范围'+result.time.time1+'至'+result.time.time2+'的波动率为'+result.fluc_ratio[index]+'，在对比时间范围'+result.time.history_time1+'至'+result.time.history_time2+'的波动率为'+result.fluc_ratio_history[index]+',偏离度为'+result.offset_result_cent[index]+',\n通过数据的相关性分析发现，导致该问题的原因是:\n');
                 
                 // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
-
+                $("#txt").empty();//清除表格内容
+                $("#txt").append('分析结果')
                 for (var i=0;i<data.offset_number;i++){
                     // $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
 
                     if (i < 5){
-                        $("#cause_txt").append((i+1)+' 相关字段为: '+data.En_to_Ch_result[i]+'('+data.xasis_fieldname[i]+")，其偏离程度为："+data.offset_result[i]+'，权重系数为：'+data.regression_coefficient[i]+"。\n");
+                        $("#cause_txt").append((i+1)+'、'+data.En_to_Ch_result_score[i]+data.offset_result_nature[i]+data.posNum[i]+'\n');
                     }
                 }
+
              }   
             
         })

@@ -350,19 +350,55 @@ function drawMapChartShandong(data,tradeNo,aspect_name,unite,maxValue,module_nam
 
 
 //时间折线图 (Echarts 2)
-function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,showStyle){
 
     var myChart = echarts.init(document.getElementById('main4'));
-    console.log(data);
-    console.log(data[0]);
-    console.log(data[0].name);
-    console.log(data[0].value);
-    if (data[0].name == 'timeline'){
-        timeline = data[0].value;
-        timelineValue = data[1].value;
-    }else{
-        timeline = data[1].value;
-        timelineValue = data[0].value;
+    //console.log(data);
+    //console.log(data[0]);
+    //console.log(data[0].name);
+    //console.log(data[0].value);
+    //获取月/日的数据
+    for (var i=0;i<10;i++)
+    {
+        if(data[i].name == 'timeline_Day'){
+            timeline_Day = data[i].value;
+        }else if (data[i].name == 'timelineValue_Day'){
+            timelineValue_Day = data[i].value;
+        }else if (data[i].name == 'timeline_Month'){
+            timeline_Month = data[i].value;
+        }else if (data[i].name == 'timelineValue_Month'){
+            timelineValue_Month = data[i].value;
+        }else if (data[i].name == 'timeline_Week'){
+            timeline_Week = data[i].value;
+        }else if(data[i].name == 'timelineValue_Week'){
+            timelineValue_Week = data[i].value;
+        }else if (data[i].name == 'timeline_15Day'){
+            timeline_15Day = data[i].value;
+        }else if(data[i].name == 'timelineValue_15Day'){
+            timelineValue_15Day = data[i].value;
+        }else if (data[i].name == 'timeline_20Day'){
+            timeline_20Day = data[i].value;
+        }else{
+            timelineValue_20Day = data[i].value;
+        }
+    }
+
+    //月/日显示方式
+    if (showStyle == 1){ //月
+        timeline = timeline_Month;
+        timelineValue = timelineValue_Month;
+    }else if(showStyle == 2){ //周
+        timeline = timeline_Week;
+        timelineValue = timelineValue_Week;
+    }else if(showStyle == 3){ //日
+        timeline = timeline_Day;
+        timelineValue = timelineValue_Day;
+    }else if(showStyle == 4){ //15天
+        timeline = timeline_15Day;
+        timelineValue = timelineValue_15Day;
+    }else { //20天
+        timeline = timeline_20Day;
+        timelineValue = timelineValue_20Day;
     }
 
     option = {
@@ -373,12 +409,17 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
     },
     tooltip : {
         trigger: 'axis', 
-        // formatter : function (params) {
-        //         //console.log(params);
-        //         //console.log(params[0].name);
-        //         //console.log(params[0].value);
-        //         return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value + unite
-        //     }
+        formatter : function (params) {
+                //console.log(params);
+                //console.log(params[0].name);
+                //console.log(params[0].value);
+                if (params[0].value == "总销量为0，无法计算退货率！"){
+                    return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value;
+                }else{
+                    return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value + unite;
+                }
+                
+            }
     },
     toolbox: {   //这个不用改
         show : true,
@@ -388,8 +429,9 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
         }
     },
     dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
-        show: true,
-        start :50,
+
+        start :0,
+
         end :100 
     },
     legend : {
