@@ -106,6 +106,8 @@ urlpatterns = [
     url(r'^fluc_cost_produce',fluc_chyulia.fluc_cost_produce),
     #波动率原因追溯
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
+    url(r'^test',chyulia.test),
+    url(r'^analysis_tool$',chyulia.analysis_tool),
 
     #添加工具类方法，之后处理为批处理事件
     url(r'^tools$',batchprocess.load),
