@@ -23,7 +23,7 @@ from collections import defaultdict
 from math import ceil
 from os.path import join
 
-from QinggangManageSys.settings import MAIN_OUTFIT_BASE,LOGGING
+from QinggangManageSys.settings import MAIN_OUTFIT_BASE
 from .models import ContentPost
 
 import logging
@@ -301,7 +301,7 @@ def ana_data_lack(request):
 		sql='SELECT %s FROM '+table_name+' WHERE '+record['own_col']+' IS NULL'
 		varlist=[record['own_col']]
 		sqlVO=util.create_sqlVO(sql,varlist)
-		
+
 		data=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 		lack_num=len(data)
 		lack_rate=lack_num/int(total_num)
@@ -312,8 +312,8 @@ def ana_data_lack(request):
 		ana_list.append(col_ele)
 		col_ele={}
 
-	filepath=util.write_2_excel(ana_list,procedurename)		
-	
+	filepath=util.write_2_excel(ana_list,procedurename)
+
 	contentVO={
 		'title':'数据缺失度分析结果',
 		'state':'success',
@@ -426,7 +426,7 @@ def import_by_single(procedure):
 					insert_value=util.change_value_2_insert(value)
 					dictVO={'record':record,'value':insert_value,'table_name':table_name,'own_id':own_id}
 					sqlVO=util.create_update_by_uid_sqlVO(dictVO)
-					
+
 					models.BaseManage().direct_execute_query_sqlVO(sqlVO)
 				#model.objects.filter(F(own_uid_col)=own_id).update(F(own_col)=insert_value)
 			print('end################################################{0}'.format(record))
@@ -499,7 +499,7 @@ def data_import(request):
 	return render(request, MAIN_OUTFIT_BASE + 'import.html',{'title':"导入结果"})
 
 '''
-{'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)', 
+{'FROM_TABLE': 'db.tboj202', 'OWN_UID': 'heat_no', 'FROM_UID': 'heat_no', 'FRES', 'REAL_MEANING': '出钢量(t)',
 'FROM_COL': 'steelWgt', 'FROM_DEPT': '炼钢转炉', 'OWN_TABLE': 'CONVERTER
 'OWN_COL': 'steelWgt', 'CLASSIFICATION': '出钢量', 'REMARKS': '0', 'FROM_SYSTEM': 'MES',}
 '''
@@ -740,5 +740,4 @@ def lond_to_B(request):
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS_B
 	contentVO['procedure_names']=ana_result
 	#print(contentVO)
-	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
-
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')

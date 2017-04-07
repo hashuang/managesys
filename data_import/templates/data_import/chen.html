@@ -6,7 +6,7 @@
 {% block content %}
 
 <h2>青钢转炉数据分析</h2>
-<h5><a href='/fluctuation'>波动率相关分析</a></h5>
+<h7><a href='/fluctuation'>To波动率分析页面  </a><a href='/test'>  To时间插件测试</a></h7>
 
 
 <div>
@@ -18,7 +18,7 @@
 
     <p><strong>单炉次投入成本及产品产出情况分析及原因追溯</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
-    炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
+    炉次号：<input type="text" name="prime_analyse" value="1634230" id="prime_analyse">
     <button onclick="cost_produce('cost',this)" id='click2'>投入成本分析结果</button>
     <button onclick="cost_produce('produce',this)" id='click3'>产出产品分析结果</button>
     <br>
@@ -226,12 +226,12 @@
                 },
                 {
                     type: 'value',
-                    name: '生铁(Kg)',
+                    name: '废钢总和(Kg)',
                     min: 0,
-                    max: 2000,
-                    position: 'right',
+                    max: 12000,
+                    position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -130,
+                    offset: -260,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -243,11 +243,11 @@
                 },
                 {
                     type: 'value',
-                    name: '废钢总和(Kg)',
+                    name: '生铁(Kg)',
                     min: 0,
-                    max: 12000,
-                    position: 'right',
-                    offset: 0,
+                    max: 2000,
+                    position: 'left',
+                    offset: -390,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -293,7 +293,7 @@
                     }
                 },
                 {
-                    name:'生铁',
+                    name:'废钢总和',
                     type:'bar',
                     barWidth : 70,
                     barGap: '80%',
@@ -310,7 +310,7 @@
                     }
                 },
                 {
-                    name:'废钢总和',
+                    name:'生铁',
                     type:'bar',
                     barWidth : 70,
                     barGap: '80%',
@@ -394,7 +394,7 @@
                     min: 0,
                     max: 105000,
                     position: 'left',
-                    offset:0,
+                    offset:-20,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -427,9 +427,9 @@
                     name: '钢渣(Kg)',
                     min: 0,
                     max: 22000,
-                    position: 'right',
+                    position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: 0,
+                    offset: -340,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -590,7 +590,8 @@
                         axisLabel: {show:true},
                         splitArea: {show:true},
                         splitLine: {show:true},
-                        data : result.ana_result.scope
+                        data : result.ana_result.scope,
+                        show:false,
                     }
                 ],
                 yAxis: [{
