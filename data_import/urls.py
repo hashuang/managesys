@@ -7,6 +7,8 @@ from data_import.SteelPricePredict import steelprice
 from . import qualityzhuanlu
 from . import fluc_quality
 from . import batchprocess
+from . import ironstoneprice
+
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
     url(r'^$', views.home),
@@ -88,6 +90,13 @@ urlpatterns = [
     url(r'^price_history$', steelprice.price_history),#价格历史数据
 
     url(r'^price_predict$', steelprice.price_predict),#价格预测
+
+    #铁矿石价格预测
+    url(r'^ironstoneprice',ironstoneprice.ironstoneprice),
+    # url(r'^iron_price_history', ironstoneprice.iron_price_history),stone_price_predict
+    url(r'^stone_price_history',ironstoneprice.price_history),
+    url(r'^stone_price_predict',ironstoneprice.price_predict),
+
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
