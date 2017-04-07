@@ -546,7 +546,7 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D5_BO_CSM',('第五次吹氧消耗',46)),
 								('D6_BO_CSM',('第六次吹氧消耗',47)),
 								('D1_TEMP_VALUE',('第一次测温值',48)),
-								('D2_TEMP_VALUE',('(第二次测温值',49)),
+								('D2_TEMP_VALUE',('第二次测温值',49)),
 								('D3_TEMP_VALUE',('第三次测温值',50)),
 								('D4_TEMP_VALUE',('第四次测温值',51)),
 
