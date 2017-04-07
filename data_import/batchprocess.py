@@ -6,6 +6,10 @@ from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpRespons
 
 from openpyxl import Workbook
 import pandas as pd
+#ha加
+import numpy as np
+from sklearn import preprocessing
+from sklearn import linear_model
 
 from . import models
 
@@ -51,7 +55,7 @@ def linear_regression_model(data):
 
     return regr.coef_, regr.intercept_
 
-def regression(output,selected_eles,db_table_name):
+def regression(output,selected_eles,db_table_name):   
     """
     @param output 回归应变量 str
     @param selected_eles 回归自变量list
@@ -76,6 +80,33 @@ def regression(output,selected_eles,db_table_name):
     sql = 'insert into QG_USER.%s values(\'%s\', \'BIAS\', \'%s\')'%(db_table_name, output, str(intercept))
     sqlVO['sql'] = sql
     models.BaseManage().direct_execute_query_sqlVO(sqlVO)
+    return coef, intercept
+#test 之后我会删除  hashuang
+def regression_ha(output,selected_eles):   
+    """
+    @param output 回归应变量 str
+    @param selected_eles 回归自变量list
+    @param db_table_name 存储回归结果的表
+    @rtn coef 与selected_eles对应的回归系数list
+    @rtn intercep 回归方程截距
+    """
+    sqlVO = {"db_name": 'l2own'}
+    sql = 'SELECT ' + ', '.join(selected_eles) + ', ' + output + ' from QG_USER.PRO_BOF_HIS_ALLFIELDS'
+    sqlVO["sql"] = sql
+    rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
+
+    data_ready = data_cleaning(pd.DataFrame(list(rs)))
+    #i'm supposed to use scale method to reduce the impact of the differ of magnitude.
+    coef, intercept = linear_regression_model(data_ready)
+    coef = list(map(lambda x: str(x), coef))
+    # save result to database
+    # for i in range(len(selected_eles)):
+    #     sql = 'insert into QG_USER.%s values(\'%s\', \'%s\', \'%s\')'%(db_table_name, output, selected_eles[i], coef[i])
+    #     sqlVO['sql'] = sql
+    #     models.BaseManage().direct_execute_query_sqlVO(sqlVO)
+    # sql = 'insert into QG_USER.%s values(\'%s\', \'BIAS\', \'%s\')'%(db_table_name, output, str(intercept))
+    # sqlVO['sql'] = sql
+    # models.BaseManage().direct_execute_query_sqlVO(sqlVO)
     return coef, intercept
 
 def regression_ana(result):
