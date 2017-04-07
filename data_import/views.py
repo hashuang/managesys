@@ -669,12 +669,44 @@ def time(request):
 			print(ex)
 
 
+def trade(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/trade.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
+										  								int(request.POST.get('aspect')),
+										  								int(request.POST.get('dateChoose')),
+										 						 		request.POST.get('sql_date1'),
+										 						 		request.POST.get('sql_date2'),
+										  								request.POST.get('sql_cust'),
+										  								request.POST.get('tradeNo'),
+										  								int(request.POST.get('space')),
+										  								request.POST.get('space_detail'))
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst,
+				                            'module_name': module_name,
+				                            'aspect_name': aspect_name,
+				                            'unite': unite,
+				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
+		except Exception as ex:
+			print(ex)
+
+
 #从数据库动态加载钢种
 def getAllTradeNo_time(request):
 	conn_mysql=mysql.MySQL();
 	sql_getAllTradeNo = "select c.tradeNo from data_import_sales_orderno a,data_import_sales2_orderno_orderitem c where c.orderNo = a.orderNo group by c.tradeNo"
 	allTradeNo = conn_mysql.select(sql_getAllTradeNo)
 	print (allTradeNo)
+	#print (type(allTradeNo))
 
 	# sqlVO={}
 	# sqlVO["db_name"]="l2own"

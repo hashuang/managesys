@@ -137,6 +137,16 @@ def tradeNo_rate(dictionary,allTrade_sum,aspect,module_unit):
 			tradeNo_rate_dict[tradeNo] = maxRateReason
 	return tradeNo_rate_dict
 			
+def tradeNo_rate_choose(dictionary,chooseTrade_sum,aspect,module_unit):
+	tradeNo_rate_dict = {}
+	for tradeNo in dictionary:
+		printMax,maxRate,maxRate100,maxRateReason = maxrate(chooseTrade_sum,aspect,dictionary[tradeNo],module_unit)
+		if maxRateReason == "":
+			tradeNo_rate_dict[tradeNo] = maxRate100
+		else:
+			tradeNo_rate_dict[tradeNo] = maxRateReason
+	return tradeNo_rate_dict
+			
 
 
 def max_min_ave_sum(dictionary,aspect,module_unit):
@@ -147,13 +157,14 @@ def max_min_ave_sum(dictionary,aspect,module_unit):
 	#print (str(sumValue))
 	return maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason
 
-def max_min_ave_sum_trade(dictionary,aspect,module_unit,allTrade_sum):
+def max_min_ave_sum_trade(dictionary,aspect,module_unit,allTrade_sum,chooseTrade_sum):
 	maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue = max_min_average(dictionary)
 	printMax,maxRate,maxRate100,maxRateReason = maxrate(sumValue,aspect,maxValue,module_unit)
 	maxValue,minValue,sumValue,averageValue = float_format(maxValue,minValue,sumValue,averageValue)
 	#print ("max",maxValue,"maxkey",maxKey,"\nmin",minValue,"minkey",minKey,"\nnomin",noMin,"sum",sumValue,"ave",averageValue,"\nprintmax",printMax,"maxrate",maxRate,"maxrate100",maxRate100,"\nmaxratereason",maxRateReason)
 	
 	tradeNo_rate_dict = tradeNo_rate(dictionary,allTrade_sum,aspect,module_unit)
+	tradeNo_rate_choose_dict =  tradeNo_rate_choose(dictionary,chooseTrade_sum,aspect,module_unit)
 
-	return maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason,tradeNo_rate_dict
+	return maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason,tradeNo_rate_dict,tradeNo_rate_choose_dict
 
