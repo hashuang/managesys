@@ -113,7 +113,7 @@ def regression(output,selected_eles,db_table_name):
         temp_df = alldf.copy()
         temp_df[col] = alldf[col].dropna().map(lambda x:float(x))
         # filter data by bound of low and high
-        bound_low = float(bound_lows.get(col,-0.0000000001))
+        bound_low = float(bound_lows.get(col,-999999999999))
         bound_high = float(bound_highs.get(col,999999999999))
         temp_df = temp_df[(temp_df[col] >= bound_low) & ( temp_df[col] <= bound_high )]
         if isFiveAnalyse.get(col,'0') == '1':
@@ -125,7 +125,7 @@ def regression(output,selected_eles,db_table_name):
     # 根据各因素上限联合筛选数据
     value_bound_tag = True
     for col in allcolumns:
-        bound_low = float(bound_lows.get(col,-0.0000000001))
+        bound_low = float(bound_lows.get(col,-999999999999))
         bound_high = float(bound_highs.get(col,999999999999))
         alldf = alldf[(alldf[col] >= bound_low) & (alldf[col] <= bound_high)]
         if len(alldf) == 0:
