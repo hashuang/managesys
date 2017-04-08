@@ -17,69 +17,90 @@ def cost_produce(request):
 	print("enter cost_produce")
 	heat_no=request.POST.get("heat_no");
 	# print(heat_no)
-	nature=request.POST.get("nature");#区别是cost还是produce
-	# print('nature',nature)
+	# nature=request.POST.get("nature");#区别是cost还是produce
+	# # print('nature',nature)
 	contentVO={
 		'title':'测试',
 		'state':'success'
 	}
-	if nature=='cost':
-		xaxis=['铁水重量','耗氧量','废钢总和','生铁']
-		xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','SCRAPWGT_COUNT','COLDPIGWGT']
-		danwei=['Kg','NM3','Kg','Kg']
-	else:
-		xaxis=['钢水','LDG','钢渣']
-		xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
-		danwei=['Kg','NM3','Kg']
+
+	#result 用来存放四大类字段的结果
+	classification_results={}
 	
+	# field_classification=['原料','物料','产品','合金']
+	field_classification=['raw','material','product','alloy']
+	for k in range(len(field_classification)):
 
-#对任意个数字段进行字符串拼接
-	field_sql=''
-	for i in range(len(xasis_fieldname)):
-		field_sql=field_sql+',nvl('+xasis_fieldname[i]+',0) as '+xasis_fieldname[i]
-
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	# sqlVO["sql"]="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
-	sqlVO["sql"]="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO='"+heat_no+"'";
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	
-	# for i in range(len(xasis_fieldname)):
-	# 	value = scrapy_records[0].get(xasis_fieldname[i],None)
-	# 	if value != None :
-	# 		scrapy_records[0][xasis_fieldname[i]] = float(value)
-	# frame=DataFrame(scrapy_records)
-	# yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
-
-	yaxis=[]#存放单炉次的字段值
-	for i in range(len(xasis_fieldname)):
-		value = scrapy_records[0].get(xasis_fieldname[i],None)
-		if value != None :
-			yaxis.append(float(value))
+		if field_classification[k]=='raw':
+			#原料
+			xasis_fieldname_ch=['铁水重量','生铁','废钢总和','大渣钢','自产废钢','重型废钢','中型废钢']
+			xasis_fieldname=['MIRON_WGT','COLDPIGWGT','SCRAPWGT_COUNT','SCRAP_96053101','SCRAP_96052200','SCRAP_16010101','SCRAP_16020101']
+			danwei=['Kg','Kg','Kg','Kg','Kg','Kg','Kg']
+		elif field_classification[k]=='material':
+			#物料
+			xasis_fieldname_ch=['总吹氧消耗','氮气耗量','1#烧结矿','石灰石_40-70mm','萤石_FL80','增碳剂','低氮增碳剂','石灰','轻烧白云石']
+			xasis_fieldname=['SUM_BO_CSM','N2CONSUME','L96020400','L12010302','L12010601','L12020201','L12020301','L96040100','L96040200']
+			danwei=['NM3','NM3','Kg','Kg','Kg','Kg','Kg','Kg','Kg']
+		elif field_classification[k]=='product':
+			#产品
+			xasis_fieldname_ch=['出钢量','转炉煤气','钢渣']
+			xasis_fieldname=['STEELWGT','LDG_STEELWGT','STEEL_SLAG']
+			danwei=['Kg','NM3','Kg']
 		else:
-			yaxis.append(value)
+			#合金
+			xasis_fieldname_ch=['硅铁_Si72-80%、AL≤2%(粒度10-60mm)','微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%','硅锰合金_Mn 65-72%、Si 17-20%','高硅硅锰_Mn ≥60%、Si ≥27%','中碳铬铁']
+			xasis_fieldname=['L13010101','L13010301','L13020101','L13020201','L13040400']
+			danwei=['Kg','Kg','Kg','Kg','Kg']
 
-	print('xasis_fieldname',xasis_fieldname)
-	print('yaxis',yaxis)
-	offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
-	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
-	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
-	print('offset_result',offset_result)
-	print('offset_resultlist',offset_resultlist)
-	ana_result={}
-	ana_result['heat_no']=heat_no#炉次号
-	ana_result['xname']=xaxis#字段中文名字
-	ana_result['xEnglishname']=xasis_fieldname#字段英文名字
-	ana_result['danwei']=danwei#字段的数值单位
-	ana_result['yvalue']=yaxis#该炉次字段的实际值
-	if nature=='cost':
-		ana_result['attribute']='成本投入量'
-	else:
-		ana_result['attribute']='输出产品量'
-	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
-	ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
-	contentVO['result']=ana_result
+
+		#对任意个数字段进行字符串拼接
+		field_sql=''
+		for i in range(len(xasis_fieldname)):
+			field_sql=field_sql+',nvl('+xasis_fieldname[i]+',0) as '+xasis_fieldname[i]
+
+		sqlVO={}
+		sqlVO["db_name"]="l2own"
+		# sqlVO["sql"]="SELECT HEAT_NO,nvl(TOTAL_SLAB_WGT,0) as TOTAL_SLAB_WGT,nvl(LDG_TOTAL_SLAB_WGT,0) as LDG_TOTAL_SLAB_WGT ,nvl(STEEL_SLAG,0) as STEEL_SLAG FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+heat_no+"'";
+		sqlVO["sql"]="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO='"+heat_no+"'";
+		print(sqlVO["sql"])
+		scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+		
+		# for i in range(len(xasis_fieldname)):
+		# 	value = scrapy_records[0].get(xasis_fieldname[i],None)
+		# 	if value != None :
+		# 		scrapy_records[0][xasis_fieldname[i]] = float(value)
+		# frame=DataFrame(scrapy_records)
+		# yaxis=[frame.TOTAL_SLAB_WGT[0],frame.LDG_TOTAL_SLAB_WGT[0],frame.STEEL_SLAG[0]]
+
+		yaxis=[]#存放单炉次的字段值
+		for i in range(len(xasis_fieldname)):
+			value = scrapy_records[0].get(xasis_fieldname[i],None)
+			if value != None :
+				yaxis.append(float(value))
+			else:
+				yaxis.append(value)
+
+		print('xasis_fieldname',xasis_fieldname)
+		print('yaxis',yaxis)
+		offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
+		qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
+		offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
+		print('offset_result',offset_result)
+		print('offset_resultlist',offset_resultlist)
+		ana_result={}
+		ana_result['heat_no']=heat_no#炉次号
+		ana_result['xname']=xasis_fieldname_ch#字段中文名字
+		ana_result['xEnglishname']=xasis_fieldname#字段英文名字
+		ana_result['danwei']=danwei#字段的数值单位
+		ana_result['yvalue']=yaxis#该炉次字段的实际值
+
+		ana_result['attribute']=field_classification[k]#分类
+		ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
+		ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
+
+		classification_results[field_classification[k]]=ana_result
+
+	contentVO['result']=classification_results
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 #通过从数据库中查询期望等参数来输入/产出图中的偏离程度
@@ -102,9 +123,8 @@ def offset(xasis_fieldname,yaxis):
 		# print(isinstance(yaxis[i],float))#判断数据类型
 		for j in range (len(parameters)):
 			value = scrapy_records[0].get(parameters[j],None)
-			if value != None :
+			if value != None and value != 'null':
 				scrapy_records[0][parameters[j]] = float(value)
-
 		try:
 			temp_value=(float(yaxis[i])-scrapy_records[0]['DESIRED_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE'])
 		except:
@@ -367,7 +387,12 @@ def ivalue_num(num):
     if(a.isdigit()):
         ivalue_valid=0
     else:
-        ivalue_valid=len(a.split('.')[1])
+        # print("%s,%s"%(a.split('.'),len(a.split('.'))))
+        #数据库中存在如448.000的字段，执行a.split('.')的结果只有整数部分，因此取a.split('.')[1]会出现超出索引的情况
+        if len(a.split('.'))==1:
+            ivalue_valid=0
+        else:
+            ivalue_valid=len(a.split('.')[1])
     return  ivalue_valid   
 
 #取有效位数
@@ -547,7 +572,7 @@ def max_influence(request):
 	#从数据库读取回归系数文件
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
+	sqlVO["sql"]="SELECT * FROM PRO_BOF_HIS_RELATION_COF where OUTPUTFIELD='"+field +"' order by abs(COF) desc"
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	print(scrapy_records)
@@ -557,9 +582,9 @@ def max_influence(request):
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None).upper())
+		xasis_fieldname.append(scrapy_records[i].get('MIDDLEFIELD', None).upper())
 		regression_coefficient.append(scrapy_records[i].get('COF', None))
-		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
+		str_sql=str_sql+','+scrapy_records[i].get('MIDDLEFIELD', None)
 	# print(len(scrapy_records))
 	# print(xasis_fieldname)
 	# print(regression_coefficient)
