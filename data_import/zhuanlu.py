@@ -532,6 +532,8 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('N2CONSUME',('氮气耗量',30)),
 								('TOTALOXYGENCONSUME',('总供氧耗量',31)),
 								('SUM_BO_CSM',('总吹氧消耗',32)),
+								('SUM_BO_DUR',('总吹氧时间',32.5)),
+
 								('FIRSTCATCHOXYGENCONSUME',('一倒氧气耗量',33)),
 								('CARBONTEMPERATURE',('一倒温度(℃)',34)),
 								('FIRSTCATCHCARBONC',('一倒C%',35)),
@@ -552,11 +554,12 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D2_TEMP_VALUE',('第二次测温值',49)),
 								('D3_TEMP_VALUE',('第三次测温值',50)),
 								('D4_TEMP_VALUE',('第四次测温值',51)),
-
-								('STEELWGT_COUNT',('出钢量1',52)),
-								('TOTAL_SLAB_WGT',('出钢量2',53)),
-								('LDG_STEELWGT_COUNT',('煤气发生量1',54)),
-								('LDG_TOTAL_SLAB_WGT',('煤气发生量2',55)),
+								('STEELWGT',('出钢量',52)),
+								# ('STEELWGT_COUNT',('出钢量1',52)),
+								# ('TOTAL_SLAB_WGT',('出钢量2',53)),
+								('LDG_STEELWGT',('煤气发生量',54)),
+								# ('LDG_STEELWGT_COUNT',('煤气发生量1',54)),
+								# ('LDG_TOTAL_SLAB_WGT',('煤气发生量2',55)),
 								('STEEL_SLAG',('钢渣量',56)),
 								('C',('C',57)),
 								('SI',('Si',58)),
@@ -589,6 +592,7 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('L13010301',('微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%',84)),
 								('L13020101',('硅锰合金_Mn 65-72%、Si 17-20%',85)),
 								('L13020201',('高硅硅锰_Mn ≥60%、Si ≥27%',86)),
+								('L13020501',('中碳锰铁_Mn78.0-85.0%, C≤1.0%',86.5)),
 								('L13040400',('中碳铬铁',87)),
 								('SCRAP_16040101',('破碎废钢',88)),
 								('SCRAP_96052501',('小渣钢',89)),
@@ -625,6 +629,7 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D2_BO_DUR',('第二次吹氧时间',119)),
 								('D3_BOSTRT_TIME',('第三次吹氧开始时间',120)),
 								('D3_BOEND_TIME',('第三次吹氧结束时间',121)),
+								('D3_BO_DUR',('第三次吹氧时间',121.5)),
 								('D4_BOSTRT_TIME',('第四次吹氧开始时间',121)),
 								('D4_BOEND_TIME',('第四次吹氧结束时间',122)),
 								('D4_BO_DUR',('第四次吹氧时间',123)),
@@ -634,6 +639,8 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D6_BOSTRT_TIME',('第六次吹氧开始时间',127)),
 								('D6_BOEND_TIME',('第六次吹氧结束时间',128)),
 								('D6_BO_DUR',('第六次吹氧时间',129)),
+
+
 								('D1_TEMP_TIME',('第一次测温时间',130)),
 								('D1_TEMP_TYPE',('第一次测温位置',131)),
 								('D1_TEMP_ACQ',('第一次测温操作方式',132)),
@@ -673,4 +680,9 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('ARRIVETIME',('进吹氩站时刻',166)),
 								('DEPARTUREDATE',('出吹氩站日期',167)),
 								('DEPARTURETIME',('出吹氩站时刻',168)),
+
+								
+						        
+						      
+						        
 						])
