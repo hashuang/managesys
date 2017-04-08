@@ -1030,7 +1030,7 @@ def violent_ananlyse(request):
 	paragraph=document.add_paragraph()
 	#炉次	
 	for i in range(2):
-		prime_cost=str(1634230+i);
+		prime_cost=str(1530320+i);
 		str_cause=violent_ananlyse_to(prime_cost,document,paragraph)
 
 	contentVO={
@@ -1048,12 +1048,15 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 
 	# xasis_fieldname_single=['C','SI','MN','P','S','Fe','STEELWGT','FINAL_TEMP_VALUE']
 	# xaxis=['C含量','SI含量','MN含量','P含量','S含量','Fe含量','重量','温度']
+	str_heatno='炉次号'+prime_cost+'\n'      
+	paragraph.add_run(str_heatno)
+
 	xasis_fieldname_single=['C','SI']
 	xaxis=['C含量','SI含量']
 	for i in range(len(xasis_fieldname_single)):
 		value = scrapy_records_single[0].get(xasis_fieldname_single[i],None)
 		if value != None :
-			scrapy_records_single[0][xasis_fieldname_single[i]] = float(value)
+			scrapy_records_single[0][xasis_fieldname_single[i]] = float(value)	
 	frame=DataFrame(scrapy_records_single)
 
 	yaxis_single=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.FINAL_TEMP_VALUE[0]]
@@ -1075,8 +1078,7 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 	print(offset_value_single)
 	#写入word
 
-	str_heatno='炉次号'+prime_cost+'\n'      
-	paragraph.add_run(str_heatno)
+	
 	for i in range(len(xasis_fieldname_single)):
 		xaxis_chinese=xaxis[i];
 		field=xasis_fieldname_single[i];
