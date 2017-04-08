@@ -1074,6 +1074,7 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 	print('单炉次质量分析字段偏离度定向分析')
 	print(offset_value_single)
 	#写入word
+
 	str_heatno='炉次号'+prime_cost+'\n'      
 	paragraph.add_run(str_heatno)
 	for i in range(len(xasis_fieldname_single)):
@@ -1083,11 +1084,15 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 		offset_value=offset_value_single[i];
 		qualitative_offset_result_single=qualitative_offset_result[i];
 		En_to_Ch_result_score,offset_result_nature,offset_value_single_cof=analy_cof(prime_cost,field,single_value,offset_value);				
-		str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
-		paragraph.add_run(str_des)
-		for i in range(len(En_to_Ch_result_score)):
-			str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+'\n'
-			paragraph.add_run(str_cause)    
+		if abs(float(offset_result_single[i]))<=0.1:
+			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。\n'      
+			paragraph.add_run(str_des)
+		else:
+			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
+			paragraph.add_run(str_des)	
+			for i in range(len(En_to_Ch_result_score)):
+				str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+'\n'
+				paragraph.add_run(str_cause)    
 	document.add_page_break()
 	document.save('e:/demo.docx')
 	return 	str_cause		
