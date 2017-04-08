@@ -139,7 +139,7 @@ def regression(output,selected_eles,db_table_name):
     five_tag = True
     for col in allcolumns:
         if isFiveAnalyse.get(col,'0') == '1':
-            five_down = five_downs.get(col,-0.0000000001)
+            five_down = five_downs.get(col,-999999999999)
             five_high = five_highs.get(col,999999999999)
             alldf = alldf[( alldf[col] >= five_down ) & ( alldf[col] <= five_high )]
             if len(alldf) == 0:
