@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 from collections import OrderedDict
 PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
-								
+
 								('FURNACESEQ','炉龄'),
 								('SPRAYGUNSEQ','枪龄'),
 								('MIRON_WGT','铁水重量'),
@@ -18,14 +18,14 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('scrap_16020101','中型废钢'),
 								('scrap_16030101','未知废钢'),
 								#('scrap_16040101','破碎废钢'),
-								#('scrap_96052501','小渣钢'),		
+								#('scrap_96052501','小渣钢'),
 								('COLDPIGWGT','生铁装入量'),
 								('SCRAPWGT','废钢装入量'),
 								('SCRAPWGT_COUNT','废钢装入计算量'),
 								#('RETURNSTEELWEIGHT','回炉钢液量'),
 								#('LADLESTATUS','包况'),
 								#('LADLEAGE','包龄'),
-								
+
 								('L96020400','1#烧结矿'),
 								#('L12010301','石灰石_15-40mm'),
 								('L12010302','石灰石_40-70mm'),
@@ -61,8 +61,8 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('D1_TEMP_VALUE','第一次测温值'),
 								('D2_TEMP_VALUE','第二次测温值'),
 								('D3_TEMP_VALUE','第三次测温值'),
-								('D4_TEMP_VALUE','第四次测温值'),								
-								
+								('D4_TEMP_VALUE','第四次测温值'),
+
 								('STEELWGT_COUNT','出钢量1'),
 								('TOTAL_SLAB_WGT','出钢量2'),
 								('LDG_STEELWGT_COUNT','煤气发生量1'),
@@ -93,19 +93,19 @@ PRO_BOF_HIS_ALLFIELDS_S=OrderedDict([
 								('Zr','Zr'),
 								('Ce','Ce'),
 								('Fe','Fe'),
-										
+
 								('L13010101','硅铁_Si72-80%、AL≤2%(粒度10-60mm)'),
 								('L13010301','微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%'),
 								('L13020101','硅锰合金_Mn 65-72%、Si 17-20%'),
 								('L13020201','高硅硅锰_Mn ≥60%、Si ≥27%'),
-								('L13040400','中碳铬铁'),							
+								('L13040400','中碳铬铁'),
 								#('SLAGTHICK','渣层厚度'),#1,8
 								#('SCRAPSTEEL','调温废钢'),#2,7
 								#('INSULATIONAGENT','保温剂(包)'),
 								#('TEMPOFARRIVE','进站温度(℃)'),#数据量少
 								#'TEMPOFDEPARTURE','出站温度(℃)'),
-							
-	
+
+
 						])
 
 PRO_BOF_HIS_ALLFIELDS_C=OrderedDict([
@@ -123,7 +123,7 @@ PRO_BOF_HIS_ALLFIELDS_C=OrderedDict([
 								('TEMPOFARRIVE','进站温度(℃)'),#数据量少
 								('TEMPOFDEPARTURE','出站温度(℃)'),
 								])
-							
+
 
 PRO_BOF_HIS_ALLFIELDS_B=OrderedDict([
 
@@ -237,13 +237,13 @@ PRO_BOF_HIS_ALLFIELDS_B=OrderedDict([
 								('D4_SAMP_TYPE','第四次取样类型'),
 								('D5_SAMP_TIME','第五次取样时间'),
 								('D5_SAMP_TYPE','第五次取样类型'),
-								
+
 								('final_TEMP_NO','最后一次测温的序号'),
 								('final_TEMP_TIME','最后一次测温时间'),
 								('final_TEMP_VALUE','最终测温值'),
 								('final_TEMP_TYPE','最后一次测温位置'),
 								('final_TEMP_ACQ','最后一次测温操作方式'),
-								
+
 								('Event_3010','出钢开始'),
 								('Event_3011','出钢结束'),
 								('TIMEOFSLAGSPLISHING','溅渣护炉时间'),
@@ -256,7 +256,6 @@ PRO_BOF_HIS_ALLFIELDS_B=OrderedDict([
 								('DEPARTURETIME','出吹氩站时刻'),
 						])
 PRO_BOF_HIS_ALLFIELDS=OrderedDict([
-								
 								('FURNACESEQ','炉龄'),
 								('SPRAYGUNSEQ','枪龄'),
 								('MIRON_WGT','铁水重量'),
@@ -271,10 +270,10 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('SCRAP_96052200','自产废钢'),
 								('SCRAP_16010101','重型废钢'),
 								('SCRAP_16020101','中型废钢'),
-								('SCRAP_16030101','未知废钢'),		
+								('SCRAP_16030101','未知废钢'),
 								('COLDPIGWGT','生铁装入量'),
 								('SCRAPWGT','废钢装入量'),
-								('SCRAPWGT_COUNT','废钢装入计算量'),				
+								('SCRAPWGT_COUNT','废钢装入计算量'),
 								('L96020400','1#烧结矿'),
 								#('L12010301','石灰石_15-40mm'),
 								('L12010302','石灰石_40-70mm'),
@@ -311,7 +310,8 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('D1_TEMP_VALUE','第一次测温值'),
 								('D2_TEMP_VALUE','第二次测温值'),
 								('D3_TEMP_VALUE','第三次测温值'),
-								('D4_TEMP_VALUE','第四次测温值'),								
+								('D4_TEMP_VALUE','第四次测温值'),	
+
 								('STEELWGT','出钢量'),
 								('LDG_STEELWGT','煤气发生量'),
 								('STEEL_SLAG','钢渣量'),
@@ -341,12 +341,12 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('ZR','Zr'),
 								('CE','Ce'),
 								('FE','Fe'),
-										
+
 								('L13010101','硅铁_Si72-80%、AL≤2%(粒度10-60mm)'),
 								('L13010301','微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%'),
 								('L13020101','硅锰合金_Mn 65-72%、Si 17-20%'),
 								('L13020201','高硅硅锰_Mn ≥60%、Si ≥27%'),
-								('L13040400','中碳铬铁'),							
+								('L13040400','中碳铬铁'),
 								('SCRAP_16040101','破碎废钢'),
 								('SCRAP_96052501','小渣钢'),
 								('RETURNSTEELWEIGHT','回炉钢液量'),
@@ -471,13 +471,13 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('D4_SAMP_TYPE','第四次取样类型'),
 								('D5_SAMP_TIME','第五次取样时间'),
 								('D5_SAMP_TYPE','第五次取样类型'),
-								
+
 								('FINAL_TEMP_NO','最后一次测温的序号'),
 								('FINAL_TEMP_TIME','最后一次测温时间'),
 								('FINAL_TEMP_VALUE','最终测温值'),
 								('FINAL_TEMP_TYPE','最后一次测温位置'),
 								('FINAL_TEMP_ACQ','最后一次测温操作方式'),
-								
+
 								('EVENT_3010','出钢开始'),
 								('EVENT_3011','出钢结束'),
 								('TIMEOFSLAGSPLISHING','溅渣护炉时间'),
@@ -488,10 +488,12 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('ARRIVETIME','进吹氩站时刻'),
 								('DEPARTUREDATE','出吹氩站日期'),
 								('DEPARTURETIME','出吹氩站时刻'),
+						        ('D3_BO_DUR','第三次吹氧时间'),
+						        ('L13020501','中碳锰铁_Mn78.0-85.0%, C≤1.0%'),
 						])
 
 PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
-								
+
 								('FURNACESEQ',('炉龄',1)),
 								('SPRAYGUNSEQ',('枪龄',2)),
 								('MIRON_WGT',('铁水重量',3)),
@@ -506,10 +508,10 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('SCRAP_96052200',('自产废钢',12)),
 								('SCRAP_16010101',('重型废钢',13)),
 								('SCRAP_16020101',('中型废钢',14)),
-								('SCRAP_16030101',('未知废钢',15)),		
+								('SCRAP_16030101',('未知废钢',15)),
 								('COLDPIGWGT',('生铁装入量',16)),
 								('SCRAPWGT',('废钢装入量',17)),
-								('SCRAPWGT_COUNT',('废钢装入计算量',18)),				
+								('SCRAPWGT_COUNT',('废钢装入计算量',18)),
 								('L96020400',('1#烧结矿',19)),
 								#('L12010301','石灰石_15-40mm'),
 								('L12010302',('石灰石_40-70mm',20)),
@@ -545,8 +547,8 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D1_TEMP_VALUE',('第一次测温值',48)),
 								('D2_TEMP_VALUE',('(第二次测温值',49)),
 								('D3_TEMP_VALUE',('第三次测温值',50)),
-								('D4_TEMP_VALUE',('第四次测温值',51)),								
-								
+								('D4_TEMP_VALUE',('第四次测温值',51)),
+
 								('STEELWGT_COUNT',('出钢量1',52)),
 								('TOTAL_SLAB_WGT',('出钢量2',53)),
 								('LDG_STEELWGT_COUNT',('煤气发生量1',54)),
@@ -578,12 +580,12 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('ZR',('Zr',80)),
 								('CE',('Ce',81)),
 								('FE',('Fe',82)),
-										
+
 								('L13010101',('硅铁_Si72-80%、AL≤2%(粒度10-60mm)',83)),
 								('L13010301',('微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%',84)),
 								('L13020101',('硅锰合金_Mn 65-72%、Si 17-20%',85)),
 								('L13020201',('高硅硅锰_Mn ≥60%、Si ≥27%',86)),
-								('L13040400',('中碳铬铁',87)),							
+								('L13040400',('中碳铬铁',87)),
 								('SCRAP_16040101',('破碎废钢',88)),
 								('SCRAP_96052501',('小渣钢',89)),
 								('RETURNSTEELWEIGHT',('回炉钢液量',90)),
@@ -650,13 +652,13 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('D4_SAMP_TYPE',('第四次取样类型',151)),
 								('D5_SAMP_TIME',('第五次取样时间',152)),
 								('D5_SAMP_TYPE',('第五次取样类型',153)),
-								
+
 								('FINAL_TEMP_NO',('最后一次测温的序号',154)),
 								('FINAL_TEMP_TIME',('最后一次测温时间',155)),
 								('FINAL_TEMP_VALUE',('最终测温值',156)),
 								('FINAL_TEMP_TYPE',('最后一次测温位置',157)),
 								('FINAL_TEMP_ACQ',('最后一次测温操作方式',158)),
-								
+
 								('EVENT_3010',('出钢开始',159)),
 								('EVENT_3011',('出钢结束',160)),
 								('TIMEOFSLAGSPLISHING',('溅渣护炉时间',161)),
@@ -668,6 +670,3 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('DEPARTUREDATE',('出吹氩站日期',167)),
 								('DEPARTURETIME',('出吹氩站时刻',168)),
 						])
-
-
-

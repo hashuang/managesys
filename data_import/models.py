@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import datetime
 
 from django.db import models,connection,connections
@@ -69,7 +70,11 @@ class BaseManage(models.Manager):
 			cursor = connections[db_name].cursor()
 		else:
 			cursor = connection.cursor()
-		cursor.execute(sqlVO.get('sql'),sqlVO.get('vars'))
+		try:
+			print('SQL [%s]' % sqlVO.get('sql'))
+			cursor.execute(sqlVO.get('sql'),sqlVO.get('vars'))
+		except:
+			print( 'Failed to execute SQL[%s]\n' % sqlVO.get('sql') )
 
 	def direct_get_description(self,sqlVO):
 		db_name=sqlVO.get('db_name')
@@ -82,6 +87,23 @@ class BaseManage(models.Manager):
 		types=[col[1].__name__ for col in cursor.description]
 		columns_type=dict(zip(columns, types))
 		return [columns,columns_type]
+
+	def direct_select_query_orignal_sqlVO(self,sqlVO):
+		#如果是多数据库
+		#cursor = connections['my_db_alias'].cursor()
+		db_name=sqlVO.get('db_name')
+		print(db_name)
+		if sqlVO.get('db_name')!=None:
+			cursor = connections[db_name].cursor()
+		else:
+			cursor = connection.cursor()
+		try:
+			print('SQL [%s]' % sqlVO.get('sql'))
+			cursor.execute(sqlVO.get('sql'),sqlVO.get('vars',None))
+			return cursor.fetchall()
+		except:
+			print( 'Failed to execute SQL[%s]\n' % sqlVO.get('sql') )
+			return False
 
 # Create your models here.
 class TransRelationManage(BaseManage):
@@ -202,7 +224,7 @@ class TransRelation(models.Model):
 	from_col = models.CharField(max_length=100,blank=True)#需要迁移字段在原数据库表的列名
 	remarks = models.CharField(max_length=100,blank=True)#备注
 	procedure = models.CharField(max_length=100,blank=True,null=True)
- 	
+
 	def set_attr(self,**kwargs):
 		#print(kwargs.items())
 		for item in kwargs.items():
@@ -217,7 +239,7 @@ class TransRelation(models.Model):
 
 
 class steel_price(models.Model):
-	own_uid = models.CharField(max_length=100,blank=True) 
+	own_uid = models.CharField(max_length=100,blank=True)
 	final_price = models.FloatField(blank=True)
 	highest_price = models.FloatField(blank=True)
 	lowest_price =models.FloatField(blank=True)
@@ -290,7 +312,7 @@ class KR(models.Model):
 
 
 class BOF(models.Model):
-	heatNo=models.CharField(max_length=30,primary_key=True) 
+	heatNo=models.CharField(max_length=30,primary_key=True)
 	MIRON_WGT=models.CharField(max_length=100,blank=True,null=True)
 	COLDPIGWGT=models.CharField(max_length=100,blank=True,null=True)
 	SCRAPWGT=models.CharField(max_length=100,blank=True,null=True)
@@ -392,7 +414,7 @@ class Sales(models.Model):
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
 
-	
+
 	objects = OrderItemManage()
 
 class external_eles(models.Model):
@@ -403,7 +425,7 @@ class external_eles(models.Model):
 	now_ore=models.FloatField(blank=True)#现矿
 	import_ore=models.FloatField(blank=True)#进口矿
 	now_date = models.DateField()#CREATEDATE CY
-	
+
 	def set_attr(self,**kwargs):
 		#print(kwargs.items())
 		for item in kwargs.items():
@@ -411,8 +433,8 @@ class external_eles(models.Model):
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
 
-	
-	
+
+
 
 class TransRelationMultikey(models.Model):
 	own_uid1 = models.CharField(max_length=100,blank=True)#关联字段在自己设计数据库的字段名
@@ -429,7 +451,7 @@ class TransRelationMultikey(models.Model):
 	from_col = models.CharField(max_length=100,blank=True)#需要迁移字段在原数据库表的列名
 	remarks = models.CharField(max_length=100,blank=False)#备注
 	procedure = models.CharField(max_length=100,blank=True,null=True)
- 	
+
 	def set_attr(self,**kwargs):
 		#print(kwargs.items())
 		for item in kwargs.items():
@@ -494,7 +516,7 @@ class LG_HEATNO(models.Model):
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
 
-	
+
 class LG_SLABID(models.Model):
 	slabId=models.CharField(max_length=30,primary_key=True)
 	warehouseNo=models.CharField(max_length=100,blank=True,null=True)
@@ -511,7 +533,7 @@ class LG_SLABID(models.Model):
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
 
-	
+
 class LG_HEATORDER(models.Model):
 	HEATORDER=models.CharField(max_length=30,primary_key=True)
 	heatNo=models.CharField(max_length=100,blank=True,null=True)
@@ -947,7 +969,7 @@ class SR_SAMPLINGID(models.Model):
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
 
-#销售数据模型	
+#销售数据模型
 class SALES_AREANO(models.Model):
 	areaNo=models.CharField(max_length=30,primary_key=True)
 	areaName=models.CharField(max_length=100,blank=True,null=True)
@@ -1088,7 +1110,7 @@ class SALES_REFID(models.Model):
 			for each in item[1].items():
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
-	
+
 class SALES_SITENO(models.Model):
 	siteNo=models.CharField(max_length=30,primary_key=True)
 	siteChnName=models.CharField(max_length=100,blank=True,null=True)
@@ -1829,7 +1851,7 @@ class SALES2_ORDERNO_ORDERITEM(models.Model):
 			for each in item[1].items():
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
-		
+
 class SALES2_REFID_SUBID(models.Model):
 	refId=models.CharField(max_length=30,blank=True)
 	subId=models.CharField(max_length=30,blank=True)
@@ -1855,7 +1877,3 @@ class SALES2_REFID_SUBID(models.Model):
 			for each in item[1].items():
 				#print('{0}:{1}'.format(each[0],each[1]))
 				setattr(self,each[0],each[1])
-	
-
-
-
