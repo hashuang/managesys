@@ -1174,7 +1174,7 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	print(xasis_fieldname_result_max)
 
 	#计算回归系数
-	coef, intercept=batchprocess.regression_ha(field,xasis_fieldname_result_max)
+	coef, intercept=batchprocess.regression(field,xasis_fieldname_result_max,None)
 	print('与前8个最终相关字段对应的回归系数')
 	print(coef)
 	print('截距')
