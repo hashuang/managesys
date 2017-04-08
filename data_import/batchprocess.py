@@ -75,6 +75,7 @@ def regression(output,selected_eles,db_table_name):
     @param db_table_name 存储回归结果的表
     @rtn coef 与selected_eles对应的回归系数list
     @rtn intercep 回归方程截距
+    @warning: 如果清洗后无数据，返回false，注意处理这种情况
     """
     sqlVO = {"db_name": 'l2own'}
 
@@ -86,7 +87,7 @@ def regression(output,selected_eles,db_table_name):
     sqlVO["sql"] = sql
     rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
 
-    for row in one:
+    for row in rs:
         isFiveAnalyse['%s' % row[0]] = '%s' % row[1]
         bound_lows['%s' % row[0]] = '%s' % row[2]
         bound_highs['%s' % row[0]] = '%s' % row[3]
