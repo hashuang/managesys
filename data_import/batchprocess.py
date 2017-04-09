@@ -107,7 +107,16 @@ def regression(output,selected_eles,db_table_name):
 
     for col in allcolumns:
         temp_df = alldf.copy()
-        temp_df[col] = alldf[col].dropna().map(lambda x:float(x))
+        temp_df[col] = temp_df[col].dropna().map(lambda x:float(x))
+        """
+        可添加 用均值对原数据集空值的填充,若不需要则注释
+        """
+        mean=temp_df[col].describe().get('mean',0)
+        # print('mean:',mean)
+        alldf[col] = alldf[col].fillna(mean)
+        """
+        end fill nan with mean
+        """
         # filter data by bound of low and high
         bound_low = float(bound_lows.get(col,-999999999999))
         bound_high = float(bound_highs.get(col,999999999999))
@@ -118,6 +127,11 @@ def regression(output,selected_eles,db_table_name):
             five_highs['%s' % col ] = LH['top']
             print(col, five_downs[col], five_highs[col])
 
+    # 有字段的类型为Object
+    alldf = alldf.dropna(how='any')
+    for col in allcolumns:
+        alldf[col] = alldf[col].map(lambda x:float(x))
+        
     # 根据各因素上限联合筛选数据
     value_bound_tag = True
     for col in allcolumns:
