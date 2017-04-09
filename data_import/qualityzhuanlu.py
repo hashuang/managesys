@@ -1029,8 +1029,9 @@ def violent_ananlyse(request):
 	document = Document()
 	paragraph=document.add_paragraph()
 	#炉次	
-	for i in range(2):
-		prime_cost=str(1530320+i);
+	for i in range(1):
+		# prime_cost=str(1530320+i);
+		prime_cost=str(1634230+i);		
 		str_cause=violent_ananlyse_to(prime_cost,document,paragraph)
 
 	contentVO={
@@ -1064,7 +1065,7 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 	print('单炉次质量分析字段')
 	print(xasis_fieldname_single)
 	print("单炉次质量分析字段实际值")
-	print(yaxis_single)
+	print(yaxis_single[0])
 	
 	#计算单炉次质量分析字段偏离程度
 	offset_result_single=offset(xasis_fieldname_single,yaxis_single)
@@ -1075,17 +1076,17 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 	#分析字段偏离程度定性判断
 	qualitative_offset_result=qualitative_offset(offset_result_single)
 	print('单炉次质量分析字段偏离度定向分析')
-	print(offset_value_single)
+	print(qualitative_offset_result)
 	#写入word
 
-	
+
 	for i in range(len(xasis_fieldname_single)):
 		xaxis_chinese=xaxis[i];
 		field=xasis_fieldname_single[i];
 		single_value=yaxis_single[i];
 		offset_value=offset_value_single[i];
 		qualitative_offset_result_single=qualitative_offset_result[i];
-		En_to_Ch_result_score,offset_result_nature,offset_value_single_cof=analy_cof(prime_cost,field,single_value,offset_value);				
+		En_to_Ch_result_score,offset_result_nature,offset_value_single_cof,coef_value_re=analy_cof(prime_cost,field,single_value,offset_value);				
 		if abs(float(offset_result_single[i]))<=0.1:
 			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。\n'      
 			paragraph.add_run(str_des)
@@ -1093,7 +1094,7 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
 			paragraph.add_run(str_des)	
 			for i in range(len(En_to_Ch_result_score)):
-				str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+'\n'
+				str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+',权重为'+coef_value_re[i]+'\n'
 				paragraph.add_run(str_cause)    
 	document.add_page_break()
 	document.save('e:/demo.docx')
@@ -1183,14 +1184,48 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	print(intercept)
 
 	
-	#取前5个权重最大的字段按操作顺序（表结构）进行排序
+	#取前3个权重最大的字段
+	#按权重大小对8个字段进行排序
+	coef_abs=[abs(float(n)) for n in coef]	
+	print(coef_abs)
+	print(type(coef_abs))
+	M=dict(zip(coef,xasis_fieldname_result_max))
+	print('组合前8个最终相关字段和回归系数')
+	print(M)
+	dicty_coef=dict(zip(coef_abs,xasis_fieldname_result_max))
+	dicty_coef_order=sorted(dicty_coef.items(),reverse=True)
+	print('组合前8个最终相关字段和回归系数按权重大小排序')
+	print(dicty_coef_order)
+	coef_order_max=dicty_coef_order[0:3]
+	coef_field=[]
+	coef_value=[]
+	for n in range(len(coef_order_max)):
+		coef_field.append(coef_order_max[n][1])
+		coef_value.append(coef_order_max[n][0])
+	print('前3个权重最大的字段和权重')	
+	print(dicty_coef_order[0:3])
+	print('前3个权重最大的字段')
+	print(coef_field)
+	print('前3个权重最大的字段权重')
+	print(coef_value)
+	coef_value_re=["%.4f"%n for n in list(coef_value)]
+
+	#取前3个权重最大的字段偏离程度
+	
+	offsets_coef=value_offset(coef_field,prime_cost)
+	print('前3个权重最大的字段偏离程度')
+	print(offsets_coef)	
+	
+	
+
+	#按操作顺序（表结构）进行排序
 
 	#读取中文字段名
 	ana_result={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
 	En_to_Ch_result=[]
-	for i in range(len(xasis_fieldname_result_max)):
-		En_to_Ch_result.append(ana_result[xasis_fieldname_result_max[i]])
+	for i in range(len(coef_field)):
+		En_to_Ch_result.append(ana_result[coef_field[i]])
 	print("中文字段")	
 	print(En_to_Ch_result)
 
@@ -1198,64 +1233,68 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	ana_result_score={}
 	ana_result_score=zhuanlu.PRO_BOF_HIS_ALLFIELDS_SCORE
 	En_to_Ch_result_score=[]
-	for i in range(len(xasis_fieldname_result_max)):
-		En_to_Ch_result_score.append(ana_result_score[xasis_fieldname_result_max[i]])
+	for i in range(len(coef_field)):
+		En_to_Ch_result_score.append(ana_result_score[coef_field[i]])
 	print("带标记的中文字段")	
 	print(En_to_Ch_result_score)
 
 	#中文字段与偏离程度合并，用于联动排序
-	offset_result_final_maxfive=coef[0:3]
-	En_to_Ch_result_maxfive=En_to_Ch_result[0:3]
-	dicty=dict(zip(En_to_Ch_result_maxfive,offset_result_final_maxfive))
+	dicty=dict(zip(En_to_Ch_result,offsets_coef))
 	print('组合字段中文名和偏离程度')
 	print(dicty)
 
 	#按操作排序字段名
 	a=[]
-	En_to_Ch_result_score=[]
-	xasis_fieldname_result_maxfive=xasis_fieldname_result_max[0:3]
-	for i in range(len(xasis_fieldname_result_maxfive)):
-		a.append(ana_result_score[xasis_fieldname_result_maxfive[i]])
+	coef_field_score=[]
+	for i in range(len(coef_field)):
+		a.append(ana_result_score[coef_field[i]])
 	L=sorted(a,key=by_score)
-	for i in range(len(xasis_fieldname_result_maxfive)):
-		En_to_Ch_result_score.append(L[i][0])
+	for i in range(len(coef_field)):
+		coef_field_score.append(L[i][0])
 	print('按操作排序后中文名')
-	print(En_to_Ch_result_score)
+	print(coef_field_score)
 
     #按操作联动排序偏离程度
-	offset_result_final_maxfive_order=[]
-	for i in range(len(En_to_Ch_result_score)):
-		offset_result_final_maxfive_order.append(dicty[En_to_Ch_result_score[i]])
-	offset_value_single_cof=["%.2f%%"%(abs(float(n))*100) for n in list(offset_result_final_maxfive_order)]
+	offsets_coef_order=[]
+	for i in range(len(coef_field)):
+		offsets_coef_order.append(dicty[coef_field_score[i]])
+	offset_value_single_cof=["%.2f%%"%(abs(float(n))*100) for n in list(offsets_coef_order)]
 	print('按操作排序后字段偏离程度')
 	print(offset_value_single_cof)
 
+
 	#简单定性判断
-	pos_float=[ float(n) for n in list(offset_result_final_maxfive_order)]
+	pos_float=[ float(n) for n in list(offsets_coef_order)]
 	offset_result_nature=simple_offset(pos_float)
 	print("简单定性判断")
 	print(offset_result_nature)	
   
-	#按操作联动排序偏离程度格式化
-	pos=map(lambda x:abs(float(x)),offset_result_final_maxfive_order)
-	posNum=["%.2f%%"%(n*100) for n in list(pos)]
-	print("格式化")
-	print(posNum)
 
-	# print('炉次')
-	# print(prime_cost)
-	# xaxis=['C含量','SI含量','MN含量','P含量','S含量','重量','温度']
-	print('分析质量字段')
-	print(field)
-	# print('分析字段偏离程度定性判断')
-	# print(qualitative_offset_result[0])
-	# print('分析字段偏离程度')
-	# print(offset_value_single[0])
-	# print('按操作排序后回归系数中文名')
-	# print(En_to_Ch_result_score)
-	# print("简单定性判断")
-	# print(offset_result_nature)
-	# print('按操作排序后字段偏离程度')
-	# print(offset_value_single_cof)
-	return En_to_Ch_result_score,offset_result_nature,offset_value_single_cof
 
+	return coef_field_score,offset_result_nature,offset_value_single_cof,coef_value_re
+
+#取实际值并计算偏离程度
+def value_offset(coef_field,prime_cost):
+	#取相关字段实际值
+	str_sql=''
+	for i in range(len(coef_field)):
+		str_sql=str_sql+','+coef_field[i]
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_cost+"'";
+	print(sqlVO["sql"])
+	scrapy_records_actual=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	yaxis=[]#各相关性字段实际值
+	for i in range(len(coef_field)):
+		value = scrapy_records_actual[0].get(coef_field[i],None)
+		if value != None :
+			scrapy_records_actual[0][coef_field[i]] = Decimal(value)
+		else:
+			scrapy_records_actual[0][coef_field[i]] = 0#将空值None暂时以0填充
+		yaxis.append(value)
+	frame=DataFrame(scrapy_records_actual)
+	print("frame",frame)	
+	print("yaxis",yaxis)	
+	#计算各相关字段的偏离程度
+	offset_result=offset(coef_field,yaxis)
+	return offset_result
