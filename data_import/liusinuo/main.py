@@ -415,9 +415,9 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 		dictionary = trade_dict
 
 		# 【 结 论 总 结 】 最大、最小、平均、比例等   #【 占 全 部 钢 种 比 例 】
-		maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason,tradeNo_rate_dict = max_min_average.max_min_ave_sum_trade(dictionary,aspect,module_unit,allTrade_sum)
+		maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason,tradeNo_rate_dict,tradeNo_rate_choose_dict = max_min_average.max_min_ave_sum_trade(dictionary,aspect,module_unit,allTrade_sum,chooseTrade_sum)
 		# 【 结 论 输 出 】 #与前两个不一样
-		conclusionPrint = conclusion.final_conclusion_trade(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,tradeNo_rate_dict,module)
+		conclusionPrint = conclusion.final_conclusion_trade(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,tradeNo_rate_dict,module,tradeNo_rate_choose_dict)
 		return dictionary,conclusionPrint,module_name,aspect_name,unite,maxValue
 	else:  #客户分析
 		if module_unit == "时间":
