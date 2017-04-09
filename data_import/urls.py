@@ -50,11 +50,9 @@ urlpatterns = [
     #sinuo
     url(r'^space',views.space),
     url(r'^time',views.time),
+    url(r'^trade',views.trade),
     url(r'^liusinuo',views.space),
-
-
-    # #自动加载钢种
-    # url(r'^getGrape',views.getAllTradeNo_time),
+    url(r'^GetTradeNo',views.getAllTradeNo_time),
 
 
     #ha

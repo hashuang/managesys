@@ -11,20 +11,20 @@
 #=====================【 结 论 输 出 】==================================
 def basical_info(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,module_unit):
 	#基本信息
-	print ("\n在",sql_date1,"至",sql_date2,"内，钢种",tradeNoList,"在",space_name,"范围内的",aspect_name,"分布如下图。")
-	conclusion = "\n在" + sql_date1 + "至" + sql_date2 + "内，钢种" + tradeNoList + "在" + space_name + "范围内的" + aspect_name + "分布如下图。"
+	print ("\n在",sql_date1,"至",sql_date2,"内，钢种",tradeNoList,"在",space_name,"范围内的",aspect_name,"分布如上图。")
+	conclusion = "\n在" + sql_date1 + "至" + sql_date2 + "内，钢种" + tradeNoList + "在" + space_name + "范围内的" + aspect_name + "分布如上图。"
 	return conclusion
 
 def basical_info_cust(sql_date1,sql_date2,tradeNoList,sql_cust,aspect_name,module_unit):
 	#基本信息
-	print ("\n对于客户",sql_cust,"，在",sql_date1,"至",sql_date2,"时间内，钢种",tradeNoList,"的",aspect_name,"分布如下图。")
-	conclusion = "\n对于客户" + sql_cust + "，在" + sql_date1 + "至" + sql_date2 + "内，钢种" + tradeNoList + "的" + aspect_name + "分布如下图。"
+	print ("\n对于客户",sql_cust,"，在",sql_date1,"至",sql_date2,"时间内，钢种",tradeNoList,"的",aspect_name,"分布如上图。")
+	conclusion = "\n对于客户" + sql_cust + "，在" + sql_date1 + "至" + sql_date2 + "内，钢种" + tradeNoList + "的" + aspect_name + "分布如上图。"
 	return conclusion
 
 def basical_info_cust2(sql_date1,sql_date2,sql_cust,aspect_name,module_unit):
 	#基本信息
-	print ("\n对于客户",sql_cust,"，在",sql_date1,"至",sql_date2,"时间内，全部销售钢种的",aspect_name,"分布如下图。")
-	conclusion = "\n对于客户" + sql_cust + "，在" + sql_date1 + "至" + sql_date2 + "内，全部销售钢种的" + aspect_name + "分布如下图。"
+	print ("\n对于客户",sql_cust,"，在",sql_date1,"至",sql_date2,"时间内，全部销售钢种的",aspect_name,"分布如上图。")
+	conclusion = "\n对于客户" + sql_cust + "，在" + sql_date1 + "至" + sql_date2 + "内，全部销售钢种的" + aspect_name + "分布如上图。"
 	return conclusion
 
 def conclusion_info(conclusion,printMax,maxRateReason,aspect_name,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,module_unit,noMin,aspect,module):
@@ -64,17 +64,31 @@ def conclusion_info(conclusion,printMax,maxRateReason,aspect_name,sumValue,unite
 			pass
 	return conclusion
 
-def trade_rate_info(conclusion,tradeNo_rate_dict,aspect):
+def trade_rate_choose_info(conclusion,tradeNo_rate_choose_dict,aspect):
 
 	if aspect == 1 or aspect == 2:
-		tem_clnclusion = "\n对于全部钢种，所选钢种所占比例为：\n"
-		for tradeNo in tradeNo_rate_dict:
-			tem_clnclusion = tem_clnclusion + tradeNo + ":" + str(tradeNo_rate_dict[tradeNo]) + "% \n"
+		tem_clnclusion = "\n\n对于所选钢种，各钢种所占比例为：\n"
+		for tradeNo in tradeNo_rate_choose_dict:
+			tem_clnclusion = tem_clnclusion + tradeNo + ":" + str(tradeNo_rate_choose_dict[tradeNo]) + "% \n"
 		print (tem_clnclusion)
 		conclusion = conclusion + tem_clnclusion
 		return conclusion
 	else:
 		return conclusion
+
+
+def trade_rate_info(conclusion,tradeNo_rate_dict,aspect):
+
+	# if aspect == 1 or aspect == 2:
+	# 	tem_clnclusion = "\n对于全部钢种，各钢种所占比例为：\n"
+	# 	for tradeNo in tradeNo_rate_dict:
+	# 		tem_clnclusion = tem_clnclusion + tradeNo + ":" + str(tradeNo_rate_dict[tradeNo]) + "% \n"
+	# 	print (tem_clnclusion)
+	# 	conclusion = conclusion + tem_clnclusion
+	# 	return conclusion
+	# else:
+	# 	return conclusion
+	return conclusion
 
 
 def return_info(aspect,passOrNot,tradeNo_rtn_reason_print,conclusion):
@@ -107,9 +121,10 @@ def final_conclusion(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,prin
 	return conclusion
 
 # 针 对 钢 种 分 析 另 加 一 个 占 全 部 钢 种 的 结 论
-def final_conclusion_trade(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,tradeNo_rate_dict,module):
+def final_conclusion_trade(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,tradeNo_rate_dict,module,tradeNo_rate_choose_dict):
 	conclusion = basical_info(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,module_unit)
 	conclusion = conclusion_info(conclusion,printMax,maxRateReason,aspect_name,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,module_unit,noMin,aspect,module)
+	conclusion = trade_rate_choose_info(conclusion,tradeNo_rate_choose_dict,aspect)
 	conclusion = trade_rate_info(conclusion,tradeNo_rate_dict,aspect)
 	conclusion = return_info(aspect,passOrNot,tradeNo_rtn_reason_print,conclusion)
 
