@@ -3,6 +3,7 @@
 {% block content %}
 <h1>销售部分：空间分析</h1> 
 <h5><a href='/time'>>>>跳转到：时间分析</a></h5>
+<h5><a href='/trade'>>>>跳转到：钢种分析</a></h5>
 <br>
 {% csrf_token %}
 <!--<h3> 输入 </h3>-->
@@ -40,6 +41,15 @@
 </div>
 <br>
 <div>
+    时间选取快捷按钮：
+    <button id="btnSelectDate_oneYear" onclick="SelectDate_default()" > 还原默认值 </button>
+    <button id="btnSelectDate_oneMonth" onclick="SelectDate_oneMonth()" > 近一月 </button>
+    <button id="btnSelectDate_threeMonth" onclick="SelectDate_threeMonth()" > 近三月 </button>
+    <button id="btnSelectDate_halfYear" onclick="SelectDate_halfYear()" > 近半年 </button>
+    <button id="btnSelectDate_oneYear" onclick="SelectDate_oneYear()" > 近一年 </button>
+</div>
+<br>
+<div>
     地点范围:
     <select name="select_space" id="select_space" class="xla_4">
         <option value="1">世界范围内</option>
@@ -57,15 +67,7 @@
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82A>C82A
 </div>
 <br>
-<!--
-<select name="select_trade" id="select_trade" class="xla_5">
-    <option value=45>45</option>
-    <option value=50>50</option>
-    <option value=C82DA>C82DA</option>
-</select><br>
--->
 
-<!--<h3> 输出 </h3>-->
 <button id="btnDrawChart">分析结果绘图</button>
 <br>
 <br>
@@ -74,6 +76,7 @@
 <textarea id="txt" style="width: 800px;height:100px;"></textarea>
 </div>
 <br>
+<script type="text/javascript" src="/static/data_import/js/loadDateSelect.js"></script>
 <script type="text/javascript">
   
     $('#btnDrawChart').click(function(){
@@ -142,6 +145,12 @@
         }else{
             space_name = '山东';
         }
+
+        //图表正在加载中
+        var myChart = echarts.init(document.getElementById('main4'));
+        myChart.showLoading({
+                    text: "图表数据正在努力加载...\n请不要点击其他按钮~"
+                });
         
         $.ajax({
             type: "post",

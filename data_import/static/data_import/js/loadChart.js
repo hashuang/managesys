@@ -357,6 +357,11 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
     //console.log(data[0]);
     //console.log(data[0].name);
     //console.log(data[0].value);
+
+//     myChart.showLoading({
+//                     text: "图表数据正在努力加载..."
+//                 });
+    
     //获取月/日的数据
     for (var i=0;i<10;i++)
     {
@@ -466,6 +471,105 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
     myChart.setOption(option);
 }
 
+
+//钢种分析饼图 (Echarts 2)
+function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+
+    var myChart = echarts.init(document.getElementById('main4'));
+    console.log(data);
+    //console.log(tradeNo);
+    //console.log(data[0]);
+    //console.log(data[0].name);
+    //console.log(data[0].value);
+    
+    option = {
+    title : {
+        text: module_name + '——' + aspect_name + '（' + space_name + '）',
+        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'item',
+        formatter: aspect_name + "占比 <br/>{b} : {c} ({d}%)"
+    },
+    legend: {
+        orient : 'vertical',
+        x : 'left',
+        data:[tradeNo]
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    series : [
+        {
+            name:"饼状图",
+            type:'pie',
+            radius : '55%',
+            center: ['50%', '60%'],
+            data:data
+        }
+    ]
+};
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+//钢种分析饼图 (Echarts 2)
+function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+
+    var myChart = echarts.init(document.getElementById('main4'));
+    console.log(data);
+    //console.log(tradeNo);
+    //console.log(data[0]);
+    //console.log(data[0].name);
+    //console.log(data[0].value);
+    
+    option = {
+    title : {
+        text: module_name + '——' + aspect_name + '（' + space_name + '）',
+        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'item',
+        formatter: aspect_name + "<br/>{b} : {c}"
+    },
+    legend: {
+        // orient : 'vertical',
+        // x : 'left',
+        data:[tradeNo]
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    series : [
+        {
+            name:'漏斗图',
+            type:'funnel',
+            width: '40%',
+            x : '30%',
+            y : '30%',
+            data:data
+        },
+
+    ]
+};
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
 
 
 
