@@ -119,4 +119,5 @@ urlpatterns = [
     #添加工具类方法，之后处理为批处理事件
     url(r'^relation_ana$',batchprocess.relation_ana),
     url(r'^report$',batchprocess.report),
+    
 ]

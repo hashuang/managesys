@@ -132,7 +132,7 @@
                 // $("#txt").empty();//清除表格内容
                 $("#cause_txt").empty();//清除文本框内容
                 // $("#cause_txt").append('单炉次'+field+'字段因素追溯的分析结果:\n');
-                $("#cause_txt").append('经分析，'+heat_no+'炉次下的'+fieldname_chinese+'('+fieldname_english+')字段，偏离程度为'+offset_value+'。\n成本追溯分析结果如下(前五):\n');
+                $("#cause_txt").append('经分析，'+heat_no+'炉次下的'+fieldname_chinese+'('+fieldname_english+')字段，偏离程度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n');
                 // var content='';
                 // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
                 for (var i=0;i<data.offset_number;i++){
@@ -156,9 +156,9 @@
     function drawBarChart_raw(result){
         var myChart = echarts.init(document.getElementById('main1'));
         var colors = ['#FF8C69','#FF8247','#FF7256','#FF6347','#FF34B3','#FF0000','#FF7F50','#FF7F24'];
-        var barWidth_value=80;
-        var barGap_value='100%';
-        var barCategoryGap_value='60%';
+        var barWidth_value=80;//柱条（K线蜡烛）宽度
+        var barGap_value='100%';//柱间距离，默认为柱形宽度的30%，可设固定值
+        var barCategoryGap_value='60%';//类目间柱形距离，默认为类目间距的20%，可设固定值
 
             // 指定图表的配置项和数据
             var option = {
@@ -507,7 +507,7 @@
                     // min: 0,
                     // max: 105000,
                     position: 'left',
-                    offset:-40,
+                    offset:120,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -524,7 +524,7 @@
                     // min: 0,
                     // max: 12000,
                     position: 'left',
-                    offset: -200,
+                    offset: -40,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -539,10 +539,10 @@
                     type: 'value',
                     name: '1#烧结矿(Kg)',
                     min: 0,
-                    max: 12000,
+                    max: 8000,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -360,
+                    offset: -200,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -556,9 +556,9 @@
                     type: 'value',
                     name: '石灰石_40-70mm(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -520,
+                    offset: -360,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -573,9 +573,9 @@
                     type: 'value',
                     name: '萤石_FL80(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -680,
+                    offset: -520,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -590,9 +590,9 @@
                     type: 'value',
                     name: '增碳剂(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -840,
+                    offset: -680,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -607,9 +607,9 @@
                     type: 'value',
                     name: '低氮增碳剂(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -1000,
+                    offset: -840,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -624,9 +624,9 @@
                     type: 'value',
                     name: '石灰(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -1160,
+                    offset: -1000,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -641,9 +641,9 @@
                     type: 'value',
                     name: '轻烧白云石(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 8000,
                     position: 'left',
-                    offset: -1320,
+                    offset: -1160,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -780,7 +780,7 @@
                     barGap: barGap_value,
                     barCategoryGap: barCategoryGap_value,
                     barMinHeight:10,
-                    yAxisIndex: 6,
+                    yAxisIndex: 7,
                     data:[result.material.yvalue[7]],
                     itemStyle: {
                         normal: {
@@ -797,7 +797,7 @@
                     barGap: barGap_value,
                     barCategoryGap: barCategoryGap_value,
                     barMinHeight:10,
-                    yAxisIndex: 6,
+                    yAxisIndex: 8,
                     data:[result.material.yvalue[8]],
                     itemStyle: {
                         normal: {
@@ -878,7 +878,7 @@
                     min: 0,
                     max: 105000,
                     position: 'left',
-                    offset:-40,
+                    offset:-360,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -895,7 +895,7 @@
                     min: 0,
                     max: 12000,
                     position: 'left',
-                    offset: -200,
+                    offset: -520,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -913,7 +913,7 @@
                     max: 22000,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -360,
+                    offset: -680,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -1044,10 +1044,10 @@
                 yAxis: [{
                     type: 'value',
                     name: '硅铁_Si72-80%、AL≤2%(粒度10-60mm)(Kg)',
-                    // min: 0,
-                    // max: 105000,
+                    min: 0,
+                    max: 5000,
                     position: 'left',
-                    offset:-40,
+                    offset:-200,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -1061,10 +1061,10 @@
                 {
                     type: 'value',
                     name: '微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%(Kg)',
-                    // min: 0,
-                    // max: 12000,
+                    min: 0,
+                    max: 5000,
                     position: 'left',
-                    offset: -200,
+                    offset: -360,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -1079,10 +1079,10 @@
                     type: 'value',
                     name: '硅锰合金_Mn 65-72%、Si 17-20%(Kg)',
                     min: 0,
-                    max: 12000,
+                    max: 5000,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -360,
+                    offset: -520,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -1096,9 +1096,9 @@
                     type: 'value',
                     name: '高硅硅锰_Mn ≥60%、Si ≥27%(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 5000,
                     position: 'left',
-                    offset: -520,
+                    offset: -680,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -1113,9 +1113,9 @@
                     type: 'value',
                     name: '中碳铬铁(Kg)',
                     min: 0,
-                    max: 10000,
+                    max: 5000,
                     position: 'left',
-                    offset: -680,
+                    offset: -840,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
