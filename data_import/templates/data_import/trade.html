@@ -8,19 +8,19 @@
 {% block content %}
 
 
-<h1>销售部分：时间分析</h1> 
+<h1>销售部分：钢种分析</h1> 
 <h5><a href='/space'>>>>跳转到：空间分析</a></h5>
-<h5><a href='/trade'>>>>跳转到：钢种分析</a></h5>
+<h5><a href='/time'>>>>跳转到：时间分析</a></h5>
 {% csrf_token %}
 <br>
 <!--<h3> 输入 </h3>-->
 <div>
     分析模块:
     <select name="select_module" id="select_module" class="xla_1">
-        <!--<option value="1">空间分析</option>-->
-        <option value="2">时间分析</option>
-        <!--<option value="3">钢种分析</option>
-        <option value="4">客户分析</option>-->
+        <!-- <option value="1">空间分析</option>
+        <option value="2">时间分析</option> -->
+        <option value="3">钢种分析</option>
+        <!-- <option value="4">客户分析</option> -->
     </select>
     分析内容:
     <select name="select_aspect" id="select_aspect" class="xla_2">
@@ -65,6 +65,7 @@
         <option value="3">山东省内</option>
     </select>
     <select name="select_space_country" id="select_space_country" class="xla_5"   style="display:none;" value = '中国'>
+        <!--<option value="1" selected >==请选择国家==</option>-->
         <option value="中国">中国</option>
         <option value="美国">美国</option>
         <option value="马来西亚">马来西亚</option>
@@ -82,6 +83,7 @@
         <option value="其他">其他</option>
     </select>
     <select name="select_space_province" id="select_space_province" class="xla_6"  style="display:none;" value = '江苏'>
+        <!--<option value="1" selected >==请选择省==</option>-->
         <option value="江苏">江苏</option>
         <option value="山东">山东</option>
         <option value="黑龙江">黑龙江</option>
@@ -119,6 +121,7 @@
 
     </select>
     <select name="select_space_city" id="select_space_city" class="xla_7" style="display:none;" value = '青岛'>
+        <<!--option value="1" selected >==请选择城市==</option>-->
         <option value="青岛">青岛</option>
         <option value="烟台">烟台</option>
         <option value="威海">威海</option>
@@ -143,34 +146,57 @@
 
 <div>
     钢种选择:
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45>45
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=50>50
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45 >45
+    <!-- <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=50>50 -->
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82DA>C82DA
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=60Si2Mn>60Si2Mn
+    <!-- <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=60Si2Mn>60Si2Mn -->
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82A>C82A
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82D2>C82D2
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=ER50-6E>ER50-6E
+    <br>
+    <!-- 钢种选择的select
+    <select name="select_space_city" id="select_space_city" class="xla_8" >
+    </select><br> -->
+
+<!--     钢种选择的checkbox: -->
+<!--     <div class="test">
+
+    </div>
+    <br>
+ -->
 </div>
 <br>
 
+<!--
+<select name="select_trade" id="select_trade" class="xla_5">
+    <option value=45>45</option>
+    <option value=50>50</option>
+    <option value=C82DA>C82DA</option>
+</select><br>
+
+style="visibility: hidden;"
+
+-->
+
+<!--<h3> 输出 </h3>-->
 <div>
 <button id="btnDrawChart" >分析结果绘图</button>
+<!-- <button id="btnDrawChart_2" onclick="btnDrawChart_2()">漏斗图</button> -->
 </div>
+
+<!-- ====================这里取消注释即可==========================
 <br>
 <div>
-   折线图展示方式： 
+    展示方式： 
     <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '月' style="display:inline;">
-        <option value="1">每月结果</option>
-        <option value="5">每20日结果</option>
-        <option value="4">每15日结果</option>
-        <option value="2">每7日结果</option>
-        <option value="3">每日结果</option>
+        <option value="1">饼状图</option>
+        <option value="2">漏斗图</option>
     </select>
-</div>
+</div> -->
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
-<textarea id="txt" style="width: 800px;height:100px;"></textarea>
+<textarea id="txt" style="width: 800px;height:300px;"></textarea>
 </div>
 
 <script type="text/javascript" src="/static/data_import/js/loadDateSelect.js"></script>
@@ -205,11 +231,18 @@
         space_name: null,
         showStyle: null
     }
- 
-    select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
-        //var showStyle = $ ("#select_showStyle").find("option:selected").val();
-        drawTimeLineBar(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value);
-    }
+
+    // ====================这里取消注释即可==========================
+    // select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
+    //     //var showStyle = $ ("#select_showStyle").find("option:selected").val();
+    //     if (this.value == 1){
+    //          drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+    //     }else{
+    //          drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+    //     }
+       
+    // }
+
 
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
@@ -218,7 +251,11 @@
         var dateChoose = $ ("#select_time_choose").find("option:selected").val();
         var space = $ ("#select_space").find("option:selected").val();
         var tradeNo = $ ("#select_trade").find("option:selected").val();
-        var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        console.log(tradeNo);
+        
+        // ====================这里取消注释即可==========================
+        // var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        var showStyle = 1
         
         var sql_cust = ''
         var sql_date1_ = document.getElementById("select_date1").value
@@ -243,6 +280,11 @@
             var space_name = $ ("#select_space_city").find("option:selected").val();
         }
 
+        // if(tradeNo == null){
+        //     alert("请选择钢种");
+        //     var tradeNo = $ ("#select_trade").find("option:selected").val();
+        // }
+
         //将所选钢种加到list中
         var arr = new Array();
         var tradeNoNoNo = ""
@@ -257,7 +299,8 @@
                     tradeNoNoNo = tradeNoNoNo + comma + items[i].value;
                 }
             }                
-        }                 
+        }
+        tradeNo_count = items.length
 
         //读取输入值
         var dateChoose_name = ''
@@ -288,7 +331,6 @@
                 });
         }
         
-        
         $.ajax({
             type: "post",
             url:  "/time",
@@ -309,8 +351,13 @@
             data_save.dateChoose_name = dateChoose_name;
             data_save.space_name = space_name;
             data_save.showStyle = showStyle;
-            drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle);
-            //console.log(sql_date1)
+            if ( showStyle == 1 ){
+                drawpie(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
+            }else {
+                drawfunnel(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
+            }
+            
+            console.log(tradeNoNoNo)
             //console.log(data.unite)
             $("#txt").empty();
             $("#txt").append(data.describe); 
@@ -318,41 +365,50 @@
             }).fail(function(){
                 console.log("wrong");
             });
-        
+
     });
     
+    //自动加载钢种
+    function loadOption_select_tradeNo(){ 
+        $.ajax({
+        type: "POST",
+        dataType:"json",
 
-    // //自动加载钢种
-    // function loadOption_select_tradeNo(){ 
-    //     $.ajax({
-    //     type: "POST",
-    //     dataType:"json",
+        url: "/GetTradeNo" ,
+        data: {'greet':'hello'},
+        success: function(data){
+            //console.log(data.result);
+            //console.log(data.result.length);
+            tradeNos=data.result;
+            // for(var tradeNo in tradeNos){
+            //     console.log(tradeNos[tradeNo]) 
+            //     $(".xla_8").append("<option value='"+tradeNos[tradeNo]+"'>"+tradeNos[tradeNo]+"</option>");
 
-    //     url: "/timeGetTradeNo" ,
-    //     data: {'greet':'hello'},
-    //     success: function(data){
-    //         alert(data.result);
-    //         alert(data.result.length);
-    //         tradeNos=data.result;
-    //         $(".xla_8").append("<option value='blank' selected =\"selected\"></option>");
-    //         for(var tradeNo in tradeNos){
-    //             console.log(tradeNos[tradeNo]) 
-    //             $(".xla_8").append("<option value='"+tradeNos[tradeNo]+"'>"+tradeNos[tradeNo]+"</option>");
+            // }
+            // var i = 0;
+            // for(var tradeNo in tradeNos){
+            //     //console.log(tradeNos[tradeNo]) 
+            //     $(".test").append("<input type='checkbox' name='test' id='test' class = 'test' value='"+tradeNos[tradeNo]+"'>"+tradeNos[tradeNo]);
+            //     i = i + 1;
+            //     if ( i%15 == 0){ //每行15个
+            //         $(".test").append("<br>");
+            //     }else{
+            //         continue
+            //     }
+            // }
+        },
+        error: function () {
+            alert("error");
+            }
+         });
+        };
 
-    //         }
-    //     },
-    //     error: function () {
-    //         alert("error");
-    //         }
-    //      });
-    //     };
-
-    // //初始化
-    // $(function(){
-    //         //loadOption_select_tradeNo(); //动态加载全部钢种
+    //初始化
+    $(function(){
+            loadOption_select_tradeNo(); //动态加载全部钢种
 
 
-    //     })
+        })
 
 </script>
 <script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
