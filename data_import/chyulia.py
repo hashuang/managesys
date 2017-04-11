@@ -125,8 +125,19 @@ def offset(xasis_fieldname,yaxis):
 			value = scrapy_records[0].get(parameters[j],None)
 			if value != None and value != 'null':
 				scrapy_records[0][parameters[j]] = float(value)
+
+		#如果实际值大于最大值，则按最大值计算，偏离程度为50% ; 如果实际值小于最小值，则按最小值处理。偏离程度为-50%
+		if float(yaxis[i])>scrapy_records[0]['MAX_VALUE']:
+			adjusted_yaxis=scrapy_records[0]['MAX_VALUE']
+		elif float(yaxis[i])<scrapy_records[0]['MIN_VALUE']:
+			adjusted_yaxis=scrapy_records[0]['MIN_VALUE']
+		else :
+			adjusted_yaxis=float(yaxis[i])
+
+
 		try:
-			temp_value=(float(yaxis[i])-scrapy_records[0]['DESIRED_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE'])
+			# temp_value=(float(yaxis[i])-scrapy_records[0]['DESIRED_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE'])
+			temp_value=(adjusted_yaxis-scrapy_records[0]['MIN_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE'])-0.5
 		except:
 			temp_value=None
 		offset_result.append(temp_value)
@@ -141,7 +152,7 @@ def qualitative_offset(offset_result):
 	qualitative_offset_result=[]
 	for i in range(len(offset_result)):
 		if abs(float(offset_result[i]))<=qualitative_standard[0]:
-			qualitative_offset_result.append('正常范围')
+			qualitative_offset_result.append('正常')
 		elif abs(float(offset_result[i]))<=qualitative_standard[1]:
 			if float(offset_result[i])>0:#偏高
 				qualitative_offset_result.append('偏高')
@@ -691,6 +702,7 @@ def max_influence(request):
 	print(regression_coefficient)
 	print("偏离程度")
 	print(offset_degree_result)
+	
 	#查询转炉工序字段名中英文对照
 	ana_result={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS

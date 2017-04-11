@@ -24,13 +24,27 @@
 		<td id="file_download"></td>
 	</tr>
 	<tr>
-		<td>属性</td>
-		<td>按钮</td>
+		<td>暴力追溯</td>
+		<td><button onclick='violent_analyse()'>action</button></td>
 	</tr>
 </table>
 
 
 <script type="text/javascript">
+	function violent_analyse(){
+	        $.ajax({
+	        type: "post",
+	        url:  "/violent_analyse",
+	        data: {},
+	        error: function() {
+	            alert("暴力追溯发生错误！");
+	        },
+	        success: function(data) {
+	            alert("暴力追溯完成！");
+	        }
+	     })
+	    }
+
     //定期更新数据库中表结构表中的期望等参数值(现已单独成文件，不放在整体程序中)
     function updatevalue(){
         $.ajax({
