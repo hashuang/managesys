@@ -217,7 +217,7 @@ def offset(xasis_fieldname,yaxis):
 				scrapy_records[0][parameters[j]] = float(value)
 
 		try:
-			temp_value=(float(yaxis[i])-scrapy_records[0]['MIN_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE'])- 0.5
+			temp_value=((float(yaxis[i])-scrapy_records[0]['MIN_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE']))- 0.5
 		except:
 			temp_value=None
 		offset_result.append(temp_value)
@@ -1042,33 +1042,43 @@ def violent_ananlyse(request):
 
 def violent_ananlyse_to(prime_cost,document,paragraph):
 	#取某一炉次的质量分析字段C、SI、MN、P、S、钢水重量、温度的实际值
+	
+
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(Fe,0) as Fe, nvl(STEELWGT,0) as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
-	scrapy_records_single=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(FE,0) as FE, nvl(STEELWGT,0) as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	
+	# sqlVO["sql"] = "SELECT " + ",".join(xasis_fieldname_single) + " from QG_USER.PRO_BOF_HIS_ALLFIELDS where heat_no= '"+prime_cost+"'"
 
-	# xasis_fieldname_single=['C','SI','MN','P','S','Fe','STEELWGT','FINAL_TEMP_VALUE']
-	# xaxis=['C含量','SI含量','MN含量','P含量','S含量','Fe含量','重量','温度']
+	scrapy_records_single=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+	xasis_fieldname_single=['C','SI','MN','P','S','FE','STEELWGT','FINAL_TEMP_VALUE']
+	xaxis=['C含量','SI含量','MN含量','P含量','S含量','FE含量','重量','温度']
+
+	
 	str_heatno='炉次号'+prime_cost+'\n'      
 	paragraph.add_run(str_heatno)
 
-	xasis_fieldname_single=['C','SI']
-	xaxis=['C含量','SI含量']
+	#xasis_fieldname_single=['FE']
+	#xaxis=['FE含量']
+	#yaxis_single=[]
 	for i in range(len(xasis_fieldname_single)):
 		value = scrapy_records_single[0].get(xasis_fieldname_single[i],None)
 		if value != None :
-			scrapy_records_single[0][xasis_fieldname_single[i]] = float(value)	
+			scrapy_records_single[0][xasis_fieldname_single[i]] = float(value)
+			#yaxis_single.append(float(value))
 	frame=DataFrame(scrapy_records_single)
-
-	yaxis_single=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.FINAL_TEMP_VALUE[0]]
+	#实际值
+	yaxis_single=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.FE[0],frame.STEELWGT[0],frame.FINAL_TEMP_VALUE[0]]
+	
 
 	print('单炉次质量分析字段')
 	print(xasis_fieldname_single)
 	print("单炉次质量分析字段实际值")
-	print(yaxis_single[0])
+	print(yaxis_single)
 	
 	#计算单炉次质量分析字段偏离程度
 	offset_result_single=offset(xasis_fieldname_single,yaxis_single)
+
 	offset_value_single=["%.2f%%"%(n*100) for n in list(offset_result_single)]
 	print('单炉次质量分析字段偏离度')
 	print(offset_value_single)
@@ -1087,15 +1097,30 @@ def violent_ananlyse_to(prime_cost,document,paragraph):
 		offset_value=offset_value_single[i];
 		qualitative_offset_result_single=qualitative_offset_result[i];
 		En_to_Ch_result_score,offset_result_nature,offset_value_single_cof,coef_value_re=analy_cof(prime_cost,field,single_value,offset_value);				
-		if abs(float(offset_result_single[i]))<=0.1:
-			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。\n'      
-			paragraph.add_run(str_des)
+		
+		#偏离程度小于20%
+		if abs(float(offset_result_single[i]))<=0.2:
+			continue;
+		#超过上下限范围	
+		elif bound_judge(field,single_value)==0:
+			continue;
 		else:
-			str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
+			str_des=xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'原因是:'      
 			paragraph.add_run(str_des)	
 			for i in range(len(En_to_Ch_result_score)):
-				str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+',权重为'+coef_value_re[i]+'\n'
-				paragraph.add_run(str_cause)    
+				str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+'\n'
+				paragraph.add_run(str_cause) 
+
+				
+		# if abs(float(offset_result_single[i]))<=0.1:
+		# 	str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。\n'      
+		# 	paragraph.add_run(str_des)
+		# else:
+		# 	str_des='本炉次'+prime_cost+'的钢水'+xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
+		# 	paragraph.add_run(str_des)	
+		# 	for i in range(len(En_to_Ch_result_score)):
+		# 		str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+',权重为'+coef_value_re[i]+'\n'
+		# 		paragraph.add_run(str_cause)    
 	document.add_page_break()
 	document.save('e:/demo.docx')
 	return 	str_cause		
@@ -1196,21 +1221,23 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	dicty_coef_order=sorted(dicty_coef.items(),reverse=True)
 	print('组合前8个最终相关字段和回归系数按权重大小排序')
 	print(dicty_coef_order)
-	coef_order_max=dicty_coef_order[0:3]
+	# coef_order_max=dicty_coef_order[0:3]
+	#修改为追溯2个因素
+	coef_order_max=dicty_coef_order[0:2]
 	coef_field=[]
 	coef_value=[]
 	for n in range(len(coef_order_max)):
 		coef_field.append(coef_order_max[n][1])
 		coef_value.append(coef_order_max[n][0])
 	print('前3个权重最大的字段和权重')	
-	print(dicty_coef_order[0:3])
+	print(coef_order_max)
 	print('前3个权重最大的字段')
 	print(coef_field)
 	print('前3个权重最大的字段权重')
 	print(coef_value)
 	coef_value_re=["%.4f"%n for n in list(coef_value)]
 
-	#取前3个权重最大的字段偏离程度
+	#取前3个权重最大的字段实际值和偏离程度
 	
 	offsets_coef=value_offset(coef_field,prime_cost)
 	print('前3个权重最大的字段偏离程度')
@@ -1278,7 +1305,9 @@ def value_offset(coef_field,prime_cost):
 	#取相关字段实际值
 	str_sql=''
 	for i in range(len(coef_field)):
-		str_sql=str_sql+','+coef_field[i]
+		 str_sql=str_sql+','+coef_field[i]
+		# str_sql=str_sql+','+ 'nvl('+coef_field[i]+',0)as'+coef_field[i]
+		#nvl(C,0) as C
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO" +str_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS where HEAT_NO='"+prime_cost+"'";
@@ -1298,3 +1327,21 @@ def value_offset(coef_field,prime_cost):
 	#计算各相关字段的偏离程度
 	offset_result=offset(coef_field,yaxis)
 	return offset_result
+def bound_judge(column,value):
+	bound_lows = dict()
+	bound_highs = dict()
+	sqlVO = {"db_name": 'l2own'}
+	sql = 'select DATA_ITEM_EN,NUMERICAL_LOWER_BOUND,NUMERICAL_UPPER_BOUND from QG_USER.PRO_BOF_HIS_ALLSTRUCTURE WHERE  IF_ANALYSE_TEMP = 1'
+	sqlVO["sql"] = sql
+	rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
+	for row in rs:    
+		bound_lows['%s' % row[0]] = '%s' % row[1]
+		bound_highs['%s' % row[0]] = '%s' % row[2]
+	#取到字段的上下限    
+	bound_low = float(bound_lows.get(column,-999999999999))
+	bound_high = float(bound_highs.get(column,999999999999))
+	if  (value>= bound_low) & (value <= bound_high):
+		value_tag=1;
+	else:
+		value_tag=0;
+	return value_tag		 
