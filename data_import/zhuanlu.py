@@ -529,10 +529,7 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('TOTALOXYGENCONSUME',('总供氧耗量',31)),
 								('SUM_BO_CSM',('总吹氧消耗',32)),
 								('SUM_BO_DUR',('总吹氧时间',32.5)),
-<<<<<<< HEAD
 
-=======
->>>>>>> pr/40
 								('FIRSTCATCHOXYGENCONSUME',('一倒氧气耗量',33)),
 								('CARBONTEMPERATURE',('一倒温度(℃)',34)),
 								('FIRSTCATCHCARBONC',('一倒C%',35)),
