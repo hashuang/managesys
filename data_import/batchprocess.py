@@ -134,6 +134,14 @@ def regression(output,selected_eles,db_table_name):
             five_highs['%s' % col ] = LH['top']
             print(col, five_downs[col], five_highs[col])
 
+    """
+    根据上下限填充零值
+    """
+    for col in allcolumns:
+        bound_low = float(bound_lows.get(col,-999999999999))
+        bound_high = float(bound_highs.get(col,999999999999))
+        if 0 >= bound_low and 0 <= bound_high:
+            alldf[col] = alldf[col].fillna(0)
 
     alldf_temp = alldf.copy()
     # fout_des.write("%s before drop : %s\n" % (columns_coma,str(len(alldf))))
@@ -146,7 +154,7 @@ def regression(output,selected_eles,db_table_name):
         temp_col_s = temp_col_s.dropna()
         after_drop_temp_col = len(temp_col_s)
         fout_des.write("%s  nan rate : %s\n" % (col,str(after_drop_temp_col/after_drop_num)))
-    """
+
     # 有字段的类型为Object
     for col in allcolumns:
         alldf[col] = alldf[col].map(lambda x:float(x))
@@ -180,7 +188,7 @@ def regression(output,selected_eles,db_table_name):
 
     coef, intercept = linear_regression_model(alldf)
     coef = list(map(lambda x: str(x), coef))
-    """
+
     # save result to database
     """
     for i in range(len(selected_eles)):
