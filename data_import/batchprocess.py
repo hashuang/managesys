@@ -77,6 +77,7 @@ def regression(output,selected_eles,db_table_name):
     @rtn intercep 回归方程截距
     @warning: 如果清洗后无数据，返回false，注意处理这种情况
     """
+    fout_des = open("data_number.txt", 'a+', encoding='utf-8')
     sqlVO = {"db_name": 'l2own'}
 
     isFiveAnalyse = dict()
@@ -93,7 +94,7 @@ def regression(output,selected_eles,db_table_name):
         bound_highs['%s' % row[0]] = '%s' % row[3]
 
     allcolumns = selected_eles + [output]
-
+    columns_coma = ",".join(allcolumns)
     sql = 'SELECT ' + ', '.join(selected_eles) + ', ' + output + ' from QG_USER.PRO_BOF_HIS_ALLFIELDS'
     sqlVO["sql"] = sql
     rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
@@ -111,9 +112,9 @@ def regression(output,selected_eles,db_table_name):
         """
         可添加 用均值对原数据集空值的填充,若不需要则注释
         """
-        mean=temp_df[col].describe().get('mean',0)
+        # mean=temp_df[col].describe().get('mean',0)
         # print('mean:',mean)
-        alldf[col] = alldf[col].fillna(mean)
+        # alldf[col] = alldf[col].fillna(mean)
         """
         end fill nan with mean
         """
@@ -127,11 +128,23 @@ def regression(output,selected_eles,db_table_name):
             five_highs['%s' % col ] = LH['top']
             print(col, five_downs[col], five_highs[col])
 
-    # 有字段的类型为Object
+
+    alldf_temp = alldf.copy()
+    # fout_des.write("%s before drop : %s\n" % (columns_coma,str(len(alldf))))
+    before_drop_num = len(alldf)
     alldf = alldf.dropna(how='any')
+    after_drop_num = len(alldf)
+    fout_des.write("%s  nan rate : %s\n" % (columns_coma,str(before_drop_num/after_drop_num)))
+    for col in allcolumns:
+        temp_col_s = alldf[col]
+        temp_col_s = temp_col_s.dropna()
+        after_drop_temp_col = len(temp_col_s)
+        fout_des.write("%s  nan rate : %s\n" % (col,str(after_drop_temp_col/after_drop_num)))
+    """
+    # 有字段的类型为Object
     for col in allcolumns:
         alldf[col] = alldf[col].map(lambda x:float(x))
-        
+
     # 根据各因素上限联合筛选数据
     value_bound_tag = True
     for col in allcolumns:
@@ -161,7 +174,7 @@ def regression(output,selected_eles,db_table_name):
 
     coef, intercept = linear_regression_model(alldf)
     coef = list(map(lambda x: str(x), coef))
-
+    """
     # save result to database
     """
     for i in range(len(selected_eles)):
@@ -172,7 +185,9 @@ def regression(output,selected_eles,db_table_name):
     sqlVO['sql'] = sql
     models.BaseManage().direct_execute_query_sqlVO(sqlVO)
     """
-    return coef, intercept
+    fout_des.close()
+    # return coef, intercept
+
 
 def regression_ana(result):
     pass
