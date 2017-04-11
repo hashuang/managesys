@@ -14,10 +14,10 @@
     <input type="hidden" name="hidden_inform3" id='hidden_inform3'> 
     <input type="hidden" name="hidden_inform4" id='hidden_inform4'>
     <input type="hidden" name="hidden_inform5" id='hidden_inform5'>
-
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
     <button onclick='cost()' id='click2'>钢水含量</button>
+    <button onclick='violent_ananlyse()' id='click1'>暴力求解</button>
 </div>
 
 <div style="width:1600px">
@@ -61,6 +61,23 @@
         probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value,qualitative_offset_result);
 
     }
+    //暴力求解
+    function violent_ananlyse(){
+        var prime_analyse = $("#prime_analyse").val();
+        $.ajax({
+            type: "post",
+            url:  "/violent_ananlyse",
+            data: {'prime_cost':prime_analyse},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                //alert(data.result.yvalue)
+                // alert(data.result.offset_result[0]);
+            }
+        })
+
+    };
     //质量含量
     function cost(){
         var prime_analyse = $("#prime_analyse").val();

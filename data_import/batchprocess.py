@@ -6,8 +6,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, Http404
 import numpy as np
 import pandas as pd
+
 from sklearn import preprocessing, linear_model
 from openpyxl import Workbook
+
 
 from . import models
 
@@ -53,6 +55,7 @@ def linear_regression_model(data):
 
     return regr.coef_, regr.intercept_
 
+
 def wushu_ana(df):
     """
     五数区间
@@ -89,6 +92,7 @@ def regression(output,selected_eles,db_table_name):
     rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
 
     for row in rs:
+
         isFiveAnalyse['%s' % row[0]] = '%s' % row[1]
         bound_lows['%s' % row[0]] = '%s' % row[2]
         bound_highs['%s' % row[0]] = '%s' % row[3]
@@ -109,16 +113,18 @@ def regression(output,selected_eles,db_table_name):
     for col in allcolumns:
         temp_df = alldf.copy()
         temp_df[col] = temp_df[col].dropna().map(lambda x:float(x))
-        """
-        可添加 用均值对原数据集空值的填充,若不需要则注释
-        """
+
+        # """
+        # 可添加 用均值对原数据集空值的填充,若不需要则注释
+        # """
         # mean=temp_df[col].describe().get('mean',0)
-        # print('mean:',mean)
+        # # print('mean:',mean)
         # alldf[col] = alldf[col].fillna(mean)
-        """
-        end fill nan with mean
-        """
-        # filter data by bound of low and high
+        # """
+        # end fill nan with mean
+        # """
+
+        #filter data by bound of low and high
         bound_low = float(bound_lows.get(col,-999999999999))
         bound_high = float(bound_highs.get(col,999999999999))
         temp_df = temp_df[(temp_df[col] >= bound_low) & ( temp_df[col] <= bound_high )]
@@ -187,6 +193,7 @@ def regression(output,selected_eles,db_table_name):
     """
     fout_des.close()
     # return coef, intercept
+
 
 
 def regression_ana(result):
