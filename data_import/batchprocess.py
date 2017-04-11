@@ -6,8 +6,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, Http404
 import numpy as np
 import pandas as pd
+
 from sklearn import preprocessing, linear_model
 from openpyxl import Workbook
+
 
 from . import models
 
@@ -53,6 +55,7 @@ def linear_regression_model(data):
 
     return regr.coef_, regr.intercept_
 
+
 def wushu_ana(df):
     """
     五数区间
@@ -88,6 +91,7 @@ def regression(output,selected_eles,db_table_name):
     rs = models.BaseManage().direct_select_query_orignal_sqlVO(sqlVO)
 
     for row in rs:
+
         isFiveAnalyse['%s' % row[0]] = '%s' % row[1]
         bound_lows['%s' % row[0]] = '%s' % row[2]
         bound_highs['%s' % row[0]] = '%s' % row[3]
@@ -175,6 +179,7 @@ def regression(output,selected_eles,db_table_name):
     models.BaseManage().direct_execute_query_sqlVO(sqlVO)
     """
     return coef, intercept
+
 
 def regression_ana(result):
     pass

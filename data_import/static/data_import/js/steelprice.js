@@ -4,13 +4,15 @@ function drawHistoryPriceBrokenLineChart(data){
         console.log(line_mark);
         option = {
             title: {
-                text: '钢材价格走势折线图'
+                text: '钢材价格走势折线图',
+                x: 'center',
             },
             tooltip: {
                 trigger: 'axis'
             },
             legend: {
-                data:['特钢价格历史走势',]
+                data:['特钢价格历史走势'],
+                x: 'right',
             },
             grid: {
                 left: '3%',
@@ -76,13 +78,16 @@ function drawPredictBrokenLineChart(data,figure_name,method){
     var myChart = echarts.init(document.getElementById(figure_name));
     option = {
         title: {
-            text: pridict_result_json[method] + '预测图'
+            text: pridict_result_json[method] + '预测图',
+            subtext: '评分：'+data.score,
+            x: 'center'
         },
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data:['真实值','预测值','评分：'+data.score]
+            data:['真实值','预测值'],
+            x: 'right'
         },
         grid: {
             left: '3%',
@@ -129,7 +134,7 @@ function drawPredictBrokenLineChart(data,figure_name,method){
         option.series[1].data = fill_new.concat(predict_new);
         myChart.setOption(option, true);
     }
-    
+
 }
 function history_query(){
     var history_begin =$("#history_begin").val();
@@ -240,7 +245,7 @@ function layouttest(){
         index = types[key];
         selected_rs[index] = pridict_result_json[index];
     }
-    
+
 
     console.log(selected_rs);
     console.log(pridict_result_json);
@@ -301,7 +306,7 @@ function predict_query(){
                     $("#figures").append("<div id='"+ name +"' style='width: 500px;height:400px;'></div>")
                     drawPredictBrokenLineChart(value,"",name);
                 }
-                
+
             });
         }
     })
