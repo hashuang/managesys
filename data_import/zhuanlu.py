@@ -490,7 +490,7 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('DEPARTUREDATE','出吹氩站日期'),
 								('DEPARTURETIME','出吹氩站时刻'),
 								('STEELWGT','出钢量'),
-								('SUM_BO_DUR','总吹氧时间_计算'),
+								('SUM_BO_DUR','总吹氧时间'),
 						        ('D3_BO_DUR','第三次吹氧时间'),
 						        ('LDG_STEELWGT','煤气发生量'),
 						        ('L13020501','中碳锰铁_Mn78.0-85.0%, C≤1.0%'),
@@ -681,8 +681,6 @@ PRO_BOF_HIS_ALLFIELDS_SCORE=dict([
 								('DEPARTUREDATE',('出吹氩站日期',167)),
 								('DEPARTURETIME',('出吹氩站时刻',168)),
 
-								
-						        
 						      
 						        
 						])
