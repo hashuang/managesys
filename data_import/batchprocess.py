@@ -37,22 +37,26 @@ def relation_ana(request):
 def data_cleaning(data):
     return data.fillna(0)
 
-def linear_regression_model(data):
+def linear_regression_model(data, isstd):
     cols = list(data.columns)
     length_cols = len(cols)
     features = cols[:-1]
     out = cols[-1]
+    if isstd == 1:
+        data_array = np.array(data)
+        scale_data_array = preprocessing.scale(data_array)
+        data_scale_df = pd.DataFrame(scale_data_array,columns=cols)
 
-    data_array = np.array(data)
-    scale_data_array = preprocessing.scale(data_array)
-    data_scale_df = pd.DataFrame(scale_data_array,columns=cols)
+        X_scale = data_scale_df[features]
+        Y_scale = data_scale_df[out]
 
-    X_scale = data_scale_df[features]
-    Y_scale = data_scale_df[out]
+    else:
+        X_scale = data[features]
+        Y_scale = data[out]
 
     regr = linear_model.LinearRegression()
     regr.fit(X_scale, Y_scale)
-
+    
     return regr.coef_, regr.intercept_
 
 
@@ -71,11 +75,11 @@ def wushu_ana(df):
     ana_result['top'] = H
     return ana_result
 
-def regression(output,selected_eles,db_table_name):
+def regression(output,selected_eles,isstd):
     """
     @param output 回归应变量 str
     @param selected_eles 回归自变量list
-    @param db_table_name 存储回归结果的表
+    @param isstd 存储回归结果的表 1 标准化 0 不做标准化
     @rtn coef 与selected_eles对应的回归系数list
     @rtn intercep 回归方程截距
     @warning: 如果清洗后无数据，返回false，注意处理这种情况
@@ -186,7 +190,7 @@ def regression(output,selected_eles,db_table_name):
     if not five_tag:
         return False
 
-    coef, intercept = linear_regression_model(alldf)
+    coef, intercept = linear_regression_model(alldf, isstd)
     coef = list(map(lambda x: str(x), coef))
 
     # save result to database
