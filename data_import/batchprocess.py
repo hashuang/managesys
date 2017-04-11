@@ -56,7 +56,7 @@ def linear_regression_model(data, isstd):
 
     regr = linear_model.LinearRegression()
     regr.fit(X_scale, Y_scale)
-    
+
     return regr.coef_, regr.intercept_
 
 
@@ -79,7 +79,7 @@ def regression(output,selected_eles,isstd):
     """
     @param output 回归应变量 str
     @param selected_eles 回归自变量list
-    @param isstd 存储回归结果的表 1 标准化 0 不做标准化
+    @param isstd 是否进行标准化 1 标准化 0 不做标准化
     @rtn coef 与selected_eles对应的回归系数list
     @rtn intercep 回归方程截距
     @warning: 如果清洗后无数据，返回false，注意处理这种情况
