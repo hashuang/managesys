@@ -112,16 +112,18 @@ def regression(output,selected_eles,db_table_name):
     for col in allcolumns:
         temp_df = alldf.copy()
         temp_df[col] = temp_df[col].dropna().map(lambda x:float(x))
-        """
-        可添加 用均值对原数据集空值的填充,若不需要则注释
-        """
-        mean=temp_df[col].describe().get('mean',0)
-        # print('mean:',mean)
-        alldf[col] = alldf[col].fillna(mean)
-        """
-        end fill nan with mean
-        """
-        # filter data by bound of low and high
+        
+        # """
+        # 可添加 用均值对原数据集空值的填充,若不需要则注释
+        # """
+        # mean=temp_df[col].describe().get('mean',0)
+        # # print('mean:',mean)
+        # alldf[col] = alldf[col].fillna(mean)
+        # """
+        # end fill nan with mean
+        # """
+
+        #filter data by bound of low and high
         bound_low = float(bound_lows.get(col,-999999999999))
         bound_high = float(bound_highs.get(col,999999999999))
         temp_df = temp_df[(temp_df[col] >= bound_low) & ( temp_df[col] <= bound_high )]
