@@ -204,7 +204,7 @@ def regression(output,selected_eles,isstd):
     models.BaseManage().direct_execute_query_sqlVO(sqlVO)
     """
     fout_des.close()
-    # return coef, intercept
+    return coef, intercept
 
 
 
