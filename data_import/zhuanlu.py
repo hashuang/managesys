@@ -290,6 +290,7 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('N2CONSUME','氮气耗量'),
 								('TOTALOXYGENCONSUME','总供氧耗量'),
 								('SUM_BO_CSM','总吹氧消耗'),
+								('SUM_BO_DUR','总吹氧时间'),
 								('FIRSTCATCHOXYGENCONSUME','一倒氧气耗量'),
 								('CARBONTEMPERATURE','一倒温度(℃)'),
 								('FIRSTCATCHCARBONC','一倒C%'),
@@ -309,12 +310,10 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('D1_TEMP_VALUE','第一次测温值'),
 								('D2_TEMP_VALUE','第二次测温值'),
 								('D3_TEMP_VALUE','第三次测温值'),
-								('D4_TEMP_VALUE','第四次测温值'),
+								('D4_TEMP_VALUE','第四次测温值'),	
 
-								('STEELWGT_COUNT','出钢量1'),
-								('TOTAL_SLAB_WGT','出钢量2'),
-								('LDG_STEELWGT_COUNT','煤气发生量1'),
-								('LDG_TOTAL_SLAB_WGT','煤气发生量2'),
+								('STEELWGT','出钢量'),
+								('LDG_STEELWGT','煤气发生量'),
 								('STEEL_SLAG','钢渣量'),
 								('C','C'),
 								('SI','Si'),
@@ -489,10 +488,11 @@ PRO_BOF_HIS_ALLFIELDS=OrderedDict([
 								('ARRIVETIME','进吹氩站时刻'),
 								('DEPARTUREDATE','出吹氩站日期'),
 								('DEPARTURETIME','出吹氩站时刻'),
-								('STEELWGT','出钢量'),
-								('SUM_BO_DUR','总吹氧时间'),
+
+# 								('STEELWGT','出钢量'),
+# 								('SUM_BO_DUR','总吹氧时间'),
+
 						        ('D3_BO_DUR','第三次吹氧时间'),
-						        ('LDG_STEELWGT','煤气发生量'),
 						        ('L13020501','中碳锰铁_Mn78.0-85.0%, C≤1.0%'),
 						])
 
