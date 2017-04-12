@@ -9,4 +9,3 @@ class ProcessExceptionMiddleware(object):
 
         # Print the familiar Python-style traceback to stderr
         traceback.print_exc()
-        return response
