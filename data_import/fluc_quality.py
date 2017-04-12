@@ -59,12 +59,12 @@ def fluc_produce(request):
 		sentence_historytime=''
 	#计算波动率的时间范围的sql
 	# sentence="SELECT HEAT_NO,"+fieldname+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
-	sentence="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(TOTAL_SLAB_WGT,0)as TOTAL_SLAB_WGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE  FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+	sentence="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(STEELWGT,0)as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE  FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	# sentence="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	sentence_select=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
 	#对比历史波动率的时间范围的sql
 	# sentence_history="SELECT HEAT_NO,"+fieldname+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
-	sentence_history="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(TOTAL_SLAB_WGT,0)as TOTAL_SLAB_WGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE  FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
+	sentence_history="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(STEELWGT,0)as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE  FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	sentence_selecthistory=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
 	
 	time={
@@ -82,9 +82,8 @@ def fluc_produce(request):
 		'history_time2':history_time2,
 		'time':time
 	}
-	xasis_fieldname_ch=['C','SI','MN','P','S','重量','温度']
-	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
-
+	xasis_fieldname_ch=['C含量','SI含量','MN含量','P含量','S含量','FE含量','重量','温度']
+	xasis_fieldname=['C','SI','MN','P','S','FE','STEELWGT','FINAL_TEMP_VALUE']
 	# for i in range(len(fieldname_en)):
 	# 	#ana_describe的numb参数顺序为count、mean、std/min、25%/50%/75%/max
 	# 	ana_result_temp,ana_describe_temp=calaulate_describe(scrapy_records,fieldname_en[i])#主动计算波动率
@@ -750,7 +749,7 @@ def fluc_cost_pop(request):
 	}
 	# if fluc_nature=='cost':
 	xasis_fieldname_ch=['钢水C含量','钢水SI含量','钢水MN含量','钢水P含量','钢水S含量','钢水重量','钢水温度']
-	xasis_fieldname=['C','SI','MN','P','S','TOTAL_SLAB_WGT','FINAL_TEMP_VALUE']
+	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
 	# else:
 	# 	xasis_fieldname_ch=['钢水','LDG','钢渣']
 	# 	xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
