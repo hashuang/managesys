@@ -521,7 +521,7 @@ function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,s
 }
 
 
-//钢种分析饼图 (Echarts 2)
+//钢种分析漏斗图 (Echarts 2)
 function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
 
     var myChart = echarts.init(document.getElementById('main4'));
