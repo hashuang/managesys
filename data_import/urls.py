@@ -7,6 +7,9 @@ from data_import.SteelPricePredict import steelprice
 from . import qualityzhuanlu
 from . import fluc_quality
 from . import batchprocess
+from . import ironstoneprice
+from . import violent_analyse
+
 urlpatterns = [
     #需要对相同业务的加载与处理写一个分发器
     url(r'^$', views.home),
@@ -79,6 +82,8 @@ urlpatterns = [
     #波动率原因追溯
     url(r'^s_fluc_quality',fluc_quality.fluc_cost_pop),
     url(r'^b_fluc_influence',fluc_quality.fluc_influence),
+    #暴力求解
+    url(r'^violent_ananlyse',qualityzhuanlu.violent_ananlyse),
 
     #钢铁价格预测
     #price-predict
@@ -86,6 +91,13 @@ urlpatterns = [
     url(r'^price_history$', steelprice.price_history),#价格历史数据
 
     url(r'^price_predict$', steelprice.price_predict),#价格预测
+
+    #铁矿石价格预测
+    url(r'^ironstoneprice',ironstoneprice.ironstoneprice),
+    # url(r'^iron_price_history', ironstoneprice.iron_price_history),stone_price_predict
+    url(r'^stone_price_history',ironstoneprice.price_history),
+    url(r'^stone_price_predict',ironstoneprice.price_predict),
+
     #chen
     #显示chen页面
     url(r'^chen', chyulia.chen),
@@ -106,8 +118,11 @@ urlpatterns = [
     url(r'^fluc_influence',fluc_chyulia.fluc_influence),
     url(r'^test',chyulia.test),
     url(r'^analysis_tool$',chyulia.analysis_tool),
+    url(r'^violent_analyse$',violent_analyse.violent_analyse),
+    
 
     #添加工具类方法，之后处理为批处理事件
     url(r'^relation_ana$',batchprocess.relation_ana),
     url(r'^report$',batchprocess.report),
+    
 ]

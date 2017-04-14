@@ -24,8 +24,6 @@ def fluc_cost_produce(request):
 	time2=request.POST.get("time2");
 	history_time1=request.POST.get("history_time1");
 	history_time2=request.POST.get("history_time2");
-	fluc_nature=request.POST.get("nature");#判断是cost还是prodecu
-	print('fluc_nature',fluc_nature)
 	############################为测试方便暂时将数据写死
 	# time1='2016-01-22';
 	# time2='2016-04-14';
@@ -65,130 +63,179 @@ def fluc_cost_produce(request):
 		'history_time1':history_time1,
 		'history_time2':history_time2
 	}
+
+	field_classification=['raw','material','product','alloy']
+
 	contentVO={
 		'title':'测试',
 		'state':'success',
-		'time':time
+		'time':time,
+		'field_classification':field_classification
 	}
-	if fluc_nature=='cost':
-		xasis_fieldname_ch=['铁水重量','耗氧量','生铁','废钢总和']
-		xasis_fieldname=['MIRON_WGT','SUM_BO_CSM','COLDPIGWGT','SCRAPWGT_COUNT']
-	else:
-		xasis_fieldname_ch=['钢水','LDG','钢渣']
-		xasis_fieldname=['TOTAL_SLAB_WGT','LDG_TOTAL_SLAB_WGT','STEEL_SLAG']
 
-	#对任意个数字段进行字符串拼接
-	field_sql=''
-	for i in range(len(xasis_fieldname)):
-		field_sql=field_sql+',nvl('+xasis_fieldname[i]+',0) as '+xasis_fieldname[i]
+	#result 用来存放四大类字段的结果
+	classification_results={}
 
-	#计算波动率的时间范围的sql
-	sentence_select=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
-	sentence="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_select
-	# sentence="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_select
 	
+	for k in range(len(field_classification)):
+		if field_classification[k]=='raw':
+			#原料
+			xasis_fieldname_ch=['铁水重量','生铁','废钢总和','大渣钢','自产废钢','重型废钢','中型废钢']
+			xasis_fieldname=['MIRON_WGT','COLDPIGWGT','SCRAPWGT_COUNT','SCRAP_96053101','SCRAP_96052200','SCRAP_16010101','SCRAP_16020101']
+			danwei=['Kg','Kg','Kg','Kg','Kg','Kg','Kg']
+		elif field_classification[k]=='material':
+			#物料
+			xasis_fieldname_ch=['总吹氧消耗','氮气耗量','1#烧结矿','石灰石_40-70mm','萤石_FL80','增碳剂','低氮增碳剂','石灰','轻烧白云石']
+			xasis_fieldname=['SUM_BO_CSM','N2CONSUME','L96020400','L12010302','L12010601','L12020201','L12020301','L96040100','L96040200']
+			danwei=['NM3','NM3','Kg','Kg','Kg','Kg','Kg','Kg','Kg']
+		elif field_classification[k]=='product':
+			#产品
+			xasis_fieldname_ch=['出钢量','转炉煤气','钢渣']
+			xasis_fieldname=['STEELWGT','LDG_STEELWGT','STEEL_SLAG']
+			danwei=['Kg','NM3','Kg']
+		else:
+			#合金
+			# xasis_fieldname_ch=['硅铁_Si72-80%、AL≤2%(粒度10-60mm)','微铝硅铁_Si72-80%、AL≤0.1%、Ti≤0.1%','硅锰合金_Mn65-72%、Si17-20%','高硅硅锰_Mn≥60%、Si≥27%','中碳铬铁']
+			xasis_fieldname_ch=['硅铁_Si72-80%、AL≤2%','微铝硅铁_Si72-80%、AL≤0.1%','硅锰合金_Mn65-72%、Si17-20%','高硅硅锰_Mn≥60%、Si≥27%','中碳铬铁']
+			xasis_fieldname=['L13010101','L13010301','L13020101','L13020201','L13040400']
+			danwei=['Kg','Kg','Kg','Kg','Kg']
 
-	#对比历史波动率的时间范围的sql
-	sentence_selecthistory=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
-	sentence_history="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_selecthistory
-	# sentence_history="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_selecthistory
+		#对任意个数字段进行字符串拼接
+		field_sql=''
+		for i in range(len(xasis_fieldname)):
+			field_sql=field_sql+',nvl('+xasis_fieldname[i]+',0) as '+xasis_fieldname[i]
 
-	# print('sentence',sentence)
-	# print('sentence_history',sentence_history)
+		#计算波动率的时间范围的sql
+		sentence_select=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_time
+		sentence="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_select
+		# sentence="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_select
+		
 
-	length_result1=len(xasis_fieldname)
-	#计算当前时间区间的字段波动率-------------------------------------------------------------------------------------------------
-	sqlVO={}
-	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]=sentence
-	print(sqlVO["sql"])
-	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
-	# print('len(scrapy_records)',len(scrapy_records))
+		#对比历史波动率的时间范围的sql
+		sentence_selecthistory=sentence_SPECIFICATION+sentence_OPERATESHIFT+sentence_OPERATECREW+sentence_station+sentence_historytime
+		sentence_history="SELECT HEAT_NO "+field_sql+" FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_selecthistory
+		# sentence_history="SELECT HEAT_NO,nvl(MIRON_WGT,0) as MIRON_WGT,nvl(SUM_BO_CSM,0) as SUM_BO_CSM ,nvl(COLDPIGWGT,0) as COLDPIGWGT,nvl(SCRAPWGT_COUNT,0) as SCRAPWGT_COUNT FROM qg_user.PRO_BOF_HIS_ALLFIELDS WHERE HEAT_NO>'1500000'"+sentence_selecthistory
+		
+		contentVO['sentence_select']=sentence_select
+		contentVO['sentence_selecthistory']=sentence_selecthistory
 
+		# print('sentence',sentence)
+		# print('sentence_history',sentence_history)
 
-	ana_describe=calaulate_describe(scrapy_records,xasis_fieldname)
-	if ana_describe['sign']==1:
-		contentVO['state']='failure_current'
-		return HttpResponse(json.dumps(contentVO),content_type='application/json')
-
-	# print('-----------------------ana_describe',ana_describe)
-
-	fluc_ratio=[]#存储各相关性字段的在当前的波动率
-	for i in range(length_result1):
-		describe=[ele for ele in ana_describe[xasis_fieldname[i]]]
-		#value接受计算完成的字段波动率值
-		value=describe[2]/describe[1]
-		fluc_ratio.append(value)
-	print("-------------------------fluc_ratio",fluc_ratio)
+		length_result1=len(xasis_fieldname)
+		#计算当前时间区间的字段波动率-------------------------------------------------------------------------------------------------
+		sqlVO={}
+		sqlVO["db_name"]="l2own"
+		sqlVO["sql"]=sentence
+		print(sqlVO["sql"])
+		scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+		# print('len(scrapy_records)',len(scrapy_records))
 
 
-	#计算历史时间区间的字段波动率-------------------------------------------------------------------------------------------------
-	sqlVO_history={}
-	sqlVO_history["db_name"]="l2own"
-	sqlVO_history["sql"]=sentence_history
-	print(sqlVO_history["sql"])
-	scrapy_records_history=models.BaseManage().direct_select_query_sqlVO(sqlVO_history)
+		ana_describe=calaulate_describe(scrapy_records,xasis_fieldname)
+		# if ana_describe['sign']==1:
+		if len(scrapy_records)==0:
+			contentVO['state']='failure_current'
+			return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
-	ana_describe_history=calaulate_describe(scrapy_records_history,xasis_fieldname)
-	if ana_describe['sign']==1:
-		contentVO['state']='failure_history'
-		return HttpResponse(json.dumps(contentVO),content_type='application/json')
-	# print('----------------------------ana_describe_history',ana_describe_history)
+		# print('-----------------------ana_describe',ana_describe)
 
-	fluc_ratio_history=[]#存储各相关性字段的在当前的波动率
-	for i in range(length_result1):
-		describe=[ele for ele in ana_describe_history[xasis_fieldname[i]]]
-		#value接收计算完成的字段波动率值：标准差/期望
-		value=describe[2]/describe[1]
-		fluc_ratio_history.append(value)
-	print("--------------------------fluc_ratio_history",fluc_ratio_history)
+		fluc_ratio=[]#存储各相关性字段的在当前的波动率
+		for i in range(length_result1):
+			if ana_describe['state'][xasis_fieldname[i]]=='wrong':#如果当前追溯字段无值，则设置wrong并在后面筛选除去该字段
+				fluc_ratio.append('wrong')
+				continue
+			describe=[ele for ele in ana_describe[xasis_fieldname[i]]]
+			#value接受计算完成的字段波动率值
+			value=describe[2]/describe[1]
+			fluc_ratio.append(value)
+		print("-------------------------fluc_ratio",fluc_ratio)
 
-	#计算偏离程度
-	offset_result=[]
-	for i in range(length_result1):
-		try:
-			#当fluc_ratio_history[i]=0时，计算公式将会报错，此时表明历史数据是没有波动率的，因此偏离程度相当于无穷
-			temp=(fluc_ratio[i]-fluc_ratio_history[i])/fluc_ratio_history[i]
-		except:
-			temp=99999999
-		offset_result.append(temp)
 
-	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
-	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
-	fluc_ratiolist=["%.5f"%(n) for n in list(fluc_ratio)]
-	fluc_ratio_historylist=["%.5f"%(n) for n in list(fluc_ratio_history)]
-	contentVO['fieldname_ch']=xasis_fieldname_ch
-	contentVO['fieldname_en']=xasis_fieldname
-	# contentVO['ana_result']=ana_result
-	# contentVO['ana_describe']=ana_describe
-	# contentVO['ana_result_history']=ana_result_history
-	# contentVO['ana_describe_history']=ana_describe_history
-	contentVO['fluc_ratio']=fluc_ratiolist#标准偏差，即变异系数
-	contentVO['fluc_ratio_history']=fluc_ratio_historylist#标准偏差，即变异系数
-	contentVO['qualitative_offset_result']=qualitative_offset_result#偏离程度的定性判断
-	contentVO['offset_result']=offset_result#偏离程度（小数）
-	contentVO['offset_result_cent']=offset_resultlist#偏离程度(百分数)
+		#计算历史时间区间的字段波动率-------------------------------------------------------------------------------------------------
+		sqlVO_history={}
+		sqlVO_history["db_name"]="l2own"
+		sqlVO_history["sql"]=sentence_history
+		print(sqlVO_history["sql"])
+		scrapy_records_history=models.BaseManage().direct_select_query_sqlVO(sqlVO_history)
 
-	contentVO['sentence_select']=sentence_select
-	contentVO['sentence_selecthistory']=sentence_selecthistory
-	print("contentVO",contentVO)
+		ana_describe_history=calaulate_describe(scrapy_records_history,xasis_fieldname)
+		# if ana_describe_history['sign']==1:
+		if len(scrapy_records_history)==0:
+			contentVO['state']='failure_history'
+			return HttpResponse(json.dumps(contentVO),content_type='application/json')
+		# print('----------------------------ana_describe_history',ana_describe_history)
 
-	#time_test='2015/11/30 22:45:45'
-	#string转datetime
-	#d= datetime.datetime.strptime(time1,'%Y-%m-%d')
-	#d1= datetime.datetime.strptime(time_test,'%Y/%m/%d %H:%M:%S')
-	#datetime转string
-	#str_time=d.strftime('%Y-%m-%d %H:%M:%S')
-	#print(d)
-	#print(d1)
-	#print(d<d1)
-	#print(str_time)
+		fluc_ratio_history=[]#存储各相关性字段的在当前的波动率
+		for i in range(length_result1):
+			if ana_describe_history['state'][xasis_fieldname[i]]=='wrong':#如果当前追溯字段无值，则设置wrong并在后面筛选除去该字段
+				fluc_ratio_history.append('wrong')
+				continue
+			describe=[ele for ele in ana_describe_history[xasis_fieldname[i]]]
+			#value接收计算完成的字段波动率值：标准差/期望
+			value=describe[2]/describe[1]
+			fluc_ratio_history.append(value)
+		print("--------------------------fluc_ratio_history",fluc_ratio_history)
+
+		#计算偏离程度
+		offset_result=[]
+		for i in range(length_result1):
+			if fluc_ratio[i]=='wrong' or fluc_ratio_history[i]=='wrong':#即当前字段无值时，在进行分析时（不是追溯时）,将当前字段的参数设为特殊值
+				offset_result.append('wrong')
+				continue
+			try:
+				#当fluc_ratio_history[i]=0时，计算公式将会报错，此时表明历史数据是没有波动率的，因此偏离程度相当于无穷
+				temp=(fluc_ratio[i]-fluc_ratio_history[i])/fluc_ratio_history[i]
+			except:
+				temp=99999999
+			offset_result.append(temp)
+
+		#----------------------------------------------
+		#进行筛选，在整体有数据的情况下，删除个别无数据的字段（考虑是否保留此功能）
+		xasis_fieldname_result=[]#字段英文名字数组
+		xasis_fieldname_ch_result=[]#字段中文名字数组
+		fluc_ratio_result=[]
+		fluc_ratio_history_result=[]
+		offset_result_final=[]#偏离程度值
+
+		for i in range(length_result1):
+			if offset_result[i]==None  or offset_result[i]=='wrong':
+				continue
+			else:
+				xasis_fieldname_result.append(xasis_fieldname[i])
+				xasis_fieldname_ch_result.append(xasis_fieldname_ch[i])
+				fluc_ratio_result.append(fluc_ratio[i])
+				fluc_ratio_history_result.append(fluc_ratio_history[i])
+				offset_result_final.append(offset_result[i])
+
+		#------------------------------------------------------------
+		offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result_final)]
+		qualitative_offset_result_final=qualitative_offset(offset_result_final)#对偏离程度进行定性判断
+		fluc_ratiolist=["%.5f"%(n) for n in list(fluc_ratio_result)]
+		fluc_ratio_historylist=["%.5f"%(n) for n in list(fluc_ratio_history_result)]
+
+		ana_result={}
+		ana_result['fieldname_ch']=xasis_fieldname_ch_result#中文名
+		ana_result['fieldname_en']=xasis_fieldname_result#英文名
+		# ana_result['ana_result']=ana_result
+		# ana_result['ana_describe']=ana_describe
+		# ana_result['ana_result_history']=ana_result_history
+		# ana_result['ana_describe_history']=ana_describe_history
+		ana_result['fluc_ratio']=fluc_ratiolist#标准偏差，即变异系数
+		ana_result['fluc_ratio_history']=fluc_ratio_historylist#标准偏差，即变异系数
+		ana_result['qualitative_offset_result']=qualitative_offset_result_final#偏离程度的定性判断
+		ana_result['offset_result']=offset_result_final#偏离程度（小数）
+		ana_result['offset_result_cent']=offset_resultlist#偏离程度(百分数)
+
+		classification_results[field_classification[k]]=ana_result
+
+	contentVO['result']=classification_results
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 
 #对偏离程度进行定性判断：高，偏高，正常范围，偏低，低，极端异常
 def qualitative_offset(offset_result):
-	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
+	#偏离程度定性标准，例如-10%~10%为正常，10%~30%为偏高，30%以上为数据异常/极端数据
 	qualitative_standard=[0.1,0.3,0.4]
 	qualitative_offset_result=[]
 	for i in range(len(offset_result)):
@@ -231,7 +278,12 @@ def ivalue_num(num):
     if(a.isdigit()):
         ivalue_valid=0
     else:
-        ivalue_valid=len(a.split('.')[1])
+        # print("%s,%s"%(a.split('.'),len(a.split('.'))))
+        #数据库中存在如448.000的字段，执行a.split('.')的结果只有整数部分，因此取a.split('.')[1]会出现超出索引的情况
+        if len(a.split('.'))==1:
+            ivalue_valid=0
+        else:
+            ivalue_valid=len(a.split('.')[1])
     return  ivalue_valid   
 
 #取有效位数
@@ -263,7 +315,7 @@ def fluc_influence(request):
 	#从数据库读取回归系数文件
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
-	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
+	sqlVO["sql"]="SELECT * FROM PRO_BOF_HIS_RELATION_COF where OUTPUTFIELD='"+field +"'  order by abs(COF) desc"
 	print(sqlVO["sql"])
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	print(scrapy_records)
@@ -273,9 +325,9 @@ def fluc_influence(request):
 	regression_coefficient=[]#字段回归系数值数组
 	str_sql=''
 	for i in range(length_result1):
-		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None).upper())
+		xasis_fieldname.append(scrapy_records[i].get('MIDDLEFIELD', None).upper())
 		regression_coefficient.append(scrapy_records[i].get('COF', None))
-		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
+		str_sql=str_sql+','+scrapy_records[i].get('MIDDLEFIELD', None)
 	# print(len(scrapy_records))
 	# print(xasis_fieldname)
 	# print(regression_coefficient)
@@ -328,7 +380,7 @@ def fluc_influence(request):
 
 	fluc_ratio=[]#存储各相关性字段的在当前的波动率
 	for i in range(length_result1):
-		if ana_describe['state'][xasis_fieldname[i]]=='wrong':
+		if ana_describe['state'][xasis_fieldname[i]]=='wrong':#如果当前追溯字段无值，则设置wrong并在后面筛选除去该字段
 			fluc_ratio.append('wrong')
 			continue
 		describe=[ele for ele in ana_describe[xasis_fieldname[i]]]
@@ -372,7 +424,7 @@ def fluc_influence(request):
 			offset_result.append('wrong')
 			continue
 		try:
-			#当fluc_ratio_history[i]=0时，计算公式将会报错，此时表明历史数据是没有波动率的，因此偏离程度相当于无穷
+			#当历史波动率fluc_ratio_history[i]=0时，计算公式将会报错，此时表明历史数据是没有波动率的，因此偏离程度相当于无穷
 			temp=(fluc_ratio[i]-fluc_ratio_history[i])/fluc_ratio_history[i]
 		except:
 			temp=99999999
@@ -431,7 +483,7 @@ def calaulate_describe(scrapy_records,fieldname):
 	ana_describe={}
 	ana_describe['shuxing']=['count','mean','std','min','25%','50%','75%','max']
 	state={}#存储各个字段的状态
-	sign=0#标志位，表示是否出现无数据状态
+	# sign=0#标志位，表示是否出现无数据状态
 	print('fieldname',fieldname)
 	for bookno in fieldname:
 		print('计算字段：',bookno)
@@ -448,7 +500,7 @@ def calaulate_describe(scrapy_records,fieldname):
 				 ivalue_i.sort(reverse=True)
 		if ivalue_i==[]:#若字段为空，表示该字段没有数据
 			state[bookno]='wrong'#若出现问题，将状态改为wrong
-			sign=1
+			# sign=1
 			continue
 		ivalue_valid=ivalue_i[0]#取所有有效位数的最大个数
 		# print(ivalue_valid)		
@@ -480,9 +532,9 @@ def calaulate_describe(scrapy_records,fieldname):
 		# print(type(clean))
 		# if bookno=='SCRAP_16040101':
 		# 	print(clean)
-		if len(clean)<5:#如果数据个数小于5，则跳过这个字段的计算
+		if len(clean)<50:#如果数据个数小于50，则跳过这个字段的计算
 			state[bookno]='wrong'#若出现问题，将状态改为wrong
-			sign=1
+			# sign=1
 			continue
 
 		describe=clean.describe()
@@ -501,6 +553,6 @@ def calaulate_describe(scrapy_records,fieldname):
 		# ana_describe['scopeb']=desx
 		ana_describe[bookno]=desy1
 	ana_describe['state']=state#用于详细表示各个字段的数据情况，筛选条件下的无数据表示为wrong，正常情况表示为normal
-	ana_describe['sign']=sign#用于表征是否出现了字段的无数据现象
+	# ana_describe['sign']=sign#用于表征是否出现了字段的无数据现象
 	# print('state',state)
 	return ana_describe

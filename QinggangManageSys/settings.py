@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 ]
 
 
+
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',#manages sessions across requests.
@@ -77,6 +78,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',#logs users out of their other sessions after a password change.
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'QinggangManageSys.middleware.ProcessExceptionMiddleware'
 ]
 
 ROOT_URLCONF = 'QinggangManageSys.urls'

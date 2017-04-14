@@ -19,14 +19,17 @@
     <p><strong>单炉次投入成本及产品产出情况分析及原因追溯</strong></p>
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="1634230" id="prime_analyse">
-    <button onclick="cost_produce('cost',this)" id='click2'>投入成本分析结果</button>
-    <button onclick="cost_produce('produce',this)" id='click3'>产出产品分析结果</button>
+    <!-- <button onclick="cost_produce('cost',this)" id='click2'>投入成本分析结果</button>
+    <button onclick="cost_produce('produce',this)" id='click3'>产出产品分析结果</button> -->
+    <button onclick="cost_produce()" id='click2'>成本字段分析</button>
     <br>
 </div>
 
 <div style="width:1600px">
-<div id="main1" style="float:left;width:600px;height:450px"></div>
-<div id="main2" style="float:left;width:600px;height:450px"></div>
+<div id="main1" style="float:left;width:1400px;height:450px"></div>
+<div id="main2" style="float:left;width:1400px;height:450px"></div>
+<div id="main3" style="float:left;width:1400px;height:450px"></div>
+<div id="main4" style="float:left;width:1400px;height:450px"></div>
 <!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
 <div id='coloum_div' > 
     <!-- 改变柱状个数 -->
@@ -81,13 +84,13 @@
 
     }
     //成本消耗
-    function cost_produce(a,obj){
+    function cost_produce(){
         var heat_no = $("#prime_analyse").val();
         console.log(heat_no)
         $.ajax({
             type: "post",
             url:  "/cost_produce",
-            data: {'heat_no':heat_no,'nature':a},
+            data: {'heat_no':heat_no},
             error: function() {
                 alert("错误！！");
             },
@@ -97,13 +100,12 @@
                 //alert(data.result.yvalue)
                 // alert(data.result.offset_result[0]);
                 // $("#offset").val(data.result.offset_result[0]);
-                if(a=='cost'){
-                    drawBarChart_cost(data.result);
-                }
-                else{
-                    drawBarChart_produce(data.result);
-                }
-                
+
+                    drawBarChart_raw(data.result);
+                    drawBarChart_material(data.result);
+                    drawBarChart_product(data.result);
+                    drawBarChart_alloy(data.result);
+             
             }
         })
     };   
@@ -130,7 +132,7 @@
                 // $("#txt").empty();//清除表格内容
                 $("#cause_txt").empty();//清除文本框内容
                 // $("#cause_txt").append('单炉次'+field+'字段因素追溯的分析结果:\n');
-                $("#cause_txt").append('经分析，'+heat_no+'炉次下的'+fieldname_chinese+'('+fieldname_english+')字段，偏离程度为'+offset_value+'。\n成本追溯分析结果如下(前五):\n');
+                $("#cause_txt").append('经分析，'+heat_no+'炉次下的'+fieldname_chinese+'('+fieldname_english+')字段，偏离程度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n');
                 // var content='';
                 // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
                 for (var i=0;i<data.offset_number;i++){
@@ -150,15 +152,19 @@
         })
     };
 
-    // 条形图（投入）(多Y轴)
-    function drawBarChart_cost(result){
+    // 条形图（原料raw）(多Y轴)
+    function drawBarChart_raw(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
+        var colors = ['#FF8C69','#FF8247','#FF7256','#FF6347','#FF34B3','#FF0000','#FF7F50','#FF7F24'];
+        var barWidth_value=80;//柱条（K线蜡烛）宽度
+        var barGap_value='100%';//柱间距离，默认为柱形宽度的30%，可设固定值
+        var barCategoryGap_value='60%';//类目间柱形距离，默认为类目间距的20%，可设固定值
+
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
                 title: {
-                    text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
+                    text: '炉次号'+result.raw.heat_no+'的'+result.raw.attribute+'组成',
                     x:'center'
                 },
                 tooltip: {
@@ -167,7 +173,7 @@
                     //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         trigger:'item',
                         formatter: function (params){
-                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                         
+                            var res = result.raw.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.raw.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.raw.offset_result[params.seriesIndex]+'</br>定性判断：'+result.raw.qualitative_offset_result[params.seriesIndex];                         
                             return res;
 
                      }
@@ -188,7 +194,7 @@
                     axisTick: {
                     alignWithLabel: true
                     },
-                    data: ['单炉次字段']
+                    data: ['单炉次原料投入字段']
                 },
                 yAxis: [{
                     type: 'value',
@@ -196,7 +202,7 @@
                     min: 0,
                     max: 105000,
                     position: 'left',
-                    offset:0,
+                    offset:-40,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -209,11 +215,11 @@
                 },
                 {
                     type: 'value',
-                    name: '耗氧量(NM3)',
+                    name: '生铁(Kg)',
                     min: 0,
-                    max: 5000,
+                    max: 12000,
                     position: 'left',
-                    offset: -130,
+                    offset: -200,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -231,7 +237,7 @@
                     max: 12000,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -260,
+                    offset: -360,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -243,15 +249,66 @@
                 },
                 {
                     type: 'value',
-                    name: '生铁(Kg)',
+                    name: '大渣钢(Kg)',
                     min: 0,
-                    max: 2000,
+                    max: 10000,
                     position: 'left',
-                    offset: -390,
+                    offset: -520,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
                             color: colors[3]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '自产废钢(Kg)',
+                    min: 0,
+                    max: 10000,
+                    position: 'left',
+                    offset: -680,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[4]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '重型废钢(Kg)',
+                    min: 0,
+                    max: 10000,
+                    position: 'left',
+                    offset: -840,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[5]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '中型废钢(Kg)',
+                    min: 0,
+                    max: 10000,
+                    position: 'left',
+                    offset: -1000,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[6]
                         }
                     },
                     // axisLabel: {
@@ -262,45 +319,11 @@
                 series: [{
                     name: '铁水重量',
                     type: 'bar',
-                    barWidth : 70,//柱条（K线蜡烛）宽度
-                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:'40%',//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barWidth : barWidth_value,//柱条（K线蜡烛）宽度
+                    barGap: barGap_value,//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap: barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
                     barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
-                    data: [result.yvalue[0]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'耗氧量',
-                    type:'bar',
-                    barWidth : 70,
-                    barGap: '80%',
-                    barCategoryGap:'40%',
-                    barMinHeight:10,
-                    yAxisIndex: 1,
-                    data:[result.yvalue[1]],
-                    itemStyle: {
-                        normal: {
-                            label : {
-                                show: true, position: 'top'
-                            }
-                        }
-                    }
-                },
-                {
-                    name:'废钢总和',
-                    type:'bar',
-                    barWidth : 70,
-                    barGap: '80%',
-                    barCategoryGap:'40%',
-                    barMinHeight:10,
-                    yAxisIndex: 2,
-                    data:[result.yvalue[2]],
+                    data: [result.raw.yvalue[0]],
                     itemStyle: {
                         normal: {
                             label : {
@@ -312,12 +335,97 @@
                 {
                     name:'生铁',
                     type:'bar',
-                    barWidth : 70,
-                    barGap: '80%',
-                    barCategoryGap:'40%',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 1,
+                    data:[result.raw.yvalue[1]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'废钢总和',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
                     barMinHeight:10,
                     yAxisIndex: 2,
-                    data:[result.yvalue[3]],
+                    data:[result.raw.yvalue[2]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'大渣钢',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 3,
+                    data:[result.raw.yvalue[3]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'自产废钢',
+                    type:'bar',
+                   barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 4,
+                    data:[result.raw.yvalue[4]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'重型废钢',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 5,
+                    data:[result.raw.yvalue[5]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'中型废钢',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 6,
+                    data:[result.raw.yvalue[6]],
                     itemStyle: {
                         normal: {
                             label : {
@@ -334,13 +442,13 @@
             if (typeof params.seriesIndex != 'undefined') {
                 //mes += '  seriesIndex : ' + param.seriesIndex;
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                fieldname_chinese=result.xname[params.seriesIndex];
-                fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_normal(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                fieldname_chinese=result.raw.xname[params.seriesIndex];
+                fieldname_english=result.raw.xEnglishname[params.seriesIndex];
+                probability_normal(fieldname_chinese,fieldname_english,result.raw.offset_result[params.seriesIndex],params.value);
                 $("#hidden_inform1").val(fieldname_english);//字段英文名
                 $("#hidden_inform2").val(fieldname_chinese);//字段中文名
                 $("#hidden_inform3").val(params.value);//实际值
-                $("#hidden_inform4").val(result.offset_result[params.seriesIndex]);//偏离程度
+                $("#hidden_inform4").val(result.raw.offset_result[params.seriesIndex]);//偏离程度
             }
             console.log(params);
             });
@@ -349,15 +457,19 @@
             // 使用刚指定的配置项和数据显示图表。
     };
 
-    // 条形图（产出）（多Y轴）
-    function drawBarChart_produce(result){
-        var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957'];
+    // 条形图（物料material）(多Y轴)
+    function drawBarChart_material(result){
+        var myChart = echarts.init(document.getElementById('main2'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#5793f3', '#d14a61', '#675bba','#00c957'];
+        var barWidth_value=80;
+        var barGap_value='100%';
+        var barCategoryGap_value='60%';
+
             // 指定图表的配置项和数据
             var option = {
                 color:colors,
                 title: {
-                    text: '炉次号'+result.heat_no+'的'+result.attribute+'组成',
+                    text: '炉次号'+result.material.heat_no+'的'+result.material.attribute+'组成',
                     x:'center'
                 },
                 tooltip: {
@@ -366,7 +478,379 @@
                     //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         trigger:'item',
                         formatter: function (params){
-                            var res = result.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.offset_result[params.seriesIndex]+'</br>定性判断：'+result.qualitative_offset_result[params.seriesIndex];                          
+                            var res = result.material.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.material.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.material.offset_result[params.seriesIndex]+'</br>定性判断：'+result.material.qualitative_offset_result[params.seriesIndex];                         
+                            return res;
+
+                     }
+                },
+                toolbox: {
+                    show : true,
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                        }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick: {
+                    alignWithLabel: true
+                    },
+                    data: ['单炉次物料投入字段']
+                },
+                yAxis: [{
+                    type: 'value',
+                    name: '总吹氧消耗(NM3)',
+                    // min: 0,
+                    // max: 105000,
+                    position: 'left',
+                    offset:120,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[0]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '氮气耗量(NM3)',
+                    // min: 0,
+                    // max: 12000,
+                    position: 'left',
+                    offset: -40,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[1]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} NM3'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '1#烧结矿(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    splitLine:{show: false},//去除网格线
+                    offset: -200,
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[2]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '石灰石_40-70mm(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -360,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[3]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '萤石_FL80(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -520,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[4]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '增碳剂(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -680,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[5]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '低氮增碳剂(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -840,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[6]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '石灰(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -1000,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[7]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '轻烧白云石(Kg)',
+                    min: 0,
+                    max: 8000,
+                    position: 'left',
+                    offset: -1160,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[8]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                }
+                ],
+                series: [{
+                    name: '总吹氧消耗',
+                    type: 'bar',
+                    barWidth : barWidth_value,//柱条（K线蜡烛）宽度
+                    barGap: barGap_value,//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap: barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
+                    data: [result.material.yvalue[0]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'氮气耗量',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 1,
+                    data:[result.material.yvalue[1]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'1#烧结矿',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 2,
+                    data:[result.material.yvalue[2]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'石灰石_40-70mm',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 3,
+                    data:[result.material.yvalue[3]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'萤石_FL80',
+                    type:'bar',
+                   barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 4,
+                    data:[result.material.yvalue[4]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'增碳剂',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 5,
+                    data:[result.material.yvalue[5]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'低氮增碳剂',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 6,
+                    data:[result.material.yvalue[6]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'石灰',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 7,
+                    data:[result.material.yvalue[7]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'轻烧白云石',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 8,
+                    data:[result.material.yvalue[8]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                }
+                ]
+            };
+
+            var ecConfig = echarts.config;
+            myChart.on('click', function (params) {
+            if (typeof params.seriesIndex != 'undefined') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                fieldname_chinese=result.material.xname[params.seriesIndex];
+                fieldname_english=result.material.xEnglishname[params.seriesIndex];
+                probability_normal(fieldname_chinese,fieldname_english,result.material.offset_result[params.seriesIndex],params.value);
+                $("#hidden_inform1").val(fieldname_english);//字段英文名
+                $("#hidden_inform2").val(fieldname_chinese);//字段中文名
+                $("#hidden_inform3").val(params.value);//实际值
+                $("#hidden_inform4").val(result.material.offset_result[params.seriesIndex]);//偏离程度
+            }
+            console.log(params);
+            });
+
+            myChart.setOption(option);
+            // 使用刚指定的配置项和数据显示图表。
+    };
+
+    // 条形图（产品product）（多Y轴）
+    function drawBarChart_product(result){
+        var myChart = echarts.init(document.getElementById('main3'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#5793f3', '#d14a61', '#675bba','#00c957'];
+        var barWidth_value=80;
+        var barGap_value='100%';
+        var barCategoryGap_value='60%';
+            // 指定图表的配置项和数据
+            var option = {
+                color:colors,
+                title: {
+                    text: '炉次号'+result.raw.heat_no+'的'+result.product.attribute+'组成',
+                    x:'center'
+                },
+                tooltip: {
+                    // trigger: 'axis',
+                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        trigger:'item',
+                        formatter: function (params){
+                            var res = result.product.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.product.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.product.offset_result[params.seriesIndex]+'</br>定性判断：'+result.product.qualitative_offset_result[params.seriesIndex];                          
                             return res;
 
                      }
@@ -386,7 +870,7 @@
                     axisTick: {
                     alignWithLabel: true
                     },
-                    data: ['单炉次字段']
+                    data: ['单炉次产品产出字段']
                 },
                 yAxis: [{
                     type: 'value',
@@ -394,7 +878,7 @@
                     min: 0,
                     max: 105000,
                     position: 'left',
-                    offset:-20,
+                    offset:-360,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -411,7 +895,7 @@
                     min: 0,
                     max: 12000,
                     position: 'left',
-                    offset: -180,
+                    offset: -520,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -429,7 +913,7 @@
                     max: 22000,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -340,
+                    offset: -680,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -443,11 +927,11 @@
                 series: [{
                     name: '钢水重量',
                     type: 'bar',
-                    barWidth : 90,//柱条（K线蜡烛）宽度
-                    barGap: '80%',//柱间距离，默认为柱形宽度的30%，可设固定值
-                    barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barWidth : barWidth_value,//柱条（K线蜡烛）宽度
+                    barGap: barGap_value,//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap:barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
                     barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
-                    data: [result.yvalue[0]],
+                    data: [result.product.yvalue[0]],
                     itemStyle: {
                         normal: {
                             label : {
@@ -459,12 +943,12 @@
                 {
                     name:'转炉煤气',
                     type:'bar',
-                    barWidth : 90,
-                    barGap: '80%',
-                    barCategoryGap:'60%',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
                     barMinHeight:10,
                     yAxisIndex: 1,
-                    data:[result.yvalue[1]],
+                    data:[result.product.yvalue[1]],
                     itemStyle: {
                         normal: {
                             label : {
@@ -476,12 +960,12 @@
                 {
                     name:'钢渣',
                     type:'bar',
-                    barWidth : 90,
-                    barGap: '80%',
-                    barCategoryGap:'60%',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
                     barMinHeight:10,
                     yAxisIndex: 2,
-                    data:[result.yvalue[2]],
+                    data:[result.product.yvalue[2]],
                     itemStyle: {
                         normal: {
                             label : {
@@ -498,13 +982,13 @@
             if (typeof params.seriesIndex != 'undefined') {
                 //mes += '  seriesIndex : ' + param.seriesIndex;
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                fieldname_chinese=result.xname[params.seriesIndex];
-                fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_normal(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value);
+                fieldname_chinese=result.product.xname[params.seriesIndex];
+                fieldname_english=result.product.xEnglishname[params.seriesIndex];
+                probability_normal(fieldname_chinese,fieldname_english,result.product.offset_result[params.seriesIndex],params.value);
                 $("#hidden_inform1").val(fieldname_english);//字段英文名
                 $("#hidden_inform2").val(fieldname_chinese);//字段中文名
                 $("#hidden_inform3").val(params.value);//实际值
-                $("#hidden_inform4").val(result.offset_result[params.seriesIndex]);//偏离程度
+                $("#hidden_inform4").val(result.product.offset_result[params.seriesIndex]);//偏离程度
             }
             console.log(params);
             });
@@ -513,6 +997,242 @@
             // 使用刚指定的配置项和数据显示图表。
     };
 
+    // 条形图（合金alloy）(多Y轴)
+    function drawBarChart_alloy(result){
+        var myChart = echarts.init(document.getElementById('main4'));
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#5793f3', '#d14a61', '#675bba','#00c957'];
+        var barWidth_value=80;
+        var barGap_value='100%';
+        var barCategoryGap_value='60%';
+
+            // 指定图表的配置项和数据
+            var option = {
+                color:colors,
+                title: {
+                    text: '炉次号'+result.alloy.heat_no+'的'+result.alloy.attribute+'组成',
+                    x:'center'
+                },
+                tooltip: {
+                    // trigger: 'axis',
+                    // axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    //     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        trigger:'item',
+                        formatter: function (params){
+                            var res = result.alloy.xname[params.seriesIndex]+':</br>实际值：'+params.value+result.alloy.danwei[params.seriesIndex] + '<br/>偏离程度：'+result.alloy.offset_result[params.seriesIndex]+'</br>定性判断：'+result.alloy.qualitative_offset_result[params.seriesIndex];                         
+                            return res;
+
+                     }
+                },
+                toolbox: {
+                    show : true,
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                        }
+                },
+                legend: {
+                    data:['']
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick: {
+                    alignWithLabel: true
+                    },
+                    data: ['单炉次合金投入字段']
+                },
+                yAxis: [{
+                    type: 'value',
+                    name: '硅铁_Si72-80%、AL≤2%(粒度10-60mm)(Kg)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    offset:-200,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[0]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%(Kg)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    offset: -360,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[1]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} NM3'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '硅锰合金_Mn 65-72%、Si 17-20%(Kg)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    splitLine:{show: false},//去除网格线
+                    offset: -520,
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[2]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '高硅硅锰_Mn ≥60%、Si ≥27%(Kg)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    offset: -680,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[3]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                },
+                {
+                    type: 'value',
+                    name: '中碳铬铁(Kg)',
+                    min: 0,
+                    max: 5000,
+                    position: 'left',
+                    offset: -840,
+                    splitLine:{show: false},//去除网格线
+                    axisLine: {
+                        lineStyle: {
+                            color: colors[4]
+                        }
+                    },
+                    // axisLabel: {
+                    //     formatter: '{value} Kg'
+                    // }
+                }
+                ],
+                series: [{
+                    name: '硅铁_Si72-80%、AL≤2%(粒度10-60mm)',
+                    type: 'bar',
+                    barWidth : barWidth_value,//柱条（K线蜡烛）宽度
+                    barGap: barGap_value,//柱间距离，默认为柱形宽度的30%，可设固定值
+                    barCategoryGap: barCategoryGap_value,//类目间柱形距离，默认为类目间距的20%，可设固定值
+                    barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
+                    data: [result.alloy.yvalue[0]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'微铝硅铁_Si 72-80%、AL≤0.1%、Ti≤0.1%',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 1,
+                    data:[result.alloy.yvalue[1]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'硅锰合金_Mn 65-72%、Si 17-20%',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 2,
+                    data:[result.alloy.yvalue[2]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'高硅硅锰_Mn ≥60%、Si ≥27%',
+                    type:'bar',
+                    barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 3,
+                    data:[result.alloy.yvalue[3]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                },
+                {
+                    name:'中碳铬铁',
+                    type:'bar',
+                   barWidth : barWidth_value,
+                    barGap: barGap_value,
+                    barCategoryGap: barCategoryGap_value,
+                    barMinHeight:10,
+                    yAxisIndex: 4,
+                    data:[result.alloy.yvalue[4]],
+                    itemStyle: {
+                        normal: {
+                            label : {
+                                show: true, position: 'top'
+                            }
+                        }
+                    }
+                }
+                ]
+            };
+
+            var ecConfig = echarts.config;
+            myChart.on('click', function (params) {
+            if (typeof params.seriesIndex != 'undefined') {
+                //mes += '  seriesIndex : ' + param.seriesIndex;
+                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
+                fieldname_chinese=result.alloy.xname[params.seriesIndex];
+                fieldname_english=result.alloy.xEnglishname[params.seriesIndex];
+                probability_normal(fieldname_chinese,fieldname_english,result.alloy.offset_result[params.seriesIndex],params.value);
+                $("#hidden_inform1").val(fieldname_english);//字段英文名
+                $("#hidden_inform2").val(fieldname_chinese);//字段中文名
+                $("#hidden_inform3").val(params.value);//实际值
+                $("#hidden_inform4").val(result.alloy.offset_result[params.seriesIndex]);//偏离程度
+            }
+            console.log(params);
+            });
+
+            myChart.setOption(option);
+            // 使用刚指定的配置项和数据显示图表。
+    };
 
     //正态分布+概率分布
     function probability_normal(fieldname_chinese,fieldname_english,offset_value,actual_value){
