@@ -700,6 +700,19 @@ def trade(request):
 			print(ex)
 
 
+#import data_import.liusinuo.update_mysql_space 
+from data_import.liusinuo.update_mysql_space import update_mysql_space_orderNo
+#更新数据仓库：销售部分——空间分析
+def update_mysql_space(request):
+	contentVO={
+		'title':'测试',
+		'state':'success'
+	}
+	print("更新数据仓库 view.update_mysql_space可以执行")
+	update_mysql_space_orderNo();
+	return HttpResponse(json.dumps(contentVO),content_type='application/json')
+
+
 #从数据库动态加载钢种
 def getAllTradeNo_time(request):
 	conn_mysql=mysql.MySQL();

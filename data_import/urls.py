@@ -49,11 +49,15 @@ urlpatterns = [
     #echarts展示示例
     url(r'^echarts$',views.echarts),
     #sinuo
+    #显示分析页面
     url(r'^space',views.space),
     url(r'^time',views.time),
     url(r'^trade',views.trade),
     url(r'^liusinuo',views.space),
+    #钢种自动加载
     url(r'^GetTradeNo',views.getAllTradeNo_time),
+    #数据仓库更新
+    url(r'^update_mysql_space',views.update_mysql_space),
 
 
     #ha

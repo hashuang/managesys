@@ -69,6 +69,7 @@
 <br>
 
 <button id="btnDrawChart">分析结果绘图</button>
+<button id="btnUpdateMysql" onclick="UpdateMysql()">更新数据仓库</button>
 <br>
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>
@@ -179,7 +180,23 @@
              });
     });
 
- 
+    function UpdateMysql(){
+        $.ajax({
+        type: "POST",
+        dataType:"json",
+        url: "/update_mysql_space" ,
+        data: {'greet':'hello'},
+        success: function(data){
+            console.log("更新数据仓库的 ajax 可以执行");
+        },
+        error: function () {
+            alert("error");
+            }
+         });
+    };
+
+
+
 </script>
 <script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
 <!-- <script type="text/javascript">

@@ -78,6 +78,7 @@ def space_sql(space_dict,sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,spac
 		
 		if aspect == 1 :
 			tradeNo_wgt_list = conn_mysql.select(sql_wgt)
+			print (type(tradeNo_wgt_list))
 			weight_sum = 0
 			for tradeNo in tradeNo_list:  #所选钢种
 				for tradeNo_wgt in tradeNo_wgt_list:
