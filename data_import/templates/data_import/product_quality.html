@@ -20,11 +20,20 @@
     <button onclick='violent_ananlyse()' id='click1'>暴力求解</button>
 </div>
 
-<div style="width:1600px">
-<div id="main1"  style="float:left;width:1400px;height:500px"></div>
-<div id="main2"  style="float:left;width:800px;height:500px"></div>
-<!--<textarea id="txt" style="width: 800px;height:100px;">下</textarea></div>-->
-<div id='coloum_div' style="float:left;width:300px;height:50px">
+<div style="width:1040px">
+
+<div id="main1"  style="float:left;width:1040px;height:350px"></div>
+
+<div id='main3' style="float:left;width: 600px;height:20px"></div>
+<div id='cause_area' style="float:left;width:400px;height:300px">
+   <!--table用来放置因素追溯的分析结果-->
+    <p><strong>异常字段追溯结果：</strong></p>
+    <textarea id="cause_txt" style="float:left;width: 400px;height:150px;"></textarea>
+</div>
+
+
+<div id="main2"  style="float:right;width:400px;height:300px"></div>
+<div id='coloum_div' style="float:right;width:300px;height:50px">
     <!-- 改变柱状个数 -->
     <lebel>选择直方图柱状数目：</lebel>
     <select name='change_column' id='change_column' onChange="change_column()">
@@ -33,19 +42,18 @@
         <option value='21'>21 </option> 
         <option value='50' selected="selected">50 </option> 
   </select> 
-</div>  
 </div>
+</div>
+
+</div>
+
 
 <p></p>
 <!-- <div>
     <table id='txt' style="width: 900px;height:350px;border:45px;">
     </table>
 </div> -->
-<div id='cause_area'>
-   <!--table用来放置因素追溯的分析结果-->
-    <p><strong>转炉工序单炉次字段成本追溯结果：</strong></p>
-    <textarea id="cause_txt" style="width: 900px;height:150px;"></textarea>
-</div>
+
 <!-- <button onclick='updatevalue()' id='updatevalue'>定期更新数据库转炉字段统计值</button> -->
 
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
@@ -90,20 +98,57 @@
                 alert("错误！！");
             },
             success: function(data) {
-                //alert(data.result.yvalue)
-                // alert(data.result.offset_result[0]);
+              
                 $("#offset").val(data.result.offset_result[0]);
                 drawBarChart_cost(data.result);
+
+                
+               
+                retrospectfactor_all();
+                //炉次号、单炉次分析字段中文名、单炉次分析字段英文名、单炉次质量分析字段实际值、单炉次质量分析字段偏离度、单炉次质量分析字段偏离度定向分析
             }
         })
     };   
 
-    
+     //回归系数因素追溯及其偏离程度
+    function retrospectfactor_all(){
+        var prime_analyse = $("#prime_analyse").val();
+        alert(prime_analyse)
+
+        var txt = echarts.init(document.getElementById('main3'));
+        txt.showLoading({
+                    text: "追溯结果正在努力计算中...可能需要耗费一定时间..."
+                });
+        $.ajax({
+            type: "post",
+            url:  "/retrospectfactor_all",
+            data: {'prime_cost':prime_analyse},
+            error: function() {
+                alert("错误！！");
+            },
+            success: function(data) {
+                console.log(data)
+                $("#main3").empty()
+                $("#cause_txt").empty();//清除文本框内容
+                $("#cause_txt").append(data.str_all);
+                $("#cause_area").show();
+
+               
+                }
+        })
+    };
+
+
+
     // 条形图（含量）
     function drawBarChart_cost(result){
         var myChart = echarts.init(document.getElementById('main1'));
-        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#2367d9','#f39646','#e02222'];
+        var colors = ['#5793f3', '#d14a61', '#675bba','#00c957','#e02222', '#2367d9','#f39646','#e02222','#d14ab1'];
             // 指定图表的配置项和数据
+        var barWidth_value=64;
+        var barGap_value='100%';
+        var barCategoryGap_value='60%';
+    
             var option = {
                 color:colors,
                 title: {
@@ -144,7 +189,7 @@
                     min: 0,
                     max: 0.9905,
                     position: 'left',
-                    offset:-40,
+                    offset:0,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -161,7 +206,7 @@
                     min: 0,
                     max: 0.4200,
                     position: 'left',
-                    offset: -200,
+                    offset: -128,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -179,7 +224,7 @@
                     max: 0.8970,
                     position: 'left',
                     splitLine:{show: false},//去除网格线
-                    offset: -360,
+                    offset: -256,
                     axisLine: {
                         lineStyle: {
                             color: colors[2]
@@ -195,7 +240,7 @@
                     min: 0,
                     max: 0.0180,
                     position: 'left',
-                    offset: -520,
+                    offset: -384,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -209,7 +254,7 @@
                     min: 0,
                     max: 0.0180,
                     position: 'left',
-                    offset: -680,
+                    offset: -512,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -223,7 +268,7 @@
                     min: 0,
                     max: 113000,
                     position: 'left',
-                    offset: -840,
+                    offset: -640,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -237,7 +282,7 @@
                     min: 1000,
                     max: 2000,
                     position: 'left',
-                    offset: -1000,
+                    offset: -768,
                     splitLine:{show: false},//去除网格线
                     axisLine: {
                         lineStyle: {
@@ -245,11 +290,12 @@
                         }
                     },
                 },
+               
                 ],
                 series: [{
                     name: 'C',
                     type: 'bar',
-                    barWidth : 80,//柱条（K线蜡烛）宽度
+                    barWidth : barWidth_value,//柱条（K线蜡烛）宽度
                     barGap: '100%',//柱间距离，默认为柱形宽度的30%，可设固定值
                     barCategoryGap:'60%',//类目间柱形距离，默认为类目间距的20%，可设固定值
                     barMinHeight:10,//柱条最小高度，可用于防止某item的值过小而影响交互
@@ -265,7 +311,7 @@
                 {
                     name:'SI',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -282,7 +328,7 @@
                 {
                     name:'MN',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -299,7 +345,7 @@
                 {
                     name:'P',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -316,7 +362,7 @@
                 {
                     name:'S',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -333,7 +379,7 @@
                 {
                     name:'重量',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -350,7 +396,7 @@
                 {
                     name:'温度',
                     type:'bar',
-                    barWidth : 80,
+                    barWidth : barWidth_value,
                     barGap: '100%',
                     barCategoryGap:'60%',
                     barMinHeight:10,
@@ -364,6 +410,8 @@
                         }
                     }
                 },
+
+       
                 ]
             };
 
@@ -399,6 +447,11 @@
         var fieldname_chinese=fieldname_chinese;//字段中文名
         var coloum_number = $("#change_column").val();//柱状图个数
         console.log(field1,fieldname_english,fieldname_chinese,coloum_number);
+
+        var myChart_main2 = echarts.init(document.getElementById('main2'));
+        myChart_main2.showLoading({
+                    text: "图表数据正在努力加载..."
+                });
             $.ajax({
             type: "post",
             url:  "/probability_distribution",
@@ -528,24 +581,22 @@
                 ]
 
             };
+        //$("#cause_area").show();
 
-        var ecConfig = echarts.config;
-        myChart.on('click', function (params) {
-            // if (params.componentType == 'markPoint') {
-                //mes += '  seriesIndex : ' + param.seriesIndex;
-                //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
-                offset_value=result.normal_result.offset_value;//读取偏离值
-                qualitative_offset_result=result.qualitative_offset_result;//读取定性判断
-                fieldname_english=result.normal_result.fieldname;//读取字段英文名字
+        //点击条形图可调用retrospectfactor得到点击条形图对应字段的分析结果
+        // var ecConfig = echarts.config;
+        // myChart.on('click', function (params) {
+        //         offset_value=result.normal_result.offset_value;//读取偏离值
+        //         qualitative_offset_result=result.qualitative_offset_result;//读取定性判断
+        //         fieldname_english=result.normal_result.fieldname;//读取字段英文名字
 
-                retrospectfactor(fieldname_english,offset_value,qualitative_offset_result);
+        //         retrospectfactor(fieldname_english,offset_value,qualitative_offset_result);
             // }
-            console.log(params);
-            console.log(fieldname_english)
-            });
+            //});
 
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
+
 
     };
     //回归系数因素追溯及其偏离程度
@@ -568,7 +619,7 @@
                     }
 
                 }
-                $("#cause_area").show();//
+                $("#cause_area").show();
                 //alert(content);
                 }
         })
