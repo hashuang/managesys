@@ -79,15 +79,15 @@ def trade_rate_choose_info(conclusion,tradeNo_rate_choose_dict,aspect):
 
 def trade_rate_info(conclusion,tradeNo_rate_dict,aspect):
 
-	# if aspect == 1 or aspect == 2:
-	# 	tem_clnclusion = "\n对于全部钢种，各钢种所占比例为：\n"
-	# 	for tradeNo in tradeNo_rate_dict:
-	# 		tem_clnclusion = tem_clnclusion + tradeNo + ":" + str(tradeNo_rate_dict[tradeNo]) + "% \n"
-	# 	print (tem_clnclusion)
-	# 	conclusion = conclusion + tem_clnclusion
-	# 	return conclusion
-	# else:
-	# 	return conclusion
+	if aspect == 1 or aspect == 2:
+		tem_clnclusion = "\n对于全部钢种，各钢种所占比例为：\n"
+		for tradeNo in tradeNo_rate_dict:
+			tem_clnclusion = tem_clnclusion + tradeNo + ":" + str(tradeNo_rate_dict[tradeNo]) + "% \n"
+		print (tem_clnclusion)
+		conclusion = conclusion + tem_clnclusion
+		return conclusion
+	else:
+		return conclusion
 	return conclusion
 
 

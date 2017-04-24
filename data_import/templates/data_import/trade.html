@@ -184,7 +184,6 @@ style="visibility: hidden;"
 <!-- <button id="btnDrawChart_2" onclick="btnDrawChart_2()">漏斗图</button> -->
 </div>
 
-<!-- ====================这里取消注释即可==========================
 <br>
 <div>
     展示方式： 
@@ -192,7 +191,7 @@ style="visibility: hidden;"
         <option value="1">饼状图</option>
         <option value="2">漏斗图</option>
     </select>
-</div> -->
+</div>
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
@@ -232,16 +231,15 @@ style="visibility: hidden;"
         showStyle: null
     }
 
-    // ====================这里取消注释即可==========================
-    // select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
-    //     //var showStyle = $ ("#select_showStyle").find("option:selected").val();
-    //     if (this.value == 1){
-    //          drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
-    //     }else{
-    //          drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
-    //     }
+    select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
+        //var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        if (this.value == 1){
+             drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+        }else{
+             drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+        }
        
-    // }
+    }
 
 
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
@@ -252,10 +250,9 @@ style="visibility: hidden;"
         var space = $ ("#select_space").find("option:selected").val();
         var tradeNo = $ ("#select_trade").find("option:selected").val();
         console.log(tradeNo);
-        
-        // ====================这里取消注释即可==========================
-        // var showStyle = $ ("#select_showStyle").find("option:selected").val();
-        var showStyle = 1
+
+
+        var showStyle = $ ("#select_showStyle").find("option:selected").val();
         
         var sql_cust = ''
         var sql_date1_ = document.getElementById("select_date1").value
