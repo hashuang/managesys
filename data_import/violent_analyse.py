@@ -15,13 +15,13 @@ import json
 import math
 
 
-
+#暴力追溯时程序入口
 def violent_analyse(request):
 	print("violent_ananlyse")
 	document = Document()
 	paragraph=document.add_paragraph()
 	#炉次	
-	for i in range(10):
+	for i in range(20):
 		prime_cost=str(1634230+i);
 		str_cause=violent_analyse_to(prime_cost,document,paragraph)
 
@@ -30,6 +30,8 @@ def violent_analyse(request):
 		'state':'success'		
 	}				
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')	
+
+
 
 def violent_analyse_to(prime_cost,document,paragraph):
 	str_heatno='-------------------炉次号:'+prime_cost+'-------------------\n'      
@@ -40,7 +42,7 @@ def violent_analyse_to(prime_cost,document,paragraph):
 
 	field_classification=['raw','material','product','alloy']
 	# for k in range(2,len(field_classification)):
-	for k in range(0,4):
+	for k in range(1,4):
 		classify='【'+field_classification[k]+'】\n'
 		paragraph.add_run(classify)
 
@@ -102,13 +104,14 @@ def violent_analyse_to(prime_cost,document,paragraph):
 		#计算单炉次质量分析字段偏离程度
 		offset_result_single=chyulia.offset(xasis_fieldname_en,yaxis_single)
 		offset_value_single=["%.2f%%"%(n*100) for n in list(offset_result_single)]
+		offset_value_single_abs=["%.2f%%"%(abs(float(n))*100) for n in list(offset_result_single)]
 		print('单炉次成本分析字段偏离度')
 		print(offset_value_single)
 
 		#分析字段偏离程度定性判断
 		qualitative_offset_result=chyulia.qualitative_offset(offset_result_single)
 		print('单炉次成本分析字段偏离度定向分析')
-		print(offset_value_single)
+		print(qualitative_offset_result)
 		#写入word
 
 		for i in range(len(xasis_fieldname_en)):
@@ -117,32 +120,50 @@ def violent_analyse_to(prime_cost,document,paragraph):
 			field=xasis_fieldname_en[i];
 			single_value=yaxis_single[i];
 			offset_value=offset_value_single[i];
+			offset_value_abs=offset_value_single_abs[i]
 			qualitative_offset_result_single=qualitative_offset_result[i];
 
-			if single_value==0:#实际值为0，表示原来为空置或0值，追溯无意义
-				str_des='本炉次'+prime_cost+'的'+xaxis_chinese+'字段实际值为空或0，追溯无意义！\n' 
-				paragraph.add_run(str_des)	
-				paragraph.add_run('\n')	
+			sql = "select DATA_ITEM_EN,IF_FIVENUMBERSUMMARY,NUMERICAL_LOWER_BOUND,NUMERICAL_UPPER_BOUND from QG_USER.PRO_BOF_HIS_ALLSTRUCTURE WHERE  DATA_ITEM_EN = '"+field+"'"
+			sqlVO["sql"] = sql
+			scrapy_records = models.BaseManage().direct_select_query_sqlVO(sqlVO)
+			NUMERICAL_LOWER_BOUND=scrapy_records[0].get('NUMERICAL_LOWER_BOUND',None)#下限
+			NUMERICAL_UPPER_BOUND=scrapy_records[0].get('NUMERICAL_UPPER_BOUND',None)#上限
+			if single_value==0:#实际值为0的字段在暴力追溯中暂时不分析
+				# str_des='本炉次'+prime_cost+'的'+xaxis_chinese+'数据异常！\n' 
+				# paragraph.add_run(str_des)	
+				# paragraph.add_run('\n')	
 				continue
+			if (field_classification[k]== 'material' or field_classification[k]== 'alloy' ) and  offset_result_single[i]<0:
+				continue
+			if single_value<float(NUMERICAL_LOWER_BOUND) or single_value>float(NUMERICAL_UPPER_BOUND):#实际值在上下限范围之外，表示数据异常；实际值在上下限之间，但在最大最小值之外，在计算偏离程度时（offeset()）按照最大最小值计算
+				# str_des='本炉次'+prime_cost+'的'+xaxis_chinese+'数据异常！\n' 
+				# paragraph.add_run(str_des)	
+				# paragraph.add_run('\n')	
+				continue
+			elif abs(float(offset_result_single[i]))<=0.25:#偏离度小于10%的设定为正常
+				# str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+',偏离度为'+offset_value+'。\n'      
+				# paragraph.add_run(str_des)
+				continue
+
 			En_to_Ch_result_score,offset_result_nature,offset_value_single_cof,regression_coefficient_result=analy_cof(prime_cost,field,single_value,offset_value);		
 			if 	En_to_Ch_result_score==None:
-				str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+'，但进行回归分析时相关字段无数据！'
-				paragraph.add_run(str_des)	
-				paragraph.add_run('\n')	
+				# str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+'，但进行回归分析时相关字段无数据！'
+				# paragraph.add_run(str_des)	
+				# paragraph.add_run('\n')	
 				continue
-			if abs(float(offset_result_single[i]))<=0.1:
-				str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+',偏离度为'+offset_value+'。\n'      
-				paragraph.add_run(str_des)
 			else:
-				str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
+				# str_des='本炉次'+prime_cost+'的'+xaxis_chinese+qualitative_offset_result_single+',实际值为'+str(single_value)+danwei[i]+',偏离度为'+offset_value+'。通过数据相关性分析发现，导致该问题的原因是:\n'      
+				str_des=xaxis_chinese+qualitative_offset_result_single+offset_value_abs+'：'      
+				
 				paragraph.add_run(str_des)	
 				for i in range(len(En_to_Ch_result_score)):
-					str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+',权重为'+str(regression_coefficient_result[i])+'\n'
+					str_cause=En_to_Ch_result_score[i]+offset_result_nature[i]+offset_value_single_cof[i]+'；'
 					paragraph.add_run(str_cause) 
-			paragraph.add_run('\n')
-	document.add_page_break()
+				paragraph.add_run('\n')
+			# paragraph.add_run('\n')
+	# document.add_page_break()
 	document.save('e:/demo_chen.docx')
-	return 	str_cause		
+	return 	'done'		
 
 from . import zhuanlu
 def  analy_cof(prime_cost,field,single_value,offset_value):
@@ -185,7 +206,7 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	# print("frame",frame)	
 	print("yaxis",yaxis)
 
-	offset_degree=chyulia.offset(xasis_fieldname,yaxis)
+	offset_degree=chyulia.offset(xasis_fieldname,yaxis,'')
 	print("字段名字：")
 	print(xasis_fieldname)
 	print("相关性：")
@@ -229,8 +250,8 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	if len(xasis_fieldname_result) == 0:
 		return None,None,None,None
 
-	#计算回归系数:regression_coefficient[0]表示各回归值，regression_coefficient[1]表示截距
-	regression_coefficient=batchprocess.regression(field,xasis_fieldname_result,'null')
+	#计算回归系数:regression_coefficient[0]表示各回归值，regression_coefficient[1]表示截距;1表示在regression中进行标准化，0表示不进行标准化
+	regression_coefficient=batchprocess.regression(field,xasis_fieldname_result,1)
 	if regression_coefficient== False:
 		return None,None,None,None
 
@@ -259,7 +280,7 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	L_zip.sort(key=lambda x:x[3],reverse=True)
 	print('按照回归系数排序后的字段：',L_zip)
 	#取回归系数前三的字段
-	L_zip=L_zip[0:3]
+	L_zip=L_zip[0:2]
 	print('取前三个字段时的实际字段个数：',len(L_zip))
 	#解压缩
 	L_unzip=list(zip(*L_zip))
@@ -278,7 +299,7 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	# print('表结构中字段的顺序',En_to_Ch_result_score)
 
 	#zip压缩：中文名、英文名、偏离程度、字段顺序编号
-	L_zip = list(zip(En_to_Ch_result_max,xasis_fieldname_result_max,offset_degree_result_max,En_to_Ch_result_score))
+	L_zip = list(zip(En_to_Ch_result_max,xasis_fieldname_result_max,offset_degree_result_max,En_to_Ch_result_score,regression_coefficient_max))
 	#按照字段顺序进行排序（从小到大）
 	L_zip.sort(key=lambda x:x[3])
 	print('追溯结果的三个字段',L_zip)
@@ -288,7 +309,8 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 	En_to_Ch_result_max=L_unzip[0]#中文名
 	xasis_fieldname_result_max=L_unzip[1]#英文名
 	offset_degree_result_max=L_unzip[2]#偏离程度
-	regression_coefficient_max=L_unzip[3]#回归系数（权重）
+	En_to_Ch_result_score_max=L_unzip[3]#字段序号
+	regression_coefficient_max=L_unzip[4]#回归系数（权重）
 	# '''
 
 	offset_degree_result_max_final=["%.2f%%"%(abs(float(n))*100) for n in list(offset_degree_result_max)]#将偏离程度值转化为保留两位小数的百分数
@@ -314,7 +336,7 @@ def  analy_cof(prime_cost,field,single_value,offset_value):
 
 #对相关性字段展示做简单定性分析	正数为偏高负数为偏低
 def simple_offset(offset_result_final):
-	#偏离程度定性标准，例如-10%~10%为正常，10%~20%为偏高，20%~40%为高，40%以上为数据异常/极端数据
+	#偏离程度定性标准，例如-10%~10%为正常，10%~30%为偏高，30%为高，40%以上为数据异常/极端数据
 	offset_result_nature=[]#相关字段定性分析
 	for i in range(len(offset_result_final)):
 		if float(offset_result_final[i]>0):

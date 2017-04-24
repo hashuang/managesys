@@ -119,6 +119,7 @@ urlpatterns = [
     url(r'^test',chyulia.test),
     url(r'^analysis_tool$',chyulia.analysis_tool),
     url(r'^violent_analyse$',violent_analyse.violent_analyse),
+    url(r'^regression_analyse$',chyulia.regression_analyse),
     
 
     #添加工具类方法，之后处理为批处理事件
