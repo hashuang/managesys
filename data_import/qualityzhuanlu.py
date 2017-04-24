@@ -93,18 +93,26 @@ def cost(request):
 	print('你好')
 	#print("cost_success")
 	prime_cost=request.POST.get("prime_cost");
-	#print(prime_cost)
+	SPECIFICATION=request.POST.get("SPECIFICATION");#钢种
+	OPERATECREW=request.POST.get("OPERATECREW");#班别
+	time1=request.POST.get("time1");
+	time2=request.POST.get("time2");
+
+	xaxis=['C含量','SI含量','MN含量','P含量','S含量','重量','温度']
+	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
+
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(STEELWGT,0)as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
+	# sqlVO["sql"]=sentence
 	scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	contentVO={
 		'title':'测试',
 		'state':'success'
 	}
 
-	xaxis=['C含量','SI含量','MN含量','P含量','S含量','重量','温度']
-	xasis_fieldname=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
+
+	print(scrapy_records)
 
 	for i in range(len(xasis_fieldname)):
 		value = scrapy_records[0].get(xasis_fieldname[i],None)
@@ -136,6 +144,43 @@ def cost(request):
 	contentVO['result']=ana_result
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
+def offset_mul(xasis_fieldname,yaxis,SPECIFICATION,OPERATECREW,time1,time2):
+	if SPECIFICATION !='blank':
+		sentence_SPECIFICATION= " and SPECIFICATION='"+SPECIFICATION+"'"
+	else:
+		sentence_SPECIFICATION=''
+	if OPERATECREW !='blank':
+		sentence_OPERATECREW=" and OPERATECREW='"+OPERATECREW+"'"
+	else:
+		sentence_OPERATECREW=''
+	#时间范围
+	if time1 != '' and time2!='':
+		sentence_time="and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')>'"+time1+"'and to_char(MSG_DATE_PLAN,'yyyy-mm-dd')<'"+time2+"'"
+	else:
+		sentence_time=''
+		
+	sqlVO={}
+	sqlVO["db_name"]="l2own"
+	sentence_select=sentence_SPECIFICATION+sentence_OPERATECREW+sentence_time
+	offset_result=[]
+	for i in range (len(xasis_fieldname)):
+		sqlVO["sql"]=" SELECT "+xasis_fieldname[i]+" FROM qg_user.PRO_BOF_HIS_ALLSTRUCTURE where HEAT_NO>'1500000'"+sentence_select
+		print(sqlVO["sql"])
+		scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
+		print(scrapy_records)
+		frame=DataFrame(scrapy_records)	
+		dfr=frame[frame>0].dropna(how='any')
+		cleandf=Wushu(dfr)
+		max_value=cleandf.max()
+		min_value=cleandf.min()
+		if float(yaxis[i])==None:
+			temp_value=None
+		else:	
+			temp_value=((float(yaxis[i])-min_value)/(max_value-min_value))- 0.5
+		offset_result.append(temp_value)	
+	
+	print('offset_result',offset_result)
+	return offset_resu
 
 #通过从数据库中查询期望等参数图中的偏离程度
 def offset(xasis_fieldname,yaxis):
@@ -145,21 +190,14 @@ def offset(xasis_fieldname,yaxis):
 	print('len(xasis_fieldname)',len(xasis_fieldname))
 	parameters=["MAX_VALUE","MIN_VALUE","DESIRED_VALUE","STANDARD_DEVIATION"]
 	for i in range (0,len(xasis_fieldname)):#实际计算范围为从0到len(xasis_fieldname)-1
-		# if yaxis[i]==0 or yaxis[i] is None:
-		# 	offset_result.append(None)
-		# 	continue;
 		sqlVO["sql"]="SELECT MAX_VALUE,MIN_VALUE,DESIRED_VALUE,STANDARD_DEVIATION FROM qg_user.PRO_BOF_HIS_ALLSTRUCTURE where DATA_ITEM_EN = \'"+xasis_fieldname[i]+"\'"
 		print(sqlVO["sql"])
 		scrapy_records=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 		print(scrapy_records)
-		# print(temp_array)
-		# print(yaxis[i])
-		# print(isinstance(yaxis[i],float))#判断数据类型
 		for j in range (4):
 			value = scrapy_records[0].get(parameters[j],None)
 			if value != None and value != 'null':
 				scrapy_records[0][parameters[j]] = float(value)
-
 		try:
 			temp_value=((float(yaxis[i])-scrapy_records[0]['MIN_VALUE'])/(scrapy_records[0]['MAX_VALUE']-scrapy_records[0]['MIN_VALUE']))- 0.5
 		except:
@@ -227,20 +265,6 @@ def time(request):
 	ana_result,ana_describe=num_describe(scrapy_records,fieldname)
 	contentVO['result']=ana_result
 	contentVO['describe']=ana_describe
-	#if(time1)<(time2):
-	#	contentVO['compare']='xiaoyu'
-	#else:
-	#	contentVO['compare']='dayu'
-	#time_test='2015/11/30 22:45:45'
-	#string转datetime
-	#d= datetime.datetime.strptime(time1,'%Y-%m-%d')
-	#d1= datetime.datetime.strptime(time_test,'%Y/%m/%d %H:%M:%S')
-	#datetime转string
-	#str_time=d.strftime('%Y-%m-%d %H:%M:%S')
-	#print(d)
-	#print(d1)
-	#print(d<d1)
-	#print(str_time)
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 
 

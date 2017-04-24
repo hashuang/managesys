@@ -16,15 +16,26 @@
     <input type="hidden" name="hidden_inform5" id='hidden_inform5'>
     <p>请输入要选择的炉次号，例如：1634230</p>
     炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
-    <button onclick='cost()' id='click2'>钢水含量</button>
-    <button onclick='violent_ananlyse()' id='click1'>暴力求解</button>
+    钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select>
+    班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name">
+        <option value='blank' selected = "selected"></option>
+        <option value='A'>甲班</option>
+        <option value='B'>乙班</option>
+        <option value='C'>丙班</option>
+    </select>
+    起始时间：<input id="datepicker-example7-start" type="text">
+    终止时间：<input id="datepicker-example7-end" type="text">
+           
+        
+    <button onclick='cost()' id='click2'>钢水分析</button>
+   <!--  <button onclick='violent_ananlyse()' id='click1'>暴力求解</button> -->
 </div>
 
 <div style="width:1040px">
 
 <div id="main1"  style="float:left;width:1040px;height:350px"></div>
 
-<div id='main3' style="float:left;width: 600px;height:20px"></div>
+<div id='main3' style="float:left;width: 1000px;height:20px"></div>
 <div id='cause_area' style="float:left;width:400px;height:300px">
    <!--table用来放置因素追溯的分析结果-->
     <p><strong>异常字段追溯结果：</strong></p>
@@ -58,6 +69,8 @@
 
 <script type="text/javascript" src="/static/data_import/js/loadChart_chen.js"></script>
 <script type="text/javascript" src="/static/data_import/js/loadParam.js"></script>
+<script type="text/javascript" src="/static/data_import/js/zebra_datepicker.js"></script>
+<link rel="stylesheet" href="/static/data_import/css/default.css" type="text/css">
 <script type="text/javascript"> 
      //改变概率直方分布的柱状个数
     function change_column(){
@@ -86,16 +99,62 @@
         })
 
     };
+    //自动加载钢种
+    function loadGrape(){ 
+        $.ajax({
+        type: "POST",
+        dataType:"json",
+        url: "/paihao_getGrape" ,
+        data: {'greet':'hello'},
+        success: function(data){
+            //alert(data.result);
+            //alert(data.result.length);
+            pnames=data.result;
+            $(".gangzhong_name").append("<option value='blank' selected =\"selected\"></option>");
+            for(var pname in pnames){
+                console.log(pnames[pname]) 
+                $(".gangzhong_name").append("<option value='"+pnames[pname]+"'>"+pnames[pname]+"</option>");
+            }
+        },
+        error: function () {
+            alert("error");
+            }
+         });
+        };
+
+      //初始化时间控件
+    $(document).ready(function() {
+        //$('#datepicker-example5').Zebra_DatePicker({
+            //direction: ['2012-08-01', '2012-08-12']
+            //});
+            //计算波动率的时间范围
+            $('#datepicker-example7-start').Zebra_DatePicker({
+                direction: ['2016-01-01', '2016-07-12'],
+                pair: $('#datepicker-example7-end')
+            });
+            $('#datepicker-example7-end').Zebra_DatePicker({
+                direction: 1
+            });
+            
+            //设置默认时间
+            $('#datepicker-example7-start').val();
+            $('#datepicker-example7-end').val();
+        });
+ 
     //质量含量
     function cost(){
         var prime_analyse = $("#prime_analyse").val();
+        var SPECIFICATION = $("#SPECIFICATION").val();//钢种,不用转化为大写
+        var OPERATECREW = $("#OPERATECREW").val();//班别
+        var time1 = $('#datepicker-example7-start').val();//计算波动率的时间范围起始时间
+        var time2 = $('#datepicker-example7-end').val();//计算波动率的时间范围终止时间
         console.log(prime_analyse)
         $.ajax({
             type: "post",
             url:  "/m_quality",
-            data: {'prime_cost':prime_analyse},
+            data: {'prime_cost':prime_analyse,'SPECIFICATION':SPECIFICATION,'OPERATECREW':OPERATECREW,'time1':time1,'time2':time2},
             error: function() {
-                alert("错误！！");
+                alert("所选炉次号不在所选筛选条件中！");
             },
             success: function(data) {
               
@@ -116,6 +175,7 @@
         alert(prime_analyse)
 
         var txt = echarts.init(document.getElementById('main3'));
+        $("#cause_txt").empty();//清除文本框内容
         txt.showLoading({
                     text: "追溯结果正在努力计算中...可能需要耗费一定时间..."
                 });
@@ -129,7 +189,7 @@
             success: function(data) {
                 console.log(data)
                 $("#main3").empty()
-                $("#cause_txt").empty();//清除文本框内容
+                
                 $("#cause_txt").append(data.str_all);
                 $("#cause_area").show();
 
@@ -718,6 +778,7 @@
             // loadGrape_chen();
             $("#coloum_div").hide();
             $("#cause_area").hide();
+            loadGrape();
         })
 </script>
 {% endblock %}
