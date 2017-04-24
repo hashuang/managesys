@@ -15,10 +15,15 @@
     <input type="hidden" name="hidden_inform4" id='hidden_inform4'>
     <input type="hidden" name="hidden_inform5" id='hidden_inform5'>
     <p>请输入要选择的炉次号，例如：1634230</p>
-    炉次号：<input type="text" name="prime_analyse" value="{{current_tableno}}" id="prime_analyse">
-    钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="gangzhong_name"></select>
+    炉次号：<input type="text" name="prime_analyse" value="1634230" id="prime_analyse">
+    钢种：<select name="SPECIFICATION" id="SPECIFICATION" class="SPECIFICATION_name">
+            <option value='all' selected = "selected">所有钢种</option>
+            <option value='native'>本钢种</option>
+
+        </select>
     班别：<select name="OPERATECREW" id="OPERATECREW" class="OPERATECREW_name">
-        <option value='blank' selected = "selected"></option>
+        <option value='all' selected = "selected">所有班别</option>
+        <option value='native'>本班别</option>
         <option value='A'>甲班</option>
         <option value='B'>乙班</option>
         <option value='C'>丙班</option>
@@ -157,22 +162,39 @@
                 alert("所选炉次号不在所选筛选条件中！");
             },
             success: function(data) {
-              
-                $("#offset").val(data.result.offset_result[0]);
-                drawBarChart_cost(data.result);
 
-                
-               
-                retrospectfactor_all();
+                if (data.state=='error'){
+                        // alert('当前筛选条件无可分析数据！')
+                        $("#main1").empty();
+                        $("#main1").append("\n\n\n\n注：当前"+heat_no+"炉次不存在！");
+                        $("#main2").empty();
+                        $("#main3").empty();
+
+                    }else{
+
+                    $("#offset").val(data.result.offset_result[0]);
+                    $("#main2").hide();
+                    $("#coloum_div").hide();
+                    drawBarChart_cost(data.result);
+                    if (data.normal=='true'){
+                        $("#main3").empty();
+                        $("#cause_area").hide();
+                    }else{retrospectfactor_all(data.result.str_select);}
+                    }
+                    
+               }
+
                 //炉次号、单炉次分析字段中文名、单炉次分析字段英文名、单炉次质量分析字段实际值、单炉次质量分析字段偏离度、单炉次质量分析字段偏离度定向分析
-            }
+            
         })
-    };   
+    }; 
+
 
      //回归系数因素追溯及其偏离程度
-    function retrospectfactor_all(){
+    function retrospectfactor_all(result){
         var prime_analyse = $("#prime_analyse").val();
-        alert(prime_analyse)
+        var  str_select = result;
+        //alert(prime_analyse)
 
         var txt = echarts.init(document.getElementById('main3'));
         $("#cause_txt").empty();//清除文本框内容
@@ -182,7 +204,7 @@
         $.ajax({
             type: "post",
             url:  "/retrospectfactor_all",
-            data: {'prime_cost':prime_analyse},
+            data: {'prime_cost':prime_analyse,'str_select':str_select},
             error: function() {
                 alert("错误！！");
             },
@@ -482,7 +504,8 @@
                 //mes += '  dataIndex : ' + param.dataIndex+result.xEnglishname[param.dataIndex];
                 fieldname_chinese=result.xname[params.seriesIndex];
                 fieldname_english=result.xEnglishname[params.seriesIndex];
-                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value,result.qualitative_offset_result[params.seriesIndex]);
+                str_select=result.str_select;
+                probability_distribution(fieldname_chinese,fieldname_english,result.offset_result[params.seriesIndex],params.value,result.qualitative_offset_result[params.seriesIndex],str_select);
                 $("#hidden_inform1").val(fieldname_english);//字段英文名
                 $("#hidden_inform2").val(fieldname_chinese);//字段中文名
                 $("#hidden_inform3").val(params.value);//实际值
@@ -498,7 +521,7 @@
     };
     
     //正态分布+概率分布
-    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value,qualitative_offset_result){
+    function probability_distribution(fieldname_chinese,fieldname_english,offset_value,actual_value,qualitative_offset_result,str_select){
         // alert(qualitative_offset_result);
         var field1 = $("#prime_analyse").val();//炉次号
         //var field2 = $("#field2").val();//字段
@@ -515,13 +538,25 @@
             $.ajax({
             type: "post",
             url:  "/probability_distribution",
-            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value,'coloum_number':coloum_number,'qualitative_offset_result':qualitative_offset_result},
+            data: {'heat_no':field1,'fieldname_english':fieldname_english,'fieldname_chinese':fieldname_chinese,'offset_value':offset_value,'actual_value':actual_value,'coloum_number':coloum_number,'qualitative_offset_result':qualitative_offset_result,'str_select':str_select},
             error: function() {
                 alert("404");
             },
             success: function(data) {
-                probability_distribution_picture(data);
-                $("#coloum_div").show();
+
+
+                if(data.state=='error'){
+                    // alert('数据量过少，无法形成统计分布图！');
+                    $("#coloum_div").hide();
+                    $('#main2').empty();
+                    $('#main2').append('数据量过少，无法形成统计分布图！');
+
+                }else{
+                    probability_distribution_picture(data);
+                    $("#coloum_div").show();
+                    $("#main2").show();
+                }
+
 
             }
         })
@@ -778,7 +813,7 @@
             // loadGrape_chen();
             $("#coloum_div").hide();
             $("#cause_area").hide();
-            loadGrape();
+           
         })
 </script>
 {% endblock %}

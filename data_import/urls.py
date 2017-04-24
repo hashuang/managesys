@@ -76,7 +76,7 @@ urlpatterns = [
     url(r'^probability_distribution',qualityzhuanlu.probability_distribution),
     url(r'^m_quality',qualityzhuanlu.cost),
     #单炉次原因追溯
-    url(r'^q_max_influence',qualityzhuanlu.max_influence),
+    #url(r'^q_max_influence',qualityzhuanlu.max_influence),
     url(r'^retrospectfactor_all',qualityzhuanlu.retrospectfactor_all),
     #比较多炉次波动率计算(m_fluc_qulity.html)
     url(r'^w_fluc_quality',hashuang.w_fluc_quality),
