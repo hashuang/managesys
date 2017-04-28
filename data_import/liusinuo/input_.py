@@ -10,8 +10,8 @@
 
 from datetime import datetime
 #=====================【 分 析 模 块 选 项 】==================================
-def select_module(module):
-	
+def select_module(module,module_unit_key):
+	#module_unit = ""
 	if module == 1:
 		module_name = "空间分析"
 		module_unit = "地区"
@@ -23,23 +23,21 @@ def select_module(module):
 		module_unit = "钢种"
 	elif module == 4:
 		module_name = "客户分析"
-		module_unit = select_cust_unit(module)		
+		module_unit = select_cust_unit(module,module_unit_key)		
 	else:
 		print ('ERROR 模块选项 非法输入！')
 
 	return module,module_name,module_unit
 
-def select_cust_unit(module):
+def select_cust_unit(module,module_unit_key):
 	if module == 4:
-		module_unit_key = 0
-		while module_unit_key != 1 and module_unit_key != 2:
-			module_unit_key = int(input("\n\t【客户分析具体选择】\n\t\t1.某一客户按时间分析\n\t\t2.某一客户按钢种分析\n\t >>>"))
-			if module_unit_key == 1:
-				module_unit = "时间"
-			elif module_unit_key == 2:
-				module_unit = "钢种"
-			else:
-				print ("ERROE  客户分析具体选项 非法输入！")
+		if module_unit_key == "1":
+			module_unit = "时间"
+		elif module_unit_key == "2":
+			module_unit = "钢种"
+		else:
+			print ('ERROR 模块客户单位键选项 非法输入！')
+
 	return module_unit
 
 #=====================【 分 析 内 容 选 项 】==================================
@@ -94,6 +92,7 @@ def select_space(module,space,space_detail):
 		
 	space_dict = {}
 	space_name = ""
+	sql_ctry_prov_cty = ""
 	if space == 1:
 		sql_ctry_prov_cty = "country"
 		if module == 1:

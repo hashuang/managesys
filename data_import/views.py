@@ -623,7 +623,8 @@ def space(request):
 										  								request.POST.get('sql_cust'),
 										  								request.POST.get('tradeNo'),
 										  								int(request.POST.get('space')),
-										  								request.POST.get('space_detail')
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
 										  								)
 			rst = []
 			for key in dictionary.keys():
@@ -655,7 +656,9 @@ def time(request):
 										  								request.POST.get('sql_cust'),
 										  								request.POST.get('tradeNo'),
 										  								int(request.POST.get('space')),
-										  								request.POST.get('space_detail'))
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
+										  								)
 			rst = []
 			for key in dictionary.keys():
 				rst.append({'name': key, 'value': dictionary.get(key)})
@@ -686,7 +689,9 @@ def trade(request):
 										  								request.POST.get('sql_cust'),
 										  								request.POST.get('tradeNo'),
 										  								int(request.POST.get('space')),
-										  								request.POST.get('space_detail'))
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
+										  								)
 			rst = []
 			for key in dictionary.keys():
 				rst.append({'name': key, 'value': dictionary.get(key)})
@@ -698,6 +703,40 @@ def trade(request):
 				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
 		except Exception as ex:
 			print(ex)
+
+
+def cust_time(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/cust_time.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
+										  								int(request.POST.get('aspect')),
+										  								int(request.POST.get('dateChoose')),
+										 						 		request.POST.get('sql_date1'),
+										 						 		request.POST.get('sql_date2'),
+										  								request.POST.get('sql_cust'),
+										  								request.POST.get('tradeNo'),
+										  								request.POST.get('space'), #这里去掉了int()
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
+										  								)
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst,
+				                            'module_name': module_name,
+				                            'aspect_name': aspect_name,
+				                            'unite': unite,
+				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
+		except Exception as ex:
+			print(ex)
+
 
 
 #import data_import.liusinuo.update_mysql_space 

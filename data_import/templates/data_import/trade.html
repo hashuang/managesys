@@ -11,6 +11,7 @@
 <h1>销售部分：钢种分析</h1> 
 <h5><a href='/space'>>>>跳转到：空间分析</a></h5>
 <h5><a href='/time'>>>>跳转到：时间分析</a></h5>
+<h5><a href='/cust_time'>>>>跳转到：客户分析</a></h5>
 {% csrf_token %}
 <br>
 <!--<h3> 输入 </h3>-->
@@ -255,6 +256,7 @@ style="visibility: hidden;"
         var showStyle = $ ("#select_showStyle").find("option:selected").val();
         
         var sql_cust = ''
+        var module_unit_key = ''
         var sql_date1_ = document.getElementById("select_date1").value
         sql_date1_1 = sql_date1_.substring(0, 4)
         sql_date1_2 = sql_date1_.substring(5, 7)
@@ -266,16 +268,7 @@ style="visibility: hidden;"
         sql_date2_3 = sql_date2_.substring(8)
         sql_date2 = sql_date2_1 + sql_date2_2 + sql_date2_3
 
-        //若地点选择出错，则报错，否则加载地点细分选项
-        if(space == 0){
-            alert("错误！请选择地点！");
-        }else if ( space == 1 ){
-            var space_name = $ ("#select_space_country").find("option:selected").val();
-        }else if ( space == 2 ){
-            var space_name = $ ("#select_space_province").find("option:selected").val();
-        }else{
-            var space_name = $ ("#select_space_city").find("option:selected").val();
-        }
+
 
         // if(tradeNo == null){
         //     alert("请选择钢种");
@@ -298,6 +291,31 @@ style="visibility: hidden;"
             }                
         }
         tradeNo_count = items.length
+        console.log(tradeNoNoNo.length);
+
+        //若地点选择出错，则报错，否则加载地点细分选项
+        if(space == 0){
+            alert("错误！请选择地点！");
+        }else if ( space == 1 ){
+            if (tradeNoNoNo.length == 0){
+                alert("错误！请选择钢种！"); //判断钢种选择是否正确
+            }else{
+                var space_name = $ ("#select_space_country").find("option:selected").val(); //过后国家
+            }            
+        }else if ( space == 2 ){
+            if (tradeNoNoNo.length == 0){
+                alert("错误！请选择钢种！");
+            }else{
+                var space_name = $ ("#select_space_province").find("option:selected").val();  //省
+            }            
+        }else{
+            if (tradeNoNoNo.length == 0){
+                alert("错误！请选择钢种！");
+            }else{
+                var space_name = $ ("#select_space_city").find("option:selected").val();  //市
+            }
+        }
+        
 
         //读取输入值
         var dateChoose_name = ''
@@ -321,7 +339,7 @@ style="visibility: hidden;"
             dateChoose_name = '时间选择选项输入错误';
         }
 
-        if (space != 0){
+        if (space != 0 && tradeNoNoNo.length != 0){
             var myChart = echarts.init(document.getElementById('main4'));
             myChart.showLoading({
                     text: "图表数据正在努力加载...\n请不要点击其他按钮~"
@@ -331,7 +349,7 @@ style="visibility: hidden;"
         $.ajax({
             type: "post",
             url:  "/time",
-            data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
+            data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
             
             }
         ).done(function(data) {

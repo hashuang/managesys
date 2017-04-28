@@ -109,9 +109,169 @@ def compute_show_by_many_days(dictionary,key_list_day,value_list_day,aspect,key_
 
 	return timeline,timelineValue
 
-def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,space_detail):
+#求 月总值，20日总值，15日总值，7日总值的函数
+def compute_time_dictionaty(dictionary,aspect,rtn_sum_dict,weight_sum_dict):
+	#求取每月数据
+	newDictionary = {}
+	newDictionary_rtn_sum = {}
+	newDictionary_weight_sum = {}
+	monthDictionary = {}
+	monthDictionary_rtn_sum = {}
+	monthDictionary_weight_sum = {}
+	for key in dictionary:
+		#将 20160101 转换成 2016-01-01
+		newKey = str(str(key)[0:4] + "-" + str(key)[4:6] + "-" + str(key)[6:])
+		newDictionary[newKey] = dictionary[key]
+		#获取月数据的 key
+		month_key = str(str(key)[0:4] + "-" + str(key)[4:6])
+		if aspect == 3: #对于退货率，不能直接计算。直接计算结果是不正确的，需要用总的退货重量除以总的销量  
+						# 当出现文字“总销量为0，无法计算退货率！”时，会报错，因为 str 和 int 类型不能相加
+			newDictionary_rtn_sum[newKey] = rtn_sum_dict[key]
+			newDictionary_weight_sum[newKey] = weight_sum_dict[key]
+			#得到总退货重量的和
+			if month_key in monthDictionary_rtn_sum:
+				monthDictionary_rtn_sum[month_key] += rtn_sum_dict[key]
+			else:
+				monthDictionary_rtn_sum[month_key] = rtn_sum_dict[key]
+
+			#得到总销售重量的和
+			if month_key in monthDictionary_weight_sum:
+				monthDictionary_weight_sum[month_key] += weight_sum_dict[key]
+			else:
+				monthDictionary_weight_sum[month_key] = weight_sum_dict[key]
+
+		else: #其他分析方面可以直接相加得出准确结果
+			if month_key in monthDictionary:
+				#monthDictionary[str(str(key)[0:4] + "-" + str(key)[4:6])] += dictionary[key]
+				monthDictionary[month_key] += dictionary[key]
+			else:
+				monthDictionary[month_key] = dictionary[key]
+
+	#对于退货率，不能直接加和得出结果，直接价格得出的结果是错误的，需要用总的退货重量除以总的销量
+	if aspect == 3:
+		for key in monthDictionary_weight_sum:
+			if monthDictionary_weight_sum[key] != 0:
+				monthDictionary[key] = ( monthDictionary_rtn_sum[key] / monthDictionary_weight_sum[key] ) * 100
+				monthDictionary[key] = float(str(monthDictionary[key])[0:8])
+				#print ("总退货率：\t%.5f" % rtn_rate,"%")
+			else:
+				#print ("总退货率：\t总销量为0，无法计算退货率！")
+				monthDictionary[key] = "总销量为0，无法计算退货率！"
+	else:
+		pass
+
+	dictionary2 = {}
+	#dictionaryToList = [(key,dictionary[key]) for key in sorted(dictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+	#将每日数据存入
+	dictionaryToList_Day = [(key,newDictionary[key]) for key in sorted(newDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+	timeline_Day = []
+	timelineValue_Day = []
+	for key,value in dictionaryToList_Day:
+		timeline_Day.append(key)
+		timelineValue_Day.append(value)
+	dictionary2['timeline_Day'] = timeline_Day
+	dictionary2['timelineValue_Day'] = timelineValue_Day
+	#print (dictionary2)
+
+	#将每月数据存入
+	dictionaryToList_Month = [(key,monthDictionary[key]) for key in sorted(monthDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+	timeline_Month = []
+	timelineValue_Month = []
+	for key,value in dictionaryToList_Month:
+		timeline_Month.append(key)
+		timelineValue_Month.append(value)
+	dictionary2['timeline_Month'] = timeline_Month
+	dictionary2['timelineValue_Month'] = timelineValue_Month
+	#print (dictionary2)
+
+	#初始化
+	dictionary_rtn = {}
+	dictionary_rtn['timelineValue_rtn_sum'] = 0
+	dictionary_rtn['timelineValue_weight_sum'] = 0
+	if aspect == 3:
+		#将每日退货量存入新dictionary
+		dictionaryToList_rtn_sum = [(key,newDictionary_rtn_sum[key]) for key in sorted(newDictionary_rtn_sum.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+		timeline_rtn_sum = []
+		timelineValue_rtn_sum = []
+		for key,value in dictionaryToList_rtn_sum:
+			timeline_rtn_sum.append(key)
+			timelineValue_rtn_sum.append(value)
+		dictionary_rtn['timeline_rtn_sum'] = timeline_rtn_sum
+		dictionary_rtn['timelineValue_rtn_sum'] = timelineValue_rtn_sum
+
+		#将每日销量存入新dictionary
+		dictionaryToList_weight_sum = [(key,newDictionary_weight_sum[key]) for key in sorted(newDictionary_weight_sum.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
+		timeline_weight_sum = []
+		timelineValue_weight_sum = []
+		for key,value in dictionaryToList_weight_sum:
+			timeline_weight_sum.append(key)
+			timelineValue_weight_sum.append(value)
+		dictionary_rtn['timeline_weight_sum'] = timeline_weight_sum
+		dictionary_rtn['timelineValue_weight_sum'] = timelineValue_weight_sum
+	else:
+		pass
+
+	# 求取每7日数据
+	timeline_Week,timelineValue_Week = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],7)
+
+	dictionary2['timeline_Week'] = timeline_Week
+	dictionary2['timelineValue_Week'] = timelineValue_Week
+
+	# 求取每15日数据
+	timeline_15Day,timelineValue_15Day = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],15)
+	dictionary2['timeline_15Day'] = timeline_15Day
+	dictionary2['timelineValue_15Day'] = timelineValue_15Day
+
+	# 求取每20日数据
+	timeline_20Day,timelineValue_20Day = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],20)
+	dictionary2['timeline_20Day'] = timeline_20Day
+	dictionary2['timelineValue_20Day'] = timelineValue_20Day
+
+	# 求取每7日数据
+	# conut_day = len(dictionary)
+	# #conut_week = math.ceil(conut_day / 7) #向上取整
+	# i = conut_day
+	# j = 0
+	# timeline_Week = []
+	# timelineValue_Week = []
+	# while i > 0:
+	# 	b= i-7
+	# 	if b < 0 and j == 0: #最前面那一周首日应大于零
+	# 		j = j + 1  #只能重置一次
+	# 		b = 0
+	# 	week_value,week_key = compute_value_and_key (dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],b,i,aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],7)
+	# 	# # 求 value
+	# 	# list_week_key = dictionary2['timeline_Day'][b:i] #切片求周的 键
+	# 	# list_week_value = dictionary2['timelineValue_Day'][b:i] #切片求周的 值
+	# 	# if aspect != 3: #其他情况直接加和即可
+	# 	# 	week_value = reduce(add, list_week_value) #周值加和
+	# 	# else: #退货率需要重新计算
+	# 	# 	list_week_Value_rtn_sum = dictionary_rtn['timelineValue_rtn_sum'][b:i] #切片求周的 退货值
+	# 	# 	list_week_Value_weight_sum = dictionary_rtn['timelineValue_weight_sum'][b:i] #切片求周的 销量值
+	# 	# 	week_Value_rtn_sum = reduce(add, list_week_Value_rtn_sum)
+	# 	# 	week_Value_weight_sum = reduce(add, list_week_Value_weight_sum)
+	# 	# 	if week_Value_weight_sum != 0:
+	# 	# 		week_value = ( week_Value_rtn_sum / week_Value_weight_sum ) * 100
+	# 	# 		week_value = float(str(week_value)[0:8])
+	# 	# 	else:
+	# 	# 		week_value = "总销量为0，无法计算退货率！"
+	# 	# # 求 key
+	# 	# if j == 0: #对于整周，正常计算
+	# 	# 	week_key = str(list_week_key[0]) + " 至 " + str(list_week_key[6]) #key
+	# 	# else: #对于最前面那一周，截止日期值的索引为 i-1
+	# 	# 	if i != 1: #如果最前面的一周不是只有一天，那么就是 key 一个时间段
+	# 	# 		week_key = str(list_week_key[0]) + " 至 " + str(list_week_key[i-1]) #key
+	# 	# 	else: #如果最起那面的一周只有一天，那么就是一个日期
+	# 	# 		week_key = str(list_week_key[0])
+	# 	timeline_Week.insert(0,week_key) 
+	# 	timelineValue_Week.insert(0,week_value) 
+	# 	i = i-7 #取前七天
+
+	return dictionary2
+
+def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,space_detail,module_unit_key):
 	#========================【 输 入 】===========================
-	module,module_name,module_unit = input_.select_module(module) #模块选择 
+	module,module_name,module_unit = input_.select_module(module,module_unit_key) #模块选择 
 	aspect,aspect_name,unite = input_.select_aspect(aspect) #分析内容选择
 	dateChoose = input_.select_datechoose(dateChoose) #时间选项选择
 	sql_date1,sql_date2 = input_.select_date(sql_date1,sql_date2) #时间选择
@@ -127,6 +287,8 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 	else:
 		tradeNo_list,tradeNoList = input_.select_trade(tradeNo) #钢种选择
 		space,sql_ctry_prov_cty,space_name,space_dict = input_.select_space(module,space,space_detail) #地点选择
+
+
 
 
 	#========================【 分 析 】============================
@@ -251,161 +413,9 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 		# 【 结 论 输 出 】
 		conclusionPrint = conclusion.final_conclusion(sql_date1,sql_date2,tradeNoList,space_name,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,module)
 		#print (dictionary)
-		#求取每月数据
-		newDictionary = {}
-		newDictionary_rtn_sum = {}
-		newDictionary_weight_sum = {}
-		monthDictionary = {}
-		monthDictionary_rtn_sum = {}
-		monthDictionary_weight_sum = {}
-		for key in dictionary:
-			#将 20160101 转换成 2016-01-01
-			newKey = str(str(key)[0:4] + "-" + str(key)[4:6] + "-" + str(key)[6:])
-			newDictionary[newKey] = dictionary[key]
-			#获取月数据的 key
-			month_key = str(str(key)[0:4] + "-" + str(key)[4:6])
-			if aspect == 3: #对于退货率，不能直接计算。直接计算结果是不正确的，需要用总的退货重量除以总的销量  
-							# 当出现文字“总销量为0，无法计算退货率！”时，会报错，因为 str 和 int 类型不能相加
-				newDictionary_rtn_sum[newKey] = rtn_sum_dict[key]
-				newDictionary_weight_sum[newKey] = weight_sum_dict[key]
-				#得到总退货重量的和
-				if month_key in monthDictionary_rtn_sum:
-					monthDictionary_rtn_sum[month_key] += rtn_sum_dict[key]
-				else:
-					monthDictionary_rtn_sum[month_key] = rtn_sum_dict[key]
-
-				#得到总销售重量的和
-				if month_key in monthDictionary_weight_sum:
-					monthDictionary_weight_sum[month_key] += weight_sum_dict[key]
-				else:
-					monthDictionary_weight_sum[month_key] = weight_sum_dict[key]
-
-			else: #其他分析方面可以直接相加得出准确结果
-				if month_key in monthDictionary:
-					#monthDictionary[str(str(key)[0:4] + "-" + str(key)[4:6])] += dictionary[key]
-					monthDictionary[month_key] += dictionary[key]
-				else:
-					monthDictionary[month_key] = dictionary[key]
-
-		#对于退货率，不能直接加和得出结果，直接价格得出的结果是错误的，需要用总的退货重量除以总的销量
-		if aspect == 3:
-			for key in monthDictionary_weight_sum:
-				if monthDictionary_weight_sum[key] != 0:
-					monthDictionary[key] = ( monthDictionary_rtn_sum[key] / monthDictionary_weight_sum[key] ) * 100
-					monthDictionary[key] = float(str(monthDictionary[key])[0:8])
-					#print ("总退货率：\t%.5f" % rtn_rate,"%")
-				else:
-					#print ("总退货率：\t总销量为0，无法计算退货率！")
-					monthDictionary[key] = "总销量为0，无法计算退货率！"
-		else:
-			pass
 
 		dictionary2 = {}
-		#dictionaryToList = [(key,dictionary[key]) for key in sorted(dictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
-		#将每日数据存入
-		dictionaryToList_Day = [(key,newDictionary[key]) for key in sorted(newDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
-		timeline_Day = []
-		timelineValue_Day = []
-		for key,value in dictionaryToList_Day:
-			timeline_Day.append(key)
-			timelineValue_Day.append(value)
-		dictionary2['timeline_Day'] = timeline_Day
-		dictionary2['timelineValue_Day'] = timelineValue_Day
-		#print (dictionary2)
-
-		#将每月数据存入
-		dictionaryToList_Month = [(key,monthDictionary[key]) for key in sorted(monthDictionary.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
-		timeline_Month = []
-		timelineValue_Month = []
-		for key,value in dictionaryToList_Month:
-			timeline_Month.append(key)
-			timelineValue_Month.append(value)
-		dictionary2['timeline_Month'] = timeline_Month
-		dictionary2['timelineValue_Month'] = timelineValue_Month
-		#print (dictionary2)
-
-		#初始化
-		dictionary_rtn = {}
-		dictionary_rtn['timelineValue_rtn_sum'] = 0
-		dictionary_rtn['timelineValue_weight_sum'] = 0
-		if aspect == 3:
-			#将每日退货量存入新dictionary
-			dictionaryToList_rtn_sum = [(key,newDictionary_rtn_sum[key]) for key in sorted(newDictionary_rtn_sum.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
-			timeline_rtn_sum = []
-			timelineValue_rtn_sum = []
-			for key,value in dictionaryToList_rtn_sum:
-				timeline_rtn_sum.append(key)
-				timelineValue_rtn_sum.append(value)
-			dictionary_rtn['timeline_rtn_sum'] = timeline_rtn_sum
-			dictionary_rtn['timelineValue_rtn_sum'] = timelineValue_rtn_sum
-
-			#将每日销量存入新dictionary
-			dictionaryToList_weight_sum = [(key,newDictionary_weight_sum[key]) for key in sorted(newDictionary_weight_sum.keys())] #按key的大小排序，得到 [(key,value),(key,value),...... ] 组成的list
-			timeline_weight_sum = []
-			timelineValue_weight_sum = []
-			for key,value in dictionaryToList_weight_sum:
-				timeline_weight_sum.append(key)
-				timelineValue_weight_sum.append(value)
-			dictionary_rtn['timeline_weight_sum'] = timeline_weight_sum
-			dictionary_rtn['timelineValue_weight_sum'] = timelineValue_weight_sum
-		else:
-			pass
-
-		# 求取每7日数据
-		timeline_Week,timelineValue_Week = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],7)
-
-		dictionary2['timeline_Week'] = timeline_Week
-		dictionary2['timelineValue_Week'] = timelineValue_Week
-
-		# 求取每15日数据
-		timeline_15Day,timelineValue_15Day = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],15)
-		dictionary2['timeline_15Day'] = timeline_15Day
-		dictionary2['timelineValue_15Day'] = timelineValue_15Day
-
-		# 求取每20日数据
-		timeline_20Day,timelineValue_20Day = compute_show_by_many_days(dictionary,dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],20)
-		dictionary2['timeline_20Day'] = timeline_20Day
-		dictionary2['timelineValue_20Day'] = timelineValue_20Day
-
-		# 求取每7日数据
-		# conut_day = len(dictionary)
-		# #conut_week = math.ceil(conut_day / 7) #向上取整
-		# i = conut_day
-		# j = 0
-		# timeline_Week = []
-		# timelineValue_Week = []
-		# while i > 0:
-		# 	b= i-7
-		# 	if b < 0 and j == 0: #最前面那一周首日应大于零
-		# 		j = j + 1  #只能重置一次
-		# 		b = 0
-		# 	week_value,week_key = compute_value_and_key (dictionary2['timeline_Day'],dictionary2['timelineValue_Day'],b,i,aspect,dictionary_rtn['timelineValue_rtn_sum'],dictionary_rtn['timelineValue_weight_sum'],7)
-		# 	# # 求 value
-		# 	# list_week_key = dictionary2['timeline_Day'][b:i] #切片求周的 键
-		# 	# list_week_value = dictionary2['timelineValue_Day'][b:i] #切片求周的 值
-		# 	# if aspect != 3: #其他情况直接加和即可
-		# 	# 	week_value = reduce(add, list_week_value) #周值加和
-		# 	# else: #退货率需要重新计算
-		# 	# 	list_week_Value_rtn_sum = dictionary_rtn['timelineValue_rtn_sum'][b:i] #切片求周的 退货值
-		# 	# 	list_week_Value_weight_sum = dictionary_rtn['timelineValue_weight_sum'][b:i] #切片求周的 销量值
-		# 	# 	week_Value_rtn_sum = reduce(add, list_week_Value_rtn_sum)
-		# 	# 	week_Value_weight_sum = reduce(add, list_week_Value_weight_sum)
-		# 	# 	if week_Value_weight_sum != 0:
-		# 	# 		week_value = ( week_Value_rtn_sum / week_Value_weight_sum ) * 100
-		# 	# 		week_value = float(str(week_value)[0:8])
-		# 	# 	else:
-		# 	# 		week_value = "总销量为0，无法计算退货率！"
-		# 	# # 求 key
-		# 	# if j == 0: #对于整周，正常计算
-		# 	# 	week_key = str(list_week_key[0]) + " 至 " + str(list_week_key[6]) #key
-		# 	# else: #对于最前面那一周，截止日期值的索引为 i-1
-		# 	# 	if i != 1: #如果最前面的一周不是只有一天，那么就是 key 一个时间段
-		# 	# 		week_key = str(list_week_key[0]) + " 至 " + str(list_week_key[i-1]) #key
-		# 	# 	else: #如果最起那面的一周只有一天，那么就是一个日期
-		# 	# 		week_key = str(list_week_key[0])
-		# 	timeline_Week.insert(0,week_key) 
-		# 	timelineValue_Week.insert(0,week_value) 
-		# 	i = i-7 #取前七天
+		dictionary2 = compute_time_dictionaty(dictionary,aspect,rtn_sum_dict,weight_sum_dict)
 
 		return dictionary2,conclusionPrint,module_name,aspect_name,unite,maxValue
 
@@ -423,11 +433,24 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 		if module_unit == "时间":
 			#得出每一天的，单一客户时间序列
 			cust_dict,passOrNot,tradeNo_rtn_reason_print = sql_customer.cust_sql(sql_date1,sql_date2,tradeNo_list,aspect_name,dateChoose,aspect,sql_cust)
-			dictionary = cust_dict
+			if aspect == 3: #如果是对退货率的分析，为了得出正确结果，需要将每日的总销量与总退货重量存储起来
+				#时间分析的退货率这一项，每次传回的结果是包含三个 dict 的一个 dict ，需要将他们分别提取出来
+				dictionary = cust_dict['cust_dict']
+				rtn_sum_dict = cust_dict['rtn_sum_dict']
+				weight_sum_dict = cust_dict['weight_sum_dict']
+			else:
+				dictionary = cust_dict
+				# 如果不选择退货率，则不会存在后面两个dict，报错，因此创造两个空字典
+				rtn_sum_dict = {}
+				weight_sum_dict = {}
 			# 【 结 论 总 结 】 最大、最小、平均、比例等
 			maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason = max_min_average.max_min_ave_sum(dictionary,aspect,module_unit)
 			# 【 结 论 输 出 】
 			conclusionPrint = conclusion.final_conclusion_cust(sql_date1,sql_date2,tradeNoList,sql_cust,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,module)
+			
+			dictionary2 = {}
+			dictionary2 = compute_time_dictionaty(dictionary,aspect,rtn_sum_dict,weight_sum_dict)
+			return dictionary2,conclusionPrint,module_name,aspect_name,unite,maxValue
 		elif module_unit == "钢种":
 			cust_dict,passOrNot,tradeNo_rtn_reason_print = sql_customer2.cust_sql(sql_date1,sql_date2,aspect_name,dateChoose,aspect,sql_cust)
 			dictionary = cust_dict
@@ -435,9 +458,10 @@ def main(module,aspect,dateChoose,sql_date1,sql_date2,sql_cust,tradeNo,space,spa
 			maxValue,maxKey,minValue,minKey,noMin,sumValue,averageValue,printMax,maxRate,maxRate100,maxRateReason = max_min_average.max_min_ave_sum(dictionary,aspect,module_unit)
 			# 【 结 论 输 出 】
 			conclusionPrint = conclusion.final_conclusion_cust2(sql_date1,sql_date2,sql_cust,aspect_name,printMax,maxRateReason,sumValue,unite,averageValue,maxKey,maxValue,minKey,minValue,maxRate100,aspect,passOrNot,tradeNo_rtn_reason_print,module_unit,noMin,module)
+			return dictionary,conclusionPrint,module_name,aspect_name,unite,maxValue
 		else:
 			pass
-		return dictionary,conclusionPrint,module_name,aspect_name,unite,maxValue
+			return dictionary,conclusionPrint,module_name,aspect_name,unite,maxValue
 
 
 

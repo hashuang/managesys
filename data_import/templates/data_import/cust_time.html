@@ -8,20 +8,25 @@
 {% block content %}
 
 
-<h1>销售部分：时间分析</h1> 
+<h1>销售部分：客户分析</h1> 
 <h5><a href='/space'>>>>跳转到：空间分析</a></h5>
+<h5><a href='/time'>>>>跳转到：时间分析</a></h5>
 <h5><a href='/trade'>>>>跳转到：钢种分析</a></h5>
-<h5><a href='/cust_time'>>>>跳转到：客户分析</a></h5>
 {% csrf_token %}
 <br>
 <!--<h3> 输入 </h3>-->
 <div>
     分析模块:
     <select name="select_module" id="select_module" class="xla_1">
-        <!--<option value="1">空间分析</option>-->
+<!--         <option value="1">空间分析</option>
         <option value="2">时间分析</option>
-        <!--<option value="3">钢种分析</option>
-        <option value="4">客户分析</option>-->
+        <option value="3">钢种分析</option> -->
+        <option value="4">客户分析</option>
+    </select>
+    子模块:
+    <select name="select_module_unit_key" id="select_module_unit_key" class="xla_2">
+        <option value=1>某客户按时间分析</option>
+<!--         <option value=2>某客户按钢种分析</option> -->
     </select>
     分析内容:
     <select name="select_aspect" id="select_aspect" class="xla_2">
@@ -58,90 +63,11 @@
 </div>
 <br>
 <div>
-    地点范围:
-    <select name="select_space" id="select_space" class="xla_4" value = '中国范围内'>
-        <option value="0" selected >--请选择--</option>
-        <option value="1">世界范围内</option>
-        <option value="2">中国范围内</option>
-        <option value="3">山东省内</option>
-    </select>
-    <select name="select_space_country" id="select_space_country" class="xla_5"   style="display:none;" value = '中国'>
-        <option value="中国">中国</option>
-        <option value="美国">美国</option>
-        <option value="马来西亚">马来西亚</option>
-        <option value="韩国">韩国</option>
-        <option value="英国">英国</option>
-        <option value="日本">日本</option>
-        <option value="泰国">泰国</option>
-        <option value="沙特">沙特</option>
-        <option value="新西兰">新西兰</option>
-        <option value="新加坡">新加坡</option>
-        <option value="土耳其">土耳其</option>
-        <option value="墨西哥">墨西哥</option>
-        <option value="印度">印度</option>
-        <option value="印尼">印尼</option>
-        <option value="其他">其他</option>
-    </select>
-    <select name="select_space_province" id="select_space_province" class="xla_6"  style="display:none;" value = '江苏'>
-        <option value="江苏">江苏</option>
-        <option value="山东">山东</option>
-        <option value="黑龙江">黑龙江</option>
-        <option value="河北">河北</option>
-        <option value="辽宁">辽宁</option>
-        <option value="吉林">吉林</option>
-        <option value="甘肃">甘肃</option>
-        <option value="青海">青海</option>
-        <option value="河南">河南</option>
-        <option value="湖北">湖北</option>
-        <option value="湖南">湖南</option>
-        <option value="江西">江西</option>
-        <option value="浙江">浙江</option>
-        <option value="广东">广东</option>
-        <option value="云南">云南</option>
-        <option value="福建">福建</option>
-        <option value="台湾">台湾</option>
-        <option value="海南">海南</option>
-        <option value="山西">山西</option>
-        <option value="四川">四川</option>
-        <option value="陕西">陕西</option>
-        <option value="贵州">贵州</option>
-        <option value="安徽">安徽</option>
-        <option value="重庆">重庆</option>
-        <option value="北京">北京</option>
-        <option value="上海">上海</option>
-        <option value="天津">天津</option>
-        <option value="广西">广西</option>
-        <option value="内蒙古">内蒙古</option>
-        <option value="西藏">西藏</option>
-        <option value="新疆">新疆</option>
-        <option value="宁夏">宁夏</option>
-        <option value="澳门">澳门</option>
-        <option value="香港">香港</option>
-
-    </select>
-    <select name="select_space_city" id="select_space_city" class="xla_7" style="display:none;" value = '青岛'>
-        <option value="青岛">青岛</option>
-        <option value="烟台">烟台</option>
-        <option value="威海">威海</option>
-        <option value="临沂">临沂</option>
-        <option value="潍坊">潍坊</option>
-        <option value="菏泽">菏泽</option>
-        <option value="济宁">济宁</option>
-        <option value="德州">德州</option>
-        <option value="滨州">滨州</option>
-        <option value="聊城">聊城</option>
-        <option value="东营">东营</option>
-        <option value="济南">济南</option>
-        <option value="泰安">泰安</option>
-        <option value="日照">日照</option>
-        <option value="淄博">淄博</option>
-        <option value="枣庄">枣庄</option>
-        <option value="莱芜">莱芜</option>
-
-    </select><br>
+    客户编号
+    <input type="text" name="select_cust" id="select_cust" value=1132 >
+   
 </div>
 <br>
-
 <div>
     钢种选择:
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45>45
@@ -153,7 +79,6 @@
     <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=ER50-6E>ER50-6E
 </div>
 <br>
-
 <div>
 <button id="btnDrawChart" >分析结果绘图</button>
 </div>
@@ -177,21 +102,6 @@
 <script type="text/javascript" src="/static/data_import/js/loadDateSelect.js"></script>
 <script type="text/javascript">
 
-    select_space.onchange = function(){  //控制在选择地点范围后，选择细分的地点名称
-        if(this.value=='1'){ 
-            document.getElementById("select_space_country").style.display = 'inline';
-            document.getElementById("select_space_province").style.display = 'none';
-            document.getElementById("select_space_city").style.display = 'none';
-        }else if (this.value=='2'){ 
-            document.getElementById("select_space_province").style.display = 'inline';
-            document.getElementById("select_space_country").style.display = 'none';
-            document.getElementById("select_space_city").style.display = 'none';
-        } else { 
-            document.getElementById("select_space_city").style.display = 'inline';
-            document.getElementById("select_space_province").style.display = 'none';
-            document.getElementById("select_space_country").style.display = 'none';
-        } 
-    }
 
     var data_save = {
         result: null,
@@ -205,7 +115,7 @@
         dateChoose_name: null,
         space_name: null,
         showStyle: null,
-        sql_cust: null
+        sql_cust:null
     }
  
     select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
@@ -216,35 +126,27 @@
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
         var module = $ ("#select_module").find("option:selected").val();
+        var module_unit_key = $ ("#select_module_unit_key").find("option:selected").val();
         var aspect = $ ("#select_aspect").find("option:selected").val();
         var dateChoose = $ ("#select_time_choose").find("option:selected").val();
-        var space = $ ("#select_space").find("option:selected").val();
+        var space = "";
+        var space_name = "";
         var tradeNo = $ ("#select_trade").find("option:selected").val();
         var showStyle = $ ("#select_showStyle").find("option:selected").val();
-        
-        var sql_cust = ''
-        var module_unit_key = ''
-        var sql_date1_ = document.getElementById("select_date1").value
-        sql_date1_1 = sql_date1_.substring(0, 4)
-        sql_date1_2 = sql_date1_.substring(5, 7)
-        sql_date1_3 = sql_date1_.substring(8)
-        sql_date1 = sql_date1_1 + sql_date1_2 + sql_date1_3 
-        var sql_date2_ = document.getElementById("select_date2").value
-        sql_date2_1 = sql_date2_.substring(0, 4)
-        sql_date2_2 = sql_date2_.substring(5, 7)
-        sql_date2_3 = sql_date2_.substring(8)
-        sql_date2 = sql_date2_1 + sql_date2_2 + sql_date2_3
+        var sql_cust =  $ ("#select_cust").val();
+        console.log(sql_cust);
+        var sql_date1_ = document.getElementById("select_date1").value;
+        sql_date1_1 = sql_date1_.substring(0, 4);
+        sql_date1_2 = sql_date1_.substring(5, 7);
+        sql_date1_3 = sql_date1_.substring(8);
+        sql_date1 = sql_date1_1 + sql_date1_2 + sql_date1_3 ;
+        var sql_date2_ = document.getElementById("select_date2").value;
+        sql_date2_1 = sql_date2_.substring(0, 4);
+        sql_date2_2 = sql_date2_.substring(5, 7);
+        sql_date2_3 = sql_date2_.substring(8);
+        sql_date2 = sql_date2_1 + sql_date2_2 + sql_date2_3;
 
-        //若地点选择出错，则报错，否则加载地点细分选项
-        if(space == 0){
-            alert("错误！请选择地点！");
-        }else if ( space == 1 ){
-            var space_name = $ ("#select_space_country").find("option:selected").val();
-        }else if ( space == 2 ){
-            var space_name = $ ("#select_space_province").find("option:selected").val();
-        }else{
-            var space_name = $ ("#select_space_city").find("option:selected").val();
-        }
+
 
         //将所选钢种加到list中
         var arr = new Array();
@@ -284,17 +186,16 @@
             dateChoose_name = '时间选择选项输入错误';
         }
 
-        if (space != 0){
-            var myChart = echarts.init(document.getElementById('main4'));
-            myChart.showLoading({
+
+        var myChart = echarts.init(document.getElementById('main4'));
+        myChart.showLoading({
                     text: "图表数据正在努力加载...\n请不要点击其他按钮~"
                 });
-        }
-        
+               
         
         $.ajax({
             type: "post",
-            url:  "/time",
+            url:  "/cust_time",
             data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
             
             }

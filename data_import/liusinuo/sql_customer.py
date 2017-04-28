@@ -46,6 +46,8 @@ def cust_sql(sql_date1,sql_date2,tradeNo_list,aspect_name,dateChoose,aspect,sql_
 	i = 0
 
 	cust_dict = {}
+	rtn_sum_dict = {}
+	weight_sum_dict ={}
 	passOrNot = 0
 	tradeNo_rtn_reason_print = []
 	
@@ -154,24 +156,22 @@ def cust_sql(sql_date1,sql_date2,tradeNo_list,aspect_name,dateChoose,aspect,sql_
 				for tradeNo_rtn in tradeNo_rtn_list:
 					if tradeNo_rtn[0] == tradeNo: #如果订单中有这个钢种
 						rtn_sum += tradeNo_rtn[1] #重量求和
-						print (rtn_sum)
 					else:
 						pass
 			if weight_sum != 0:
 				rtn_rate = ( rtn_sum / weight_sum ) * 100
-				#print (rtn_rate)
 				rtn_rate = float(str(rtn_rate)[0:8])
-				#print (rtn_sum)
-				#print (weight_sum)
-				#print (rtn_rate)
-				print ("总退货率：\t%s%.5f" % (sql_date,rtn_rate),"%")
+				print (sql_date,"：\t%s%.5f" % (sql_date,rtn_rate),"%")
 			else:
-				print ("总退货率：\t总销量为0，无法计算退货率！")
+				print (sql_date,"：\t总销量为0，无法计算退货率！")
 				rtn_rate = "总销量为0，无法计算退货率！"
 			#tradeNo_rtn_rsn_list = conn_mysql.select(sql_rtn_reason)
 			#print ("退货原因：\t",tradeNo_rtn_rsn_list)
 			#print ("\n")
 			cust_dict[sql_date] = rtn_rate
+			#每日的退货重量与总重量的结果存储起来
+			rtn_sum_dict[sql_date] = rtn_sum  #每日退货重量
+			weight_sum_dict[sql_date] = weight_sum  #每日总销量
 		else:
 			count = 0
 			tradeNo_rtn_reason_count_list = conn_mysql.select(sql_rtn_reason_count)
@@ -200,7 +200,20 @@ def cust_sql(sql_date1,sql_date2,tradeNo_list,aspect_name,dateChoose,aspect,sql_
 		pass
 	#print (tradeNo_rtn_reason_print)
 	#print (passOrNot)
-	return cust_dict,passOrNot,tradeNo_rtn_reason_print
+	#return cust_dict,passOrNot,tradeNo_rtn_reason_print
+
+
+	#如果是退货率的话，需要存储每日的退货量与总销量，以保证后续计算结果正确
+	if aspect == 3:
+		cust_dict_rtn = {} #将全部结果存储到同一个dictionary中
+		cust_dict_rtn['cust_dict'] = cust_dict #最原始得到的退货率
+		cust_dict_rtn['rtn_sum_dict'] = rtn_sum_dict #退货重量
+		cust_dict_rtn['weight_sum_dict'] = weight_sum_dict #总销量
+		#print (cust_dict_rtn)
+		return cust_dict_rtn,passOrNot,tradeNo_rtn_reason_print
+	else:
+		return cust_dict,passOrNot,tradeNo_rtn_reason_print
 	#return sql_wgt,sql_amt,sql_rtn,sql_rtn_reason,sql_rtn_reason_count
+
 
 
