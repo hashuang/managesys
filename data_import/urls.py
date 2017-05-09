@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^time',views.time),
     url(r'^trade',views.trade),
     url(r'^cust_time',views.cust_time),
+    url(r'^cust_trade',views.cust_trade),
     url(r'^liusinuo',views.space),
     #钢种自动加载
     url(r'^GetTradeNo',views.getAllTradeNo_time),

@@ -9,12 +9,13 @@
 
 
 <h1>销售部分：钢种分析</h1> 
-<h5><a href='/space'>>>>跳转到：空间分析</a></h5>
-<h5><a href='/time'>>>>跳转到：时间分析</a></h5>
-<h5><a href='/cust_time'>>>>跳转到：客户分析</a></h5>
+<a href='/space'>>>>跳转到：空间分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
+<a href='/cust_trade'>>>>跳转到：客户分析（按钢种）</a>
 {% csrf_token %}
 <br>
-<!--<h3> 输入 </h3>-->
+<br>
 <div>
     分析模块:
     <select name="select_module" id="select_module" class="xla_1">
@@ -229,15 +230,16 @@ style="visibility: hidden;"
         sql_date2_: null,
         dateChoose_name: null,
         space_name: null,
-        showStyle: null
+        showStyle: null,
+        sql_cust:null
     }
 
     select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
         //var showStyle = $ ("#select_showStyle").find("option:selected").val();
         if (this.value == 1){
-             drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+             drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.sql_cust);
         }else{
-             drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name);
+             drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.sql_cust);
         }
        
     }
@@ -366,10 +368,11 @@ style="visibility: hidden;"
             data_save.dateChoose_name = dateChoose_name;
             data_save.space_name = space_name;
             data_save.showStyle = showStyle;
+            data_save.sql_cust = sql_cust;
             if ( showStyle == 1 ){
-                drawpie(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
+                drawpie(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
             }else {
-                drawfunnel(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name);
+                drawfunnel(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
             }
             
             console.log(tradeNoNoNo)

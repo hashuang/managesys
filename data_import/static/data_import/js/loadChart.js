@@ -406,7 +406,7 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
         timelineValue = timelineValue_20Day;
     }
 
-    if (module_name == "时间分析"){
+    if (module_name == "钢种分析"){
         title = module_name + '——' + aspect_name + '（' + space_name + '）';
         subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
     }else{
@@ -481,7 +481,7 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
 
 
 //钢种分析饼图 (Echarts 2)
-function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,sql_cust){
 
     var myChart = echarts.init(document.getElementById('main4'));
     console.log(data);
@@ -489,11 +489,18 @@ function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,s
     //console.log(data[0]);
     //console.log(data[0].name);
     //console.log(data[0].value);
+    if (module_name == "钢种分析"){
+        title = module_name + '——' + aspect_name + '（' + space_name + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+    }else{
+        title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+    }
     
     option = {
     title : {
-        text: module_name + '——' + aspect_name + '（' + space_name + '）',
-        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        text: title,
+        subtext: subtext,
         x:'center'
     },
     tooltip : {
@@ -530,7 +537,7 @@ function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,s
 
 
 //钢种分析漏斗图 (Echarts 2)
-function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,sql_cust){
 
     var myChart = echarts.init(document.getElementById('main4'));
     console.log(data);
@@ -538,11 +545,18 @@ function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date
     //console.log(data[0]);
     //console.log(data[0].name);
     //console.log(data[0].value);
+    if (module_name == "时间分析"){
+        title = module_name + '——' + aspect_name + '（' + space_name + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+    }else{
+        title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+    }
     
     option = {
     title : {
-        text: module_name + '——' + aspect_name + '（' + space_name + '）',
-        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        text: title,
+        subtext: subtext,
         x:'center'
     },
     tooltip : {

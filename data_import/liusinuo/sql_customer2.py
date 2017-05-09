@@ -94,6 +94,7 @@ def cust_sql(sql_date1,sql_date2,aspect_name,dateChoose,aspect,sql_cust):
 		tradeNo_wgt_list = conn_mysql.select(sql_wgt)
 		tradeNo_rtn_list = conn_mysql.select(sql_rtn)
 		rtn_rate = 0
+		weight_tradeNo = 0
 		
 		for tradeNo_rtn in tradeNo_rtn_list: #求总退货
 			rtn_readeNo = tradeNo_rtn[1]  
