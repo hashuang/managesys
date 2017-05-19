@@ -162,16 +162,19 @@
 <br>
 <div>
    折线图展示方式： 
-    <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '月' style="display:inline;">
+    <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '3' style="display:inline;">
         <option value="1">月总值</option>
         <option value="5">20日总值</option>
         <option value="4">15日总值</option>
         <option value="2">7日总值</option>
         <option value="3">单日总值</option>
     </select>
+    指数平滑移动平均值的周期：
+    <input type="text" onkeyup="value=value.replace(/\D/g,'')" name="input_N" id="input_N" value = 6>
 </div>
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>
+<div id="main6" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
 <textarea id="txt" style="width: 800px;height:100px;"></textarea>
 </div>
@@ -207,13 +210,29 @@
         dateChoose_name: null,
         space_name: null,
         showStyle: null,
-        sql_cust: null
+        sql_cust: null,
+        N: null
     }
  
     select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
         //var showStyle = $ ("#select_showStyle").find("option:selected").val();
-        drawTimeLineBar(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value,data_save.sql_cust);
+        //drawTimeLineBar(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value,data_save.sql_cust);
+        drawTimeLineBar_average(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value,data_save.sql_cust,data_save.N);
+        data_save.showStyle = this.value;
     }
+
+    input_N.oninput = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
+        drawTimeLineBar_average(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.showStyle,data_save.sql_cust,this.value);
+        data_save.N = this.value;
+    }
+
+    // document.getElementById('#input_N').attachEvent('onpropertychange',function(o){   
+    //     if(o.propertyName!='value')return;  //不是value改变不执行下面的操作   
+    //     //.......函数处理   
+    //     drawTimeLineBar_average(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.showStyle,data_save.sql_cust,this.value);
+
+    // });   
+
 
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
@@ -223,6 +242,8 @@
         var space = $ ("#select_space").find("option:selected").val();
         var tradeNo = $ ("#select_trade").find("option:selected").val();
         var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        var N = $("#input_N").val();  
+        console.log(N);
         
         var sql_cust = ''
         var module_unit_key = ''
@@ -315,7 +336,9 @@
             data_save.space_name = space_name;
             data_save.showStyle = showStyle;
             data_save.sql_cust = sql_cust;
-            drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust);
+            data_save.N = N;
+            //drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust);
+            drawTimeLineBar_average(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust,N);
             //console.log(sql_date1)
             //console.log(data.unite)
             $("#txt").empty();
