@@ -606,11 +606,13 @@ def echarts(request):
 
 
 from data_import.liusinuo.main import main
+from data_import.liusinuo.market_share_sql import market_share_sql
 def space(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	if request.method == "GET":
+		#print("执行了space的view")
 		return render(request,'data_import/space.html',{'title':"青特钢大数据项目组数据管理"})
 	elif request.method == "POST":
 		print(request.POST)
@@ -769,6 +771,72 @@ def cust_trade(request):
 				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
 		except Exception as ex:
 			print(ex)
+
+
+def stockControl(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/stockControl.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
+										  								int(request.POST.get('aspect')),
+										  								int(request.POST.get('dateChoose')),
+										 						 		request.POST.get('sql_date1'),
+										 						 		request.POST.get('sql_date2'),
+										  								request.POST.get('sql_cust'),
+										  								request.POST.get('tradeNo'),
+										  								int(request.POST.get('space')),
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
+										  								)
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst,
+				                            'module_name': module_name,
+				                            'aspect_name': aspect_name,
+				                            'unite': unite,
+				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
+		except Exception as ex:
+			print(ex)
+
+
+def market_share(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/market_share.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		#print (" >>> 开始执行 view.py 中的 market_share 函数")
+		try:
+			ratio_dictionary, conclusion,all_dictionary = market_share_sql(request.POST.get("startYear"),
+													request.POST.get('startMonth'),
+													request.POST.get('endYear'),
+											 		request.POST.get('endMonth')
+														)
+
+
+			ratio_rst = []
+			for key in ratio_dictionary.keys():
+				ratio_rst.append({'name': key, 'value': ratio_dictionary.get(key)})
+			all_rst = []
+			for key in all_dictionary.keys():
+				all_rst.append({'name': key, 'value': all_dictionary.get(key)})
+			#print (" >>>  view.py 中的 market_share 函数 执行到这里")
+			#print (all_rst)
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': ratio_rst,
+				                            'all_dictionary':all_rst}), content_type='text/json/json/')
+		except Exception as ex:
+			print(ex)
+
 
 
 #import data_import.liusinuo.update_mysql_space 

@@ -1,0 +1,144 @@
+{% extends "data_import/base.html" %}
+{% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
+<!--
+{% block pagejs %}
+<script type="text/javascript" src="/static/data_import/libs/echarts/echarts.js"></script>
+{% endblock pagejs %}
+-->
+{% block content %}
+
+
+<h1>销售部分：库存管理</h1> 
+<a href='/space'>>>>跳转到：空间分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/trade'>>>>跳转到：钢种分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
+<a href='/cust_trade'>>>>跳转到：客户分析（按钢种）</a>
+<br>
+{% csrf_token %}
+<br>
+<!--<h3> 输入 </h3>-->
+
+<div >
+<h4>两行三列：</h4>
+<table border="1" width="500">
+    <tr>
+        <th align="center">序号</th>
+        <th align="center">钢种名称</th>
+        <th align="center">总重量（吨）</th>
+        <th text-align:center>3月以上库龄占比（%）</th>
+    </tr>
+    <tr>
+        <td align="center">1</td>
+        <td align="center">45</td>
+        <td align="center">300</td>
+        <td align="center">10%</td>
+    </tr>
+    <tr>
+        <td align="center">2</td>
+        <td align="center">50</td>
+        <td align="center">600</td>
+        <td align="center">&nbsp;</td>
+    </tr>
+</table>
+</div>
+<br>
+
+<div>
+    钢种选择:
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45>45
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=50>50
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82DA>C82DA
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=60Si2Mn>60Si2Mn
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82A>C82A
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82D2>C82D2
+    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=ER50-6E>ER50-6E
+</div>
+<br>
+
+<div>
+<button id="btnDrawChart" >分析结果绘图</button>
+</div>
+<div id="main4" style="width: 800px;height:400px;"></div>
+<div id="main6" style="width: 800px;height:400px;"></div>
+<div id="main5" style="width: 60px;height:400px;">
+<textarea id="txt" style="width: 800px;height:100px;"></textarea>
+</div>
+
+<script type="text/javascript" src="/static/data_import/js/loadDateSelect.js"></script>
+<script type="text/javascript">
+
+    $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
+        //提取输入值
+        var module = 2
+        var aspect = 1
+        var dateChoose = 1
+        dateChoose_name = '订单时间'
+        var space = 1
+        var space_name = "中国"
+        var tradeNo = $ ("#select_trade").find("option:selected").val();
+        var showStyle = 1
+        var N = 6
+        
+        var sql_cust = ''
+        var module_unit_key = ''
+        var sql_date1_ = "2016-01-01"
+        sql_date1 = "20160101"
+        var sql_date2_ = "2016-03-01"
+        sql_date2 = "20160301"
+
+
+        //将所选钢种加到list中
+        var arr = new Array();
+        var tradeNoNoNo = ""
+        comma = ","
+        var items = document.getElementsByName("select_tradeNo");                 
+        for (i = 0; i < items.length; i++) {                    
+            if (items[i].checked) {                        
+                arr.push(items[i].value);
+                if (tradeNoNoNo == ""){
+                    tradeNoNoNo = tradeNoNoNo + items[i].value;
+                }else{
+                    tradeNoNoNo = tradeNoNoNo + comma + items[i].value;
+                }
+            }                
+        }                 
+
+
+        var myChart = echarts.init(document.getElementById('main4'));
+        myChart.showLoading({
+                    text: "图表数据正在努力加载...\n请不要点击其他按钮~"
+                });   
+        
+        $.ajax({
+            type: "post",
+            url:  "/stockControl",
+            data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
+            
+            }
+        ).done(function(data) {
+            console.log(JSON.stringify(data.result));
+            //drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust);
+            drawTimeLineBar_average(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust,N);
+            //console.log(sql_date1)
+            //console.log(data.unite)
+            $("#txt").empty();
+            $("#txt").append(data.describe); 
+            describe = data.describe;
+            }).fail(function(){
+                console.log("wrong");
+            });
+        
+    });
+    
+
+</script>
+<script type="text/javascript" src="/static/data_import/js/loadChart.js"></script>
+<!-- <script type="text/javascript">
+    require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+</script> -->
+{% endblock %}

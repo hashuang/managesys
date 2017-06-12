@@ -2,6 +2,7 @@
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
 {% block content %}
 <h3>销售部分：空间分析</h3> 
+<a href='/market_share'>>>>跳转到：市场份额分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/trade'>>>>跳转到：钢种分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
@@ -72,7 +73,7 @@
 <br>
 
 <button id="btnDrawChart">分析结果绘图</button>
-<button id="btnUpdateMysql" onclick="UpdateMysql()">更新数据仓库</button>
+<!-- <button id="btnUpdateMysql" onclick="UpdateMysql()">更新数据仓库</button> -->
 <br>
 <br>
 <div id="main4" style="width: 800px;height:400px;"></div>

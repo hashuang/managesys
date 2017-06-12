@@ -77,6 +77,102 @@ function drawMapChartChina(data,tradeNo,aspect_name,maxValue,module_name,sql_dat
     myChart.setOption(option);
 }
 
+
+//地图----中国地图 ---- 市场容量分析
+function drawMapChartChina_ratio(all_dictionary,data,startYear,startMonth,endYear,endMonth){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+
+    console.log(data)
+    console.log(all_dictionary)
+    //获取月/日的数据
+    for (var i=0;i<4;i++)
+    {
+        if(all_dictionary[i].name == '市场容量字典'){
+            salesWeight_dictionary = all_dictionary[i].value;
+            console.log(salesWeight_dictionary);
+        }else if (all_dictionary[i].name == '全部信息list'){
+            all_list = all_dictionary[i].value;
+        }else if (all_dictionary[i].name == '比例字典'){
+            ratio_dictionary = all_dictionary[i].value;
+        }else if(all_dictionary[i].name == '青钢销量字典'){
+            qdisSalesWeight_dictionary = all_dictionary[i].value;
+        }else {
+            ratio_rst = all_dictionary[i].value;
+        }
+    }
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: "市场容量分析",
+            subtext: startYear + "年" + startMonth + "月至" + startYear + "年" + startMonth + "月内，全国各省份市场容量及占比",
+            x:'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter : function (params) {
+                console.log(params);
+                return  params.name + ':<br/>市场容量：' + salesWeight_dictionary[params.name] + '吨<br/>我公司销量：' + qdisSalesWeight_dictionary[params.name] + '吨<br/>市场容量占比：' + params.value + '%';
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            x:'left',
+            data:["市场容量占比"]
+        },
+        dataRange: {
+            min: 0,
+            max:  100,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true,
+            color: ['orangered','yellow','lightskyblue']
+            //color: ['red','lightgray']
+        },
+        toolbox: {
+            show: true,
+            orient : 'vertical',
+            x: 'right',
+            y: 'center',
+            feature : {
+                //mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                //restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        roamController: {
+            show: true,
+            x: 'right',
+            mapTypeControl: {
+                'china': true
+            }
+        },
+        series: [
+            {
+                name: "市场容量占比",
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                itemStyle:{
+                    normal:{
+                        label:{show:true},
+                    },
+                    emphasis:{label:{show:true}}
+
+                },
+                data: data
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+
 //地图 --- 世界地图
 function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
     // echarts.registerMap('china', data.chinaJson);

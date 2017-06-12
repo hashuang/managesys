@@ -56,6 +56,8 @@ urlpatterns = [
     url(r'^cust_time',views.cust_time),
     url(r'^cust_trade',views.cust_trade),
     url(r'^liusinuo',views.space),
+    url(r'^stockControl',views.stockControl),
+    url(r'^market_share',views.market_share),    
     #钢种自动加载
     url(r'^GetTradeNo',views.getAllTradeNo_time),
     #数据仓库更新

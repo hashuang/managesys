@@ -104,7 +104,7 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 						weight_sum += tradeNo_wgt[1] #重量求和
 					else:
 						pass
-			print ("总销量：\t",sql_date,weight_sum)
+			#print ("总销量：\t",sql_date,weight_sum)
 			#print ("\n")
 
 			time_dict[sql_date] = weight_sum
@@ -117,7 +117,7 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 						amount_sum += tradeNo_amt[1] #重量求和
 					else:
 						pass
-			print ("总销售额：\t",sql_date,amount_sum)
+			#print ("总销售额：\t",sql_date,amount_sum)
 			#print ("\n")
 			time_dict[sql_date] = amount_sum
 		elif aspect == 3:
@@ -143,9 +143,9 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 			if weight_sum != 0:
 				rtn_rate = ( rtn_sum / weight_sum ) * 100
 				rtn_rate = float(str(rtn_rate)[0:8])
-				print ("总退货率：\t%s%.5f" % (sql_date,rtn_rate),"%")
+			#	print ("总退货率：\t%s%.5f" % (sql_date,rtn_rate),"%")
 			else:
-				print ("总退货率：\t总销量为0，无法计算退货率！")
+			#	print ("总退货率：\t总销量为0，无法计算退货率！")
 				rtn_rate = "总销量为0，无法计算退货率！"
 			#tradeNo_rtn_rsn_list = conn_mysql.select(sql_rtn_reason)
 			#print ("退货原因：\t",tradeNo_rtn_rsn_list)
@@ -167,7 +167,7 @@ def time_sql(sql_date1,sql_date2,sql_ctry_prov_cty,tradeNo_list,space_name,aspec
 				for tradeNo_rtn_count_reason in tradeNo_rtn_reason_count_list:
 					if tradeNo == tradeNo_rtn_count_reason[0]:
 						count = count + 1
-			print ("质量问题个数：",sql_date,count)
+			#print ("质量问题个数：",sql_date,count)
 			time_dict[sql_date] = count
 
 
