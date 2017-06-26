@@ -29,7 +29,8 @@ if node in dev_machines:
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.75',
+            #'HOST': '202.204.54.75',
+            'HOST': 'localhost',
             'PORT': '3306',
         },
         'l2own': {
@@ -37,10 +38,11 @@ if node in dev_machines:
             'NAME':'orcl',
             'USER': 'qg_user',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.75',
+            'HOST': '202.204.54.154',
             'PORT': '1521',
         },
     }
+    print(PROJECT_DIR)
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
     STATIC_URL = '/static/'
     MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
@@ -59,7 +61,7 @@ else:
             'NAME':'orcl',
             'USER': 'qg_user',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.75',
+            'HOST': '202.204.54.154',
             'PORT': '1521',
         },
         'default': {
@@ -67,7 +69,7 @@ else:
             'NAME': 'qinggang',
             'USER': 'root',
             'PASSWORD': '123456',
-            'HOST': '202.204.54.75',
+            'HOST': '202.204.54.154',
             'PORT': '3306',
         },
         'mes': {
