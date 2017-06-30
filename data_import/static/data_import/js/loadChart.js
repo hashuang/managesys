@@ -734,6 +734,81 @@ function EXPMA(data,N){//  N 为周期天数  data 为全部数据的list
 
 
 
+////库存管理
+function drawStockControl(data,showStyle){
+
+    //var myChart = echarts.init(document.getElementById('main4'));
+    console.log("正在绘图");
+
+
+    option = {
+    title : {
+        text: "title",
+        subtext: "subtext",
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'axis', 
+        formatter : function (params) {
+                if (params[0].value == "总销量为0，无法计算退货率！"){
+                    return params[0].name ;
+                }else{
+                    return params[0].name ;
+                }
+            }
+    },
+    
+    legend: {
+        data:['总重量', '库龄大于3月的总重量']
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            magicType: {show: true, type: ['line', 'bar']},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'value',
+            boundaryGap : [0, 0.01]
+        }
+    ],
+    yAxis : [
+        {
+            type : 'category',
+            data : ['巴西','印尼','美国','印度','中国','世界人口(万)']
+        }
+    ],
+    series : [
+        {
+            name:'总重量',
+            type:'bar',
+            data:[18203, 23489, 29034, 104970, 131744, 630230]
+        },
+        {
+            name:'库龄大于3月的总重量',
+            type:'bar',
+            data:[19325, 23438, 31000, 121594, 134141, 681807]
+        }
+    ]
+
+
+
+
+};
+
+    var myChart = echarts.init(document.getElementById('main4'));
+    myChart.setOption(option);
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
 
 // //时间折线图 (Echarts 2) 和 指数平滑移动平均值 多图联动
 // function drawTimeLineBar_average2(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,showStyle,sql_cust){

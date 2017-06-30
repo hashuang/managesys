@@ -10,6 +10,7 @@
 
 <h1>销售部分：库存管理</h1> 
 <a href='/space'>>>>跳转到：空间分析</a>&nbsp;&nbsp;&nbsp;
+<a href='/market_share'>>>>跳转到：市场份额分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/trade'>>>>跳转到：钢种分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
@@ -60,7 +61,6 @@
 <button id="btnDrawChart" >分析结果绘图</button>
 </div>
 <div id="main4" style="width: 800px;height:400px;"></div>
-<div id="main6" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
 <textarea id="txt" style="width: 800px;height:100px;"></textarea>
 </div>
@@ -71,23 +71,9 @@
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
         var module = 2
-        var aspect = 1
-        var dateChoose = 1
-        dateChoose_name = '订单时间'
-        var space = 1
-        var space_name = "中国"
-        var tradeNo = $ ("#select_trade").find("option:selected").val();
-        var showStyle = 1
-        var N = 6
-        
-        var sql_cust = ''
         var module_unit_key = ''
-        var sql_date1_ = "2016-01-01"
-        sql_date1 = "20160101"
-        var sql_date2_ = "2016-03-01"
-        sql_date2 = "20160301"
 
-
+        var tradeNo = $ ("#select_trade").find("option:selected").val()
         //将所选钢种加到list中
         var arr = new Array();
         var tradeNoNoNo = ""
@@ -113,15 +99,11 @@
         $.ajax({
             type: "post",
             url:  "/stockControl",
-            data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
-            
+            data: {'module':module,'tradeNo':tradeNoNoNo,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
             }
         ).done(function(data) {
-            console.log(JSON.stringify(data.result));
-            //drawTimeLineBar(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust);
-            drawTimeLineBar_average(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust,N);
-            //console.log(sql_date1)
-            //console.log(data.unite)
+            console.log(" ajax 执行完毕 即将绘图");
+            drawStockControl(data.result,module_unit_key);
             $("#txt").empty();
             $("#txt").append(data.describe); 
             describe = data.describe;

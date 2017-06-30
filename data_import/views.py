@@ -606,7 +606,8 @@ def echarts(request):
 
 
 from data_import.liusinuo.main import main
-from data_import.liusinuo.market_share_sql import market_share_sql
+from data_import.liusinuo.sql_market_share import sql_market_share
+from data_import.liusinuo.sql_stockControl import sql_stockControl
 def space(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
@@ -749,7 +750,7 @@ def cust_trade(request):
 	elif request.method == "POST":
 		print(request.POST)
 		try:
-			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
+			dictionary, conclusion, module_name = main(int(request.POST.get("module")),
 										  								int(request.POST.get('aspect')),
 										  								int(request.POST.get('dateChoose')),
 										 						 		request.POST.get('sql_date1'),
@@ -781,27 +782,19 @@ def stockControl(request):
 		return render(request,'data_import/stockControl.html',{'title':"青特钢大数据项目组数据管理"})
 	elif request.method == "POST":
 		print(request.POST)
+		print("正在执行 view.py 中的 库存管理 函数")
 		try:
-			dictionary, conclusion, module_name, aspect_name, unite, maxValue = main(int(request.POST.get("module")),
-										  								int(request.POST.get('aspect')),
-										  								int(request.POST.get('dateChoose')),
-										 						 		request.POST.get('sql_date1'),
-										 						 		request.POST.get('sql_date2'),
-										  								request.POST.get('sql_cust'),
-										  								request.POST.get('tradeNo'),
-										  								int(request.POST.get('space')),
-										  								request.POST.get('space_detail'),
-										  								request.POST.get('module_unit_key')
-										  								)
+			dictionary, conclusion, module_name = sql_stockControl(int(request.POST.get("module")),
+												request.POST.get('tradeNo'),
+										  		request.POST.get('module_unit_key')
+										  		)
 			rst = []
 			for key in dictionary.keys():
 				rst.append({'name': key, 'value': dictionary.get(key)})
 			return HttpResponse(json.dumps({'describe': conclusion,
 				                            'result': rst,
-				                            'module_name': module_name,
-				                            'aspect_name': aspect_name,
-				                            'unite': unite,
-				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
+				                            'module_name': module_name
+				                           }), content_type='text/json/text')
 		except Exception as ex:
 			print(ex)
 
@@ -816,7 +809,7 @@ def market_share(request):
 		print(request.POST)
 		#print (" >>> 开始执行 view.py 中的 market_share 函数")
 		try:
-			ratio_dictionary, conclusion,all_dictionary = market_share_sql(request.POST.get("startYear"),
+			ratio_dictionary, conclusion,all_dictionary = sql_market_share(request.POST.get("startYear"),
 													request.POST.get('startMonth'),
 													request.POST.get('endYear'),
 											 		request.POST.get('endMonth')

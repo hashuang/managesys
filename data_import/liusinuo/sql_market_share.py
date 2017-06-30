@@ -36,7 +36,7 @@ from . import mysql
 conn_mysql=mysql.MySQL();
 
 
-def market_share_sql(startYear,startMonth,endYear,endMonth):
+def sql_market_share(startYear,startMonth,endYear,endMonth):
     #========================【 输 入 】===========================
     #获取数据
     #print ("开始执行 market_share_sql 函数")
@@ -82,7 +82,7 @@ def market_share_sql(startYear,startMonth,endYear,endMonth):
 
 if __name__ == '__market_share_sql__':
 
-    ratio_dictionary,conclusion,all_dictionary = market_share_sql(startYear,startMonth,endYear,endMonth)
+    ratio_dictionary,conclusion,all_dictionary = sql_market_share(startYear,startMonth,endYear,endMonth)
     #print("market_share_sql.py 执行完毕")
     #print (module,tradeNo)
 
