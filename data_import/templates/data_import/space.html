@@ -2,24 +2,24 @@
 {% block title %}{% if title %}{{ title }}{% endif %}{% endblock %}
 {% block content %}
 <h3>销售部分：空间分析</h3> 
-<a href='/market_share'>>>>跳转到：市场份额分析</a>&nbsp;&nbsp;&nbsp;
+<!-- <a href='/market_share'>>>>跳转到：市场份额分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/trade'>>>>跳转到：钢种分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
 <a href='/cust_trade'>>>>跳转到：客户分析（按钢种）</a>&nbsp;&nbsp;&nbsp;
-<!-- <a href='/stockControl'>>>>跳转到：库存管理</a> -->
+<a href='/stockControl'>>>>跳转到：库存管理</a> -->
 <br>
 <br>
 {% csrf_token %}
 <!--<h3> 输入 </h3>-->
 <div>
-    分析模块:
+    <!-- 分析模块:
     <select name="select_module" id="select_module" class="xla_1">
         <option value="1">空间分析</option>
-        <!--<option value="2">时间分析</option>
+        <option value="2">时间分析</option>
         <option value="3">钢种分析</option>
-        <option value="4">客户分析</option>-->
-    </select>
+        <option value="4">客户分析</option>
+    </select> -->
     分析内容:
     <select name="select_aspect" id="select_aspect" class="xla_2">
         <option value="1">总销量</option>

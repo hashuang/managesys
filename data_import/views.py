@@ -607,7 +607,8 @@ def echarts(request):
 
 from data_import.liusinuo.main import main
 from data_import.liusinuo.sql_market_share import sql_market_share
-from data_import.liusinuo.sql_stockControl import sql_stockControl
+#from data_import.liusinuo.sql_stockControl import sql_stockControl
+from data_import.sql_stockControl import sql_stockControl
 def space(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
@@ -791,6 +792,9 @@ def stockControl(request):
 			rst = []
 			for key in dictionary.keys():
 				rst.append({'name': key, 'value': dictionary.get(key)})
+				print (type(dictionary.get(key)))
+			print("geshi zhuanhuan wanbi")
+
 			return HttpResponse(json.dumps({'describe': conclusion,
 				                            'result': rst,
 				                            'module_name': module_name
