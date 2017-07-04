@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 import os
 from . import choose_settings
-from .import views
 
 
 ROW_NUM=10000
@@ -264,7 +263,7 @@ MAIN_OUTFIT_BASE = 'data_import/main/'
 #     ('47 11 * * *', 'django.core.management.call_command', ['aizhan_5domain_visits']),
 # ]
 CRONJOBS = [
-    # 
-    ('*/1 * * * *', 'views.paralle_test1'),
+    #
+    ('*/1 * * * *', 'QinggangManageSys.views.paralle_test1'),
 
 ]
