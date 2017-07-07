@@ -28,7 +28,7 @@ from .models import ContentPost
 
 import logging
 import logging.config
-
+from data_import.structure import int_information
 
 from .models import ContentPost
 from .liusinuo import mysql
@@ -47,11 +47,21 @@ def home(request):
 	'title':'主页',
 	'state':None
 	}
+	infost = int_information()
+	print(len(infost))
+	for infotype, infos in infost.items():
+		print(infotype)
+		for info in infos:
+			print(info.id)
+	contentVO['infost'] = infost
+
 	# the_abstract = get_object_or_404(ContentPost, title="abstract")
 	# contentVO["abstract"] = the_abstract
 	# contentVO["state"] = "success"
+	print(contentVO)
 	logger.debug(MAIN_OUTFIT_BASE)
 	return render(request, MAIN_OUTFIT_BASE + 'index.html',contentVO)
+
 
 #用户登录
 def user_login(request):
@@ -836,7 +846,7 @@ def market_share(request):
 
 
 
-#import data_import.liusinuo.update_mysql_space 
+#import data_import.liusinuo.update_mysql_space
 from data_import.liusinuo.update_mysql_space import update_mysql_space_orderNo
 #更新数据仓库：销售部分——空间分析
 def update_mysql_space(request):
