@@ -265,6 +265,6 @@ MAIN_OUTFIT_BASE = 'data_import/main/'
 # ]
 CRONJOBS = [
     # 
-    ('*/1 * * * *', 'views.paralle_test1'),
+    ('*/1 * * * *', 'QinggangManageSys.views.paralle_test1'),
 
 ]
