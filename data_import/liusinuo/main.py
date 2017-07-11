@@ -147,7 +147,7 @@ def compute_time_dictionaty(dictionary,aspect,rtn_sum_dict,weight_sum_dict):
 			else:
 				monthDictionary[month_key] = dictionary[key]
 
-	#对于退货率，不能直接加和得出结果，直接价格得出的结果是错误的，需要用总的退货重量除以总的销量
+	#对于退货率，不能直接加和得出结果，直接加和得出的结果是错误的，需要用总的退货重量除以总的销量
 	if aspect == 3:
 		for key in monthDictionary_weight_sum:
 			if monthDictionary_weight_sum[key] != 0:

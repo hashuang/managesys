@@ -1,148 +1,3 @@
-//条形图
-// function drawBarChart(result){
-//     var myChart = echarts.init(document.getElementById('main1'));
-//         //alert(result.scope)
-//         // 指定图表的配置项和数据
-//         var option = {
-//             title: {
-//                 text: ''
-//             },
-//             tooltip: {},
-//             legend: {
-//                 data:['']
-//             },
-//             xAxis: {
-//                 data: result.scope
-//             },
-//             yAxis: {},
-//             series: [{
-//                 name: '',
-//                 type: 'bar',
-//                 data: result.num
-//             }]
-
-//         };
-
-//     // 使用刚指定的配置项和数据显示图表。
-//     myChart.setOption(option);
-// }
-
-function drawBarChart(result){
-    var myChart = echarts.init(document.getElementById('main1'));
-        //alert(result.scope)
-       var option = {
-            title: {
-                text: '',
-                x:'center'
-            },
-            tooltip: {},
-            legend: {
-                data:['']
-            },
-            toolbox: {
-                show : true,
-                feature : {
-                    dataView : {show: true, readOnly: false},
-                    magicType : {show: true, type: ['line', 'bar']},
-                    restore : {show: true},
-                    saveAsImage : {show: true}
-                }
-            },
-            xAxis: {
-                data: result.scope
-            },
-            yAxis: {},
-            series: [{
-                name: '',
-                type: 'bar',
-                data: result.num,
-                // markPoint: {
-                //     data:[
-                //             {type : 'max', name: '最大值'},
-                //             {type : 'min', name: '最小值'},
-                //             //{name : '标记点', value : result.vvalue_y, xAxis: result.vvalue_x, yAxis:0.3}  
-                //     ]
-                // },
-            },
-            
-            ]
-
-        };
-
-    //使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-}
-//折线图
-function drawBrokenLineChart(data){
-    var myChart = echarts.init(document.getElementById('main2'));
-    option = {
-        title: {
-            text: '折线图堆叠'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        toolbox: {
-            feature: {
-                saveAsImage: {}
-            }
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: ['周一','周二','周三','周四','周五','周六','周日']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                name:'邮件营销',
-                type:'line',
-                stack: '总量',
-                data:[120, 132, 101, 134, 90, 230, 210]
-            },
-            {
-                name:'联盟广告',
-                type:'line',
-                stack: '总量',
-                data:[220, 182, 191, 234, 290, 330, 310]
-            },
-            {
-                name:'视频广告',
-                type:'line',
-                stack: '总量',
-                data:[150, 232, 201, 154, 190, 330, 410]
-            },
-            {
-                name:'直接访问',
-                type:'line',
-                stack: '总量',
-                data:[320, 332, 301, 334, 390, 330, 320]
-            },
-            {
-                name:'搜索引擎',
-                type:'line',
-                stack: '总量',
-                data:[820, 932, 901, 934, 1290, 1330, 1320]
-            }
-        ]
-    };
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-}
-
-//折柱混合图
-
 
 //地图----中国地图
 function drawMapChartChina(data,tradeNo,aspect_name,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,unite){
@@ -221,6 +76,102 @@ function drawMapChartChina(data,tradeNo,aspect_name,maxValue,module_name,sql_dat
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
+
+
+//地图----中国地图 ---- 市场容量分析
+function drawMapChartChina_ratio(all_dictionary,data,startYear,startMonth,endYear,endMonth){
+    // echarts.registerMap('china', data.chinaJson);
+    var myChart = echarts.init(document.getElementById('main4'));
+
+    console.log(data)
+    console.log(all_dictionary)
+    //获取月/日的数据
+    for (var i=0;i<4;i++)
+    {
+        if(all_dictionary[i].name == '市场容量字典'){
+            salesWeight_dictionary = all_dictionary[i].value;
+            console.log(salesWeight_dictionary);
+        }else if (all_dictionary[i].name == '全部信息list'){
+            all_list = all_dictionary[i].value;
+        }else if (all_dictionary[i].name == '比例字典'){
+            ratio_dictionary = all_dictionary[i].value;
+        }else if(all_dictionary[i].name == '青钢销量字典'){
+            qdisSalesWeight_dictionary = all_dictionary[i].value;
+        }else {
+            ratio_rst = all_dictionary[i].value;
+        }
+    }
+    
+        // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: "市场容量分析",
+            subtext: startYear + "年" + startMonth + "月至" + startYear + "年" + startMonth + "月内，全国各省份市场容量及占比",
+            x:'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter : function (params) {
+                console.log(params);
+                return  params.name + ':<br/>市场容量：' + salesWeight_dictionary[params.name] + '吨<br/>我公司销量：' + qdisSalesWeight_dictionary[params.name] + '吨<br/>市场容量占比：' + params.value + '%';
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            x:'left',
+            data:["市场容量占比"]
+        },
+        dataRange: {
+            min: 0,
+            max:  100,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true,
+            color: ['orangered','yellow','lightskyblue']
+            //color: ['red','lightgray']
+        },
+        toolbox: {
+            show: true,
+            orient : 'vertical',
+            x: 'right',
+            y: 'center',
+            feature : {
+                //mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                //restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        roamController: {
+            show: true,
+            x: 'right',
+            mapTypeControl: {
+                'china': true
+            }
+        },
+        series: [
+            {
+                name: "市场容量占比",
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                itemStyle:{
+                    normal:{
+                        label:{show:true},
+                    },
+                    emphasis:{label:{show:true}}
+
+                },
+                data: data
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
 
 //地图 --- 世界地图
 function drawMapChartWorld(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
@@ -481,7 +432,7 @@ function drawTimeLineBar(data,tradeNo,aspect_name,unite,maxValue,module_name,sql
 
 
 //钢种分析饼图 (Echarts 2)
-function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,sql_cust){
 
     var myChart = echarts.init(document.getElementById('main4'));
     console.log(data);
@@ -489,11 +440,18 @@ function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,s
     //console.log(data[0]);
     //console.log(data[0].name);
     //console.log(data[0].value);
+    if (module_name == "钢种分析"){
+        title = module_name + '——' + aspect_name + '（' + space_name + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+    }else{
+        title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+    }
     
     option = {
     title : {
-        text: module_name + '——' + aspect_name + '（' + space_name + '）',
-        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        text: title,
+        subtext: subtext,
         x:'center'
     },
     tooltip : {
@@ -530,19 +488,26 @@ function drawpie(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,s
 
 
 //钢种分析漏斗图 (Echarts 2)
-function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name){
+function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,sql_cust){
 
-    var myChart = echarts.init(document.getElementById('main4'));
+    var myChart = echarts.init(document.getElementById('main7'));
     console.log(data);
     //console.log(tradeNo);
     //console.log(data[0]);
     //console.log(data[0].name);
     //console.log(data[0].value);
+    if (module_name == "钢种分析"){
+        title = module_name + '——' + aspect_name + '（' + space_name + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+    }else{
+        title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+    }
     
     option = {
     title : {
-        text: module_name + '——' + aspect_name + '（' + space_name + '）',
-        subtext: sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name,
+        text: title,
+        subtext: subtext,
         x:'center'
     },
     tooltip : {
@@ -580,83 +545,495 @@ function drawfunnel(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date
 }
 
 
+////时间折线图 (Echarts 2) 和 指数平滑移动平均值 多条折线
+function drawTimeLineBar_average(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,showStyle,sql_cust,N){
 
-function loadjson(){
-	var chart = echarts.init(document.getElementById('main'),'vintage');
-		chart.setOption({
-		    series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		});
-}
+    //var myChart = echarts.init(document.getElementById('main4'));
 
-function loadtheme(){
-	var chart = echarts.init(document.getElementById('theme'),'vintage');
-		chart.setOption({
-			series: [{
-		        type: 'map',
-		        map: 'china'
-		    }]
-		    
-		});
-}
+    //console.log(data);
+    //console.log(data[0]);
+    //console.log(data[0].name);
+    //console.log(data[0].value);
+    
+    //获取月/日的数据
+    for (var i=0;i<10;i++)
+    {
+        if(data[i].name == 'timeline_Day'){
+            timeline_Day = data[i].value;            
+        }else if (data[i].name == 'timelineValue_Day'){
+            timelineValue_Day = data[i].value;            
+        }else if (data[i].name == 'timeline_Month'){
+            timeline_Month = data[i].value;
+        }else if (data[i].name == 'timelineValue_Month'){
+            timelineValue_Month = data[i].value;
+        }else if (data[i].name == 'timeline_Week'){
+            timeline_Week = data[i].value;
+        }else if(data[i].name == 'timelineValue_Week'){
+            timelineValue_Week = data[i].value;
+        }else if (data[i].name == 'timeline_15Day'){
+            timeline_15Day = data[i].value;
+        }else if(data[i].name == 'timelineValue_15Day'){
+            timelineValue_15Day = data[i].value;
+        }else if (data[i].name == 'timeline_20Day'){
+            timeline_20Day = data[i].value;
+        }else{
+            timelineValue_20Day = data[i].value;
+        }
+    }
+
+    //月/日显示方式
+    if (showStyle == 1){ //月
+        timeline = timeline_Month;
+        timelineValue = timelineValue_Month;
+        unite_of_time = "月"
+    }else if(showStyle == 2){ //周
+        timeline = timeline_Week;
+        timelineValue = timelineValue_Week;
+        unite_of_time = "7日"
+    }else if(showStyle == 3){ //日
+        timeline = timeline_Day;
+        timelineValue = timelineValue_Day;
+        unite_of_time = "日"
+    }else if(showStyle == 4){ //15天
+        timeline = timeline_15Day;
+        timelineValue = timelineValue_15Day;
+        unite_of_time = "15日"
+    }else { //20天
+        timeline = timeline_20Day;
+        timelineValue = timelineValue_20Day;
+        unite_of_time = "20日"
+    }
+
+    // // 周期时间
+    // var N = 6; 
+    //如果数据数量小于N值，将小的值赋给N
+    if (timeline.length < N){
+        N = timeline.length;
+    }
+    //求 EXPMA
+    EXPMA_timeline_Value = EXPMA(timelineValue,N);
 
 
+    if (module_name == "时间分析"){
+        title = module_name + '——' + aspect_name + '（' + space_name + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+    }else{
+        title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+        subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+    }
 
-//折柱混合图
-function drawBarAndBrokenLineBofItChart(data){
-    var myChart = echarts.init(document.getElementById('main6'));
-
+    data_Value = "所选钢种的" + aspect_name
+    data_Value_average = N + "个" + unite_of_time + "指数平滑移动平均值"
 
     option = {
-    tooltip: {
-        trigger: 'axis'
+    title : {
+        text: title,
+        subtext: subtext,
+        x:'center'
     },
-    toolbox: {
-        feature: {
-            dataView: {show: true, readOnly: false},
-            magicType: {show: true, type: ['line', 'bar']},
-            restore: {show: true},
-            saveAsImage: {show: true}
-        }
-    },
-    legend: {
-        data:['概率','概率']
-    },
-    xAxis: [
-        {
-            type: 'category',
-            data: data.x
-        }
-    ],
-    yAxis: [
-        {
-            type: 'value',
-            name: '概率',
-            min: 0,
-            max: 0.2,
-            interval: 0.05,
-            axisLabel: {
-                formatter: '{value}%'
+    tooltip : {
+        trigger: 'axis', 
+        formatter : function (params) {
+            //   新写一个函数，先算数值，把这个函数的前面全包含进来
+            //   在吧算好的数值传入到此函数中，数值包含EXPMA
+            //   此时就可以保证提示文本不出错了
+                //console.log(params);
+                //console.log(params[0].name);
+                //console.log(EXPMA_timeline_Value);
+                //console.log(params[0].value);
+                if (params[0].value == "总销量为0，无法计算退货率！"){
+                    return params[0].name + "<br/>" +  data_Value + " : " + params[0].value+ "<br/>" +  data_Value_average + " : " + EXPMA_timeline_Value[params[1].dataIndex] + unite;
+                }else{
+                    return params[0].name + "<br/>" +  data_Value + " : " + params[0].value + unite + "<br/>" +  data_Value_average + " : " + EXPMA_timeline_Value[params[1].dataIndex] + unite;
+                }
+                
             }
-        },
+    },
+    toolbox: {   //这个不用改
+        show : true,
+        feature : {
+            //dataView : {show: true, readOnly: false},
+            saveAsImage : {show: true}
+        }
+    },
+    dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
+
+        start :0,
+
+        end :100 
+    },
+    legend : {
+        orient: 'vertical',
+        x:'left',
+        data : [data_Value,data_Value_average]
+    },
+    grid: {  //这个不用改，图所占区域竖直方向长度
+        y2: 80
+    },
+    xAxis : [   //这个不用改
+        {
+            type : 'category',
+            boundaryGap : false,
+            data : timeline
+        }
     ],
-    series: [
+    yAxis : [ //这个不用改
         {
-            name:'概率',
-            type:'bar',
-            data:data.y
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name: data_Value,
+            type: 'line',
+            data:timelineValue
         },
         {
-            name:'概率',
-            type:'line',
-            data:data.y
+            name: data_Value_average,
+            type: 'line',
+            data:EXPMA_timeline_Value
         }
     ]
 };
+
+    var myChart = echarts.init(document.getElementById('main4'));
+    myChart.setOption(option);
+
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 }
 
+
+//求指数平滑移动平均值
+function EXPMA(data,N){//  N 为周期天数  data 为全部数据的list
+    //console.log(data);
+    var a_index = 2 / ( N + 1 ); //平滑指数
+    var EXPMA = new Array(); //用于存放计算好的移动平滑指数 前N天是没有数据的
+    var sum = 0;
+    //   arr[0] = "aaa"; //添加
+    //   arr.pop();  //删除
+    //   arr.push(6);  //在结尾添加并返回长度 
+    
+    // 【 求初始值（第一个值）】
+    // 一种理解
+    for (var i = 0 ; i < N ; i++){
+        sum = sum + data[i];
+    }
+    EXPMA[0] = Math.round(sum / N) ; //前N日均值作为该值
+    // //另一种理解
+    // EXPMA[0] = data[0]; //第一个 EMP 为当日值
+
+    // 【 迭代求后面的值 】
+    for (var i = 1 ; i < data.length ; i++ ){  //初始值 i = 1
+        EXPMA[i] = Math.round(a_index * (data[i] - EXPMA[i-1]) + EXPMA[i-1]); //EMA 的计算公式
+    }
+
+    return EXPMA;
+
+}
+
+
+
+////库存管理
+function drawStockControl(data,module_unit_key){
+
+    //var myChart = echarts.init(document.getElementById('main4'));
+    //console.log("正在绘图");
+    console.log(data);
+
+    for (var i=0;i<4;i++)
+    {
+        if(data[i].name == 'tradeNo'){
+            tradeNo = data[i].value;            
+        }else if (data[i].name == 'stock_All'){
+            stock_All = data[i].value;            
+        }else if (data[i].name == 'stock_overstock'){
+            stock_overstock = data[i].value;
+        }else{
+            percent = data[i].value;
+        }
+    }
+
+    // console.log(tradeNo)
+    // console.log(stock_All)
+    // console.log(stock_overstock)
+    // console.log(percent)
+
+    option = {
+    title : {
+        text: "库存管理",
+        subtext: "subtext",
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'axis', 
+        formatter : function (params) {
+                //console.log(params);
+                return params[0].name + "<br/>" +  params[0].seriesName + ":" + params[0].value + "<br/>2017-04-01以前总重量:" + params[1].value ;
+            }
+    },
+    legend: {
+        orient: 'vertical',
+        x:'left',
+        data:['总重量', '库龄大于3月的总重量']
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            magicType: {show: true, type: ['line', 'bar']},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'value',
+            boundaryGap : [0, 0.01]
+        }
+    ],
+    yAxis : [
+        {
+            type : 'category',
+            data : tradeNo
+        }
+    ],
+    series : [
+        {
+            name:'总重量',
+            type:'bar',
+            data:stock_All
+           
+        },
+        {
+            name:'库龄大于3月的总重量',
+            type:'bar',
+            data:stock_overstock
+            
+        }
+    ]
+
+
+
+
+};
+
+    var myChart = echarts.init(document.getElementById('main4'));
+    myChart.setOption(option);
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+
+// //时间折线图 (Echarts 2) 和 指数平滑移动平均值 多图联动
+// function drawTimeLineBar_average2(data,tradeNo,aspect_name,unite,maxValue,module_name,sql_date1,sql_date2,dateChoose_name,space_name,showStyle,sql_cust){
+
+//     //var myChart = echarts.init(document.getElementById('main4'));
+
+//     //console.log(data);
+//     //console.log(data[0]);
+//     //console.log(data[0].name);
+//     //console.log(data[0].value);
+    
+//     //获取月/日的数据
+//     for (var i=0;i<10;i++)
+//     {
+//         if(data[i].name == 'timeline_Day'){
+//             timeline_Day = data[i].value;            
+//         }else if (data[i].name == 'timelineValue_Day'){
+//             timelineValue_Day = data[i].value;
+//         }else if (data[i].name == 'timeline_Month'){
+//             timeline_Month = data[i].value;
+//         }else if (data[i].name == 'timelineValue_Month'){
+//             timelineValue_Month = data[i].value;
+//         }else if (data[i].name == 'timeline_Week'){
+//             timeline_Week = data[i].value;
+//         }else if(data[i].name == 'timelineValue_Week'){
+//             timelineValue_Week = data[i].value;
+//         }else if (data[i].name == 'timeline_15Day'){
+//             timeline_15Day = data[i].value;
+//         }else if(data[i].name == 'timelineValue_15Day'){
+//             timelineValue_15Day = data[i].value;
+//         }else if (data[i].name == 'timeline_20Day'){
+//             timeline_20Day = data[i].value;
+//         }else{
+//             timelineValue_20Day = data[i].value;
+//         }
+//     }
+
+//     //月/日显示方式
+//     if (showStyle == 1){ //月
+//         timeline = timeline_Month;
+//         timelineValue = timelineValue_Month;        
+//     }else if(showStyle == 2){ //周
+//         timeline = timeline_Week;
+//         timelineValue = timelineValue_Week;
+//     }else if(showStyle == 3){ //日
+//         timeline = timeline_Day;
+//         timelineValue = timelineValue_Day;
+//     }else if(showStyle == 4){ //15天
+//         timeline = timeline_15Day;
+//         timelineValue = timelineValue_15Day;
+//     }else { //20天
+//         timeline = timeline_20Day;
+//         timelineValue = timelineValue_20Day;
+//     }
+
+//     if (module_name == "时间分析"){
+//         title = module_name + '——' + aspect_name + '（' + space_name + '）';
+//         subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的' + space_name + '范围内' + aspect_name;
+//     }else{
+//         title = module_name + '——' + aspect_name + '（客户：' + sql_cust + '）';
+//         subtext = sql_date1 + '至' + sql_date2 + '内，以' + dateChoose_name + '为依据的，客户' + sql_cust + '范围内' + aspect_name;
+//     }
+
+//     option = {
+//     title : {
+//         text: title,
+//         subtext: subtext,
+//         x:'center'
+//     },
+//     tooltip : {
+//         trigger: 'axis', 
+//         formatter : function (params) {
+//                 //console.log(params);
+//                 //console.log(params[0].name);
+//                 //console.log(params[0].value);
+//                 if (params[0].value == "总销量为0，无法计算退货率！"){
+//                     return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value;
+//                 }else{
+//                     return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value + unite;
+//                 }
+                
+//             }
+//     },
+//     toolbox: {   //这个不用改
+//         show : true,
+//         feature : {
+//             //dataView : {show: true, readOnly: false},
+//             saveAsImage : {show: true}
+//         }
+//     },
+//     dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
+
+//         start :0,
+
+//         end :100 
+//     },
+//     legend : {
+//         orient: 'vertical',
+//         x:'left',
+//         data : [tradeNo]
+//     },
+//     grid: {  //这个不用改，图所占区域竖直方向长度
+//         y2: 80
+//     },
+//     xAxis : [   //这个不用改
+//         {
+//             type : 'category',
+//             boundaryGap : false,
+//             data : timeline
+//         }
+//     ],
+//     yAxis : [ //这个不用改
+//         {
+//             type : 'value'
+//         }
+//     ],
+//     series : [
+//         {
+//             name: tradeNo,
+//             type: 'line',
+//             data:timelineValue
+//         }
+//     ]
+// };
+
+//     var myChart = echarts.init(document.getElementById('main4'));
+//     myChart.setOption(option);
+
+
+//     option2 = {
+//     title : {
+//         text: title,
+//         subtext: subtext,
+//         x:'center'
+//     },
+//     tooltip : {
+//         trigger: 'axis', 
+//         formatter : function (params) {
+//                 //console.log(params);
+//                 //console.log(params[0].name);
+//                 //console.log(params[0].value);
+//                 if (params[0].value == "总销量为0，无法计算退货率！"){
+//                     return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value;
+//                 }else{
+//                     return params[0].name + "<br/>" +  "所选钢种" + aspect_name + " : " + params[0].value + unite;
+//                 }
+                
+//             }
+//     },
+//     toolbox: {   //这个不用改
+//         show : true,
+//         feature : {
+//             //dataView : {show: true, readOnly: false},
+//             saveAsImage : {show: true}
+//         }
+//     },
+//     dataZoom: {            //这个不用改，下面日期默认缩放区域大小,0-100指最前与最后
+
+//         start :0,
+
+//         end :100 
+//     },
+//     legend : {
+//         orient: 'vertical',
+//         x:'left',
+//         data : [tradeNo]
+//     },
+//     grid: {  //这个不用改，图所占区域竖直方向长度
+//         y2: 80
+//     },
+//     xAxis : [   //这个不用改
+//         {
+//             type : 'category',
+//             boundaryGap : false,
+//             data : timeline
+//         }
+//     ],
+//     yAxis : [ //这个不用改
+//         {
+//             type : 'value'
+//         }
+//     ],
+//     series : [
+//         {
+//             name: tradeNo,
+//             type: 'line',
+//             data:timelineValue
+//         }
+//     ]
+// };
+
+
+//     var myChart2 = echarts.init(document.getElementById('main6'));
+//     myChart2.setOption(option2);
+
+//     myChart.connect(myChart2);
+//     myChart2.connect(myChart);
+
+//     setTimeout(function (){
+//         window.onresize = function () {
+//             myChart.resize();
+//             myChart2.resize();
+//         }
+//     },200)
+
+
+//     // 使用刚指定的配置项和数据显示图表。
+//     myChart.setOption(option);
+// }
 

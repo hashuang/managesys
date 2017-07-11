@@ -28,7 +28,7 @@ from .models import ContentPost
 
 import logging
 import logging.config
-
+from data_import.structure import int_information
 
 from .models import ContentPost
 from .liusinuo import mysql
@@ -47,11 +47,21 @@ def home(request):
 	'title':'主页',
 	'state':None
 	}
+	infost = int_information()
+	print(len(infost))
+	for infotype, infos in infost.items():
+		print(infotype)
+		for info in infos:
+			print(info.id)
+	contentVO['infost'] = infost
+
 	# the_abstract = get_object_or_404(ContentPost, title="abstract")
 	# contentVO["abstract"] = the_abstract
 	# contentVO["state"] = "success"
+	print(contentVO)
 	logger.debug(MAIN_OUTFIT_BASE)
 	return render(request, MAIN_OUTFIT_BASE + 'index.html',contentVO)
+
 
 #用户登录
 def user_login(request):
@@ -606,11 +616,15 @@ def echarts(request):
 
 
 from data_import.liusinuo.main import main
+from data_import.liusinuo.sql_market_share import sql_market_share
+#from data_import.liusinuo.sql_stockControl import sql_stockControl
+from data_import.sql_stockControl import sql_stockControl
 def space(request):
 	print('请求主页')
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect("/login")
 	if request.method == "GET":
+		#print("执行了space的view")
 		return render(request,'data_import/space.html',{'title':"青特钢大数据项目组数据管理"})
 	elif request.method == "POST":
 		print(request.POST)
@@ -738,8 +752,101 @@ def cust_time(request):
 			print(ex)
 
 
+def cust_trade(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/cust_trade.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		try:
+			dictionary, conclusion, module_name = main(int(request.POST.get("module")),
+										  								int(request.POST.get('aspect')),
+										  								int(request.POST.get('dateChoose')),
+										 						 		request.POST.get('sql_date1'),
+										 						 		request.POST.get('sql_date2'),
+										  								request.POST.get('sql_cust'),
+										  								request.POST.get('tradeNo'),
+										  								request.POST.get('space'), #这里去掉了int()
+										  								request.POST.get('space_detail'),
+										  								request.POST.get('module_unit_key')
+										  								)
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst,
+				                            'module_name': module_name,
+				                            'aspect_name': aspect_name,
+				                            'unite': unite,
+				                            'maxValue': maxValue}), content_type='text/json/text/text/text/text/')
+		except Exception as ex:
+			print(ex)
 
-#import data_import.liusinuo.update_mysql_space 
+
+def stockControl(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/stockControl.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		print("正在执行 view.py 中的 库存管理 函数")
+		try:
+			dictionary, conclusion, module_name = sql_stockControl(int(request.POST.get("module")),
+												request.POST.get('tradeNo'),
+										  		request.POST.get('module_unit_key')
+										  		)
+			rst = []
+			for key in dictionary.keys():
+				rst.append({'name': key, 'value': dictionary.get(key)})
+				print (type(dictionary.get(key)))
+			print("geshi zhuanhuan wanbi")
+
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': rst,
+				                            'module_name': module_name
+				                           }), content_type='text/json/text')
+		except Exception as ex:
+			print(ex)
+
+
+def market_share(request):
+	print('请求主页')
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect("/login")
+	if request.method == "GET":
+		return render(request,'data_import/market_share.html',{'title':"青特钢大数据项目组数据管理"})
+	elif request.method == "POST":
+		print(request.POST)
+		#print (" >>> 开始执行 view.py 中的 market_share 函数")
+		try:
+			ratio_dictionary, conclusion,all_dictionary = sql_market_share(request.POST.get("startYear"),
+													request.POST.get('startMonth'),
+													request.POST.get('endYear'),
+											 		request.POST.get('endMonth')
+														)
+
+
+			ratio_rst = []
+			for key in ratio_dictionary.keys():
+				ratio_rst.append({'name': key, 'value': ratio_dictionary.get(key)})
+			all_rst = []
+			for key in all_dictionary.keys():
+				all_rst.append({'name': key, 'value': all_dictionary.get(key)})
+			#print (" >>>  view.py 中的 market_share 函数 执行到这里")
+			#print (all_rst)
+			return HttpResponse(json.dumps({'describe': conclusion,
+				                            'result': ratio_rst,
+				                            'all_dictionary':all_rst}), content_type='text/json/json/')
+		except Exception as ex:
+			print(ex)
+
+
+
+#import data_import.liusinuo.update_mysql_space
 from data_import.liusinuo.update_mysql_space import update_mysql_space_orderNo
 #更新数据仓库：销售部分——空间分析
 def update_mysql_space(request):

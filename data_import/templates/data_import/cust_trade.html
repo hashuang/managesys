@@ -8,12 +8,12 @@
 {% block content %}
 
 
-<h1>销售部分：客户分析(按时间)</h1> 
+<h1>销售部分：客户分析（按钢种）</h1> 
 <!-- <a href='/space'>>>>跳转到：空间分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/market_share'>>>>跳转到：市场份额分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/time'>>>>跳转到：时间分析</a>&nbsp;&nbsp;&nbsp;
 <a href='/trade'>>>>跳转到：钢种分析</a>&nbsp;&nbsp;&nbsp;
-<a href='/cust_trade'>>>>跳转到：客户分析（按钢种）</a>&nbsp;&nbsp;&nbsp;
+<a href='/cust_time'>>>>跳转到：客户分析（按时间）</a>&nbsp;&nbsp;&nbsp;
 <a href='/stockControl'>>>>跳转到：库存管理</a> -->
 {% csrf_token %}
 <br>
@@ -73,36 +73,21 @@
 </div>
 <br>
 <div>
-    钢种选择:
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=45>45
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=50>50
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82DA>C82DA
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=60Si2Mn>60Si2Mn
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82A>C82A
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=C82D2>C82D2
-    <input type="checkbox" name="select_tradeNo" id="select_tradeNo" value=ER50-6E>ER50-6E
-</div>
-<br>
-<div>
 <button id="btnDrawChart" >分析结果绘图</button>
 </div>
 <br>
-<div>
-   折线图展示方式： 
+<!-- <div>
+    展示方式： 
     <select name="select_showStyle" id="select_showStyle" class="xla_8" " value = '月' style="display:inline;">
-        <option value="1">月总值</option>
-        <option value="5">20日总值</option>
-        <option value="4">15日总值</option>
-        <option value="2">7日总值</option>
-        <option value="3">单日总值</option>
+        <option value="1">饼状图</option>
+        <option value="2">漏斗图</option>
     </select>
-        指数平滑移动平均值的周期：
-    <input type="text" onkeyup="value=value.replace(/\D/g,'')" name="input_N" id="input_N" value = 6>
 </div>
-<br>
+<br> -->
 <div id="main4" style="width: 800px;height:400px;"></div>
+<div id="main7" style="width: 800px;height:400px;"></div>
 <div id="main5" style="width: 60px;height:400px;">
-<textarea id="txt" style="width: 800px;height:100px;"></textarea>
+<textarea id="txt" style="width: 800px;height:300px;"></textarea>
 </div>
 
 <script type="text/javascript" src="/static/data_import/js/loadDateSelect.js"></script>
@@ -121,38 +106,37 @@
         dateChoose_name: null,
         space_name: null,
         showStyle: null,
-        sql_cust:null,
-        N: null
+        sql_cust:null
     }
  
-    select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
-        //var showStyle = $ ("#select_showStyle").find("option:selected").val();
-        drawTimeLineBar_average(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,this.value,data_save.sql_cust,data_save.N);
-        data_save.showStyle = this.value;
-    }
 
-    input_N.oninput = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
-        drawTimeLineBar_average(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.showStyle,data_save.sql_cust,this.value);
-        data_save.N = this.value;
-    }
+    //     select_showStyle.onchange = function(){  //修改展示方式时，不用重新跑程序，使得层序更加快速
+    //     //var showStyle = $ ("#select_showStyle").find("option:selected").val();
+    //     if (this.value == 1){
+    //          drawpie(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.sql_cust);
+    //     }else{
+    //          drawfunnel(data_save.result,data_save.tradeNoNoNo,data_save.aspect_name,data_save.unite,data_save.maxValue,data_save.module_name,data_save.sql_date1_,data_save.sql_date2_,data_save.dateChoose_name,data_save.space_name,data_save.sql_cust);
+    //     }
+       
+    // }
 
     $('#btnDrawChart').click(function(){ //点击绘图按钮后，绘制相应图形
         //提取输入值
         //var module = $ ("#select_module").find("option:selected").val();
         //var module_unit_key = $ ("#select_module_unit_key").find("option:selected").val();
         var module = 4;   
-        var module_unit_key = 1;   
+        var module_unit_key = 2; 
 
         var aspect = $ ("#select_aspect").find("option:selected").val();
         var dateChoose = $ ("#select_time_choose").find("option:selected").val();
         var space = "";
         var space_name = "";
-        var tradeNo = $ ("#select_trade").find("option:selected").val();
-        var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        //var tradeNo = $ ("#select_trade").find("option:selected").val();
+        var tradeNoNoNo = []
+        //var showStyle = $ ("#select_showStyle").find("option:selected").val();
+        var showStyle = 1
         var sql_cust =  $ ("#select_cust").val();
         console.log(sql_cust);
-        var N = $("#input_N").val(); 
-
         var sql_date1_ = document.getElementById("select_date1").value;
         sql_date1_1 = sql_date1_.substring(0, 4);
         sql_date1_2 = sql_date1_.substring(5, 7);
@@ -164,23 +148,6 @@
         sql_date2_3 = sql_date2_.substring(8);
         sql_date2 = sql_date2_1 + sql_date2_2 + sql_date2_3;
 
-
-
-        //将所选钢种加到list中
-        var arr = new Array();
-        var tradeNoNoNo = ""
-        comma = ","
-        var items = document.getElementsByName("select_tradeNo");                 
-        for (i = 0; i < items.length; i++) {                    
-            if (items[i].checked) {                        
-                arr.push(items[i].value);
-                if (tradeNoNoNo == ""){
-                    tradeNoNoNo = tradeNoNoNo + items[i].value;
-                }else{
-                    tradeNoNoNo = tradeNoNoNo + comma + items[i].value;
-                }
-            }                
-        }                 
 
         //读取输入值
         var dateChoose_name = ''
@@ -213,7 +180,7 @@
         
         $.ajax({
             type: "post",
-            url:  "/cust_time",
+            url:  "/cust_trade",
             data: {'module':module,'aspect':aspect,'dateChoose':dateChoose,'space':space,'tradeNo':tradeNoNoNo,'sql_date1':sql_date1,'sql_date2':sql_date2,'sql_cust':sql_cust,'space_detail':space_name,'module_unit_key':module_unit_key,'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()}
             
             }
@@ -232,8 +199,14 @@
             data_save.space_name = space_name;
             data_save.showStyle = showStyle;
             data_save.sql_cust = sql_cust;
-            data_save.N = N;
-            drawTimeLineBar_average(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,showStyle,sql_cust,N);
+            data_save.sql_cust = sql_cust;
+            //  if ( showStyle == 1 ){
+            //     drawpie(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
+            // }else {
+            //     drawfunnel(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
+            // }
+            drawpie(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
+            drawfunnel(data.result,tradeNoNoNo,data.aspect_name,data.unite,data.maxValue,data.module_name,sql_date1_,sql_date2_,dateChoose_name,space_name,sql_cust);
             //console.log(sql_date1)
             //console.log(data.unite)
             $("#txt").empty();

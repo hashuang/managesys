@@ -15,7 +15,7 @@
     <!-- 为了增强跨浏览器表现的一致性，我们使用了 Normalize.css，这是由 Nicolas Gallagher 和 Jonathan Neal 维护的一个CSS 重置样式库-->
     <link rel="stylesheet" type="text/css" href="{% static 'data_import/libs/bootstrap/normalize.css' %}" />
     <!-- jQuery core JavaScript file -->
-    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery-1.12.4.js' %}"></script> 
+    <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery-1.12.4.js' %}"></script>
     <!-- Bootstrap core JavaScript file -->
     <script type="text/javascript" src="{% static 'data_import/libs/bootstrap/js/bootstrap.js' %}"></script>
     <!-- echarts core JavaScript files -->
@@ -28,7 +28,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/owl.carousel.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/responsive.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'data_import/skin1/css/style.css' %}" />
-   
+
     {% block pagecss %}{% endblock pagecss %}
 
     <!-- Loading Flat UI -->
@@ -38,22 +38,22 @@
 
     <!-- skin JavaScript files -->
     <script type="text/javascript" src="{% static 'data_import/libs/jquery/jquery.cookie.js' %}"></script>
-    
+
     <script type="text/javascript" src="{% static 'data_import/skin1/js/isotope.pkgd.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'data_import/skin1/js/jquery-ui.js' %}"></script>
 
 </head>
 <body >
     <!-- start preloader -->
-    
+
     <div id="loader-wrapper">
         <div class="logo"></div>
         <div id="loader">
         </div>
     </div>
-    
+
     <!-- end preloader -->
-    
+
 <!-- Start Header Section -->
 <header class="main_menu_sec navbar navbar-default navbar-fixed-top">
 <div class="container">
@@ -63,80 +63,96 @@
                 <a class="navbar-brand" id="logo_header" href="/index">青特钢大数据项目组数据管理</a>
             </div>
 
-        </div>          
+        </div>
         <div class="col-lg-9 col-md-9 col-sm-12">
-            <div class="rgt_hd">                    
+            <div class="rgt_hd">
                 <div class="main_menu">
                     <nav id="nav_menu">
                         <!-- <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
-                        </button>   --> 
+                        </button>   -->
 
                     <div id="navbar">
                         <ul>
-                            <li><a class="page-scroll" href="/index">项目介绍</a></li> 
+                            <li><a class="page-scroll" href="/index">项目介绍</a></li>
                             <li><a href="#">数据迁移 <i class="fa fa-angle-down"></i></a>
                                 <ul>
                                     <li><a class="page-scroll" href="/data_import">数据迁移</a></li>
                                     <li><a class="page-scroll" href="/upload_file">导入模板文件</a></li>
                                     <li><a class="page-scroll" href="/analysis_tool">数据分析工具</a></li>
                                 </ul>
-                            </li>                       
+                            </li>
 
-                            <li><a href="#">项目控制<i class="fa fa-angle-down"></i></a>
+                            <!-- <li><a href="#">项目控制<i class="fa fa-angle-down"></i></a>
                                 <ul>
                                     <li><a class="page-scroll" href="/summary">项目周期总结</a></li>
                                     <li><a class="page-scroll" href="/tasks">查看任务</a></li>
                                     <li><a class="page-scroll" href="/advices">项目建议</a></li>
                                     <li><a class="page-scroll" href="/shares">文件分享</a></li>
                                 </ul>
-                            </li> 
-                        
-                            <li><a href="#">成员工作成果展示<i class="fa fa-angle-down"></i></a>
+                            </li>  -->
+                            <li><a href="#">质量分析<i class="fa fa-angle-down"></i></a>
                                 <ul>
-                                    <li><a class="page-scroll" href="/ironstoneprice">郭宏悦</a></li>
-                                    <li><a class="page-scroll" href="javascript:void(0)">叶鹏飞</a></li>
                                     <li><a class="page-scroll" href="/chen">陈玉莲</a></li>
-                                    <li><a class="page-scroll" href="/space">刘斯诺</a></li>
+                                    <li><a class="page-scroll" href="/chen">转炉数据分析</a></li>
+                                    <li><a class="page-scroll" href="/fluctuation">波动率分析</a></li>
                                     <li><a class="page-scroll" href="/ha">哈爽</a></li>
-                                    <li><a class="page-scroll" href="/steelprice">程昌新</a></li>
-                                </ul>
-                            </li> 
-                            
-                            <li><a href="#">示例<i class="fa fa-angle-down"></i></a>
-                                <ul>
-                                    <li><a class="page-scroll" href="/echarts">echarts官方示例</a></li>
+                                    <li><a class="page-scroll" href="/ha">转炉数据预处理</a></li>
+                                    <li><a class="page-scroll" href="/product_quality">转炉单炉次质量回溯</a></li>
+                                    <li><a class="page-scroll" href="/w_fluc_quality">转炉多炉次质量回溯</a></li>
                                 </ul>
                             </li>
+                            <li><a href="#">销售分析<i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="/space">刘斯诺</a></li>
+                                    <li><a class="page-scroll" href="/space">空间分析</a></li>
+                                    <li><a class="page-scroll" href='/market_share'>市场份额分析</a></li>
+                                    <li><a class="page-scroll" href="/time">时间分析</a></li>
+                                    <li><a class="page-scroll" href="/trade">钢种分析</a></li>
+                                    <li><a class="page-scroll" href="/cust_time">客户分析（按时间）</a></li>
+                                    <li><a class="page-scroll" href="/cust_trade">客户分析（按钢种）</a></li>
+                                    <li><a class="page-scroll" href="/stockControl">库存管理</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">价格预测<i class="fa fa-angle-down"></i></a>
+                                <ul>
+                                    <li><a class="page-scroll" href="/ironstoneprice">铁矿石价格预测</a></li>
+                                    <li><a class="page-scroll" href="/steelprice">钢材价格预测</a></li>
+                                </ul>
+                            </li>
+
+
+
 
                             <li><a href="#" class="page-scroll" id="userInfo">hello,{% block username %}{% if user %}{{ user.username }}{% endif %}{% endblock %}<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="/modify_password" id="userPsw">修改密码</a></li>
+                                    <li><a href="/admin" id="checkOut">管理</a></li>
                                     <li><a href="/logout" id="checkOut">退出</a></li>
                                 </ul>
                             </li>
 
                         </ul>
                         <!-- user -->
-                    </div>    
-                    </nav>    
-                </div>                  
-                    
+                    </div>
+                    </nav>
+                </div>
+
             </div>
-        </div>  
-    </div>  
-</div>  
+        </div>
+    </div>
+</div>
 </header>
 <!-- End Header Section -->
 
 <!-- start Data Section -->
-{% block indexcontent %}{% endblock %} 
+{% block indexcontent %}{% endblock %}
 <section id="data_sec">
 <div class="container">
     <div class="row">
-        {% block content %}{% endblock %}                    
+        {% block content %}{% endblock %}
     </div>
 </div>
 </section>
@@ -148,56 +164,23 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="all_tstm">
-
+      {% for infotype, infos in infost.items %}
+        {% if infotype == '1' %}
+          {% for info in infos %}
             <div class="clnt_tstm">
                 <div class="sngl_tstm">
                     <i class="fa fa-quote-right"></i>
-                    <h3>基本情况 </h3>
-                    <p>针对钢铁产品生产数据拥有庞大的规模，不断变化的类型，不断演化的分析模式，存在信息量大，信息存储的格式繁多，信息较分散不集中，现有技术难以为钢铁产品生产过程进行相应支持等具体问题，为此需要建立青特钢智能分析与决策技术平台。
-                    在智能分析与决策技术的基础理论、技术方法、模型算法与应用支撑平台等多个层面，构造综合集成的智能分析与决策技术体系，形成符合钢铁生产大数据特点的数据整合与数据分析挖掘技术和智能分析与决策技术平台。</p>
-                    <h6>- Kai Feng</h6>                 
-                </div>
-            </div>  
-
-            <div class="clnt_tstm">
-                <div class="sngl_tstm">
-                    <i class="fa fa-quote-right"></i>
-                    <h3>项目需求 </h3>
-                    <p>目前已经建立并投入使用的信息化系统包括财务业务一体化系统、产销质一体化系统、检化验系统、能源管控系统、自助计量系统、综合二级数采集成系统，以及生产工艺的一级、二级系统等。以上诸多系统的投入使用，直接表现为公司的数据爆炸。</p>
-                    <h6>- Kai Feng</h6>                 
-                </div>
-            </div>                      
-            
-            <div class="clnt_tstm">
-                <div class="sngl_tstm">
-                    <i class="fa fa-quote-right"></i>
-                    <h3>建设方案 </h3>
-                    <p>本项目是在青岛特钢生产流程范围内，面向生产制造和经营管理相关的分析评价、预测与决策等数据分析挖掘需求，以产品质量管理为主线，针对生产工序间质量分析、生产数据挖掘为目标的节能减排、营销决策支持等具体需求，深度融合实时生产数据、生产管理信息以及工艺知识，研发基于云计算与大数据技术的数据分析挖掘、深度学习、决策分析模型，利用已有成果和开源技术研发模型驱动的可视化、系统化的青岛特钢大数据智能分析与决策应用支撑平台。</p>
-                    <h6>- Kai Fengo</h6>                    
+                    <h3>{{info.title}} </h3>
+                    <p>{{info.content}}</p>
+                    <h6>- {{info.publisher}}</h6>
                 </div>
             </div>
+            {% endfor %}
+        {% endif %}
+      {% endfor %}
 
-            <div class="clnt_tstm">
-                <div class="sngl_tstm">
-                    <i class="fa fa-quote-right"></i>
-                    <h3>关键技术 </h3>
-                    <p>本项目是在青岛特钢生产流程范围内，面向生产制造和经营管理相关的分析评价、预测与决策等数据分析挖掘需求，以产品质量管理为主线，针对生产工序间质量分析、生产数据挖掘为目标的节能减排、营销决策支持等具体需求，深度融合实时生产数据、生产管理信息以及工艺知识，研发基于云计算与大数据技术的数据分析挖掘、深度学习、决策分析模型，利用已有成果和开源技术研发模型驱动的可视化、系统化的青岛特钢大数据智能分析与决策应用支撑平台。</p>
-                    <h6>- Kai Feng</h6>                   
-                </div>
             </div>
-
-            <div class="clnt_tstm">
-                <div class="sngl_tstm">
-                    <i class="fa fa-quote-right"></i>
-                    <h3>考核标准 </h3>
-                    <p>项目研究青特钢生产制造数据、经营管理数据、营销数据等大数据的多元异构集成、存储、可视化决策分析等技术；研究开发基于大数据的决策分析模型、算法，构建模型驱动的钢铁企业大数据智能分析与决策支撑平台；形成面向PC和移动终端的智能分析决策支持系统。</p>
-                    <h6>- Kai Feng</h6>                    
-                </div>
-            </div>              
-            
-                
-            </div>
-        </div>  
+        </div>
     </div>
 </div>
 </section>
@@ -207,7 +190,7 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-            <div class="ft">                        
+            <div class="ft">
                 <ul>
                     <li><a href=""><i class="fa fa-facebook"></i></a></li>
                     <li><a href=""><i class="fa fa-twitter"></i></a></li>
@@ -218,13 +201,13 @@
                     <li><a href=""><i class="fa fa-linkedin"></i></a></li>
                     <li><a href=""><i class="fa fa-skype"></i></a></li>
                     <li><a href=""><i class="fa fa-google"></i></a></li>
-                </ul>                   
+                </ul>
             </div>
             <ul class="copy_right">
                 <li>&copy; 2016</li>
                 <li>developer by md. shiddikur rahman</li>
-            </ul>                   
-        </div>  
+            </ul>
+        </div>
     </div>
 </div>
 </footer>
@@ -252,14 +235,14 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        $('.show_hide').showHide({           
-            speed: 1000,  // speed you want the toggle to happen    
+        $('.show_hide').showHide({
+            speed: 1000,  // speed you want the toggle to happen
             easing: '',  // the animation effect you want. Remove this line if you dont want an effect and if you haven't included jQuery UI
             changeText: 1, // if you dont want the button text to change, set this to 0
             showText: 'View',// the button text to show when a div is closed
             hideText: 'Close' // the button text to show when a div is open
-                         
-        }); 
+
+        });
     });
 </script>
 
@@ -278,14 +261,14 @@
         $("body").css("overflow", "hidden");
         });
 
-        // Show Overflow of Body when Everything has Loaded 
+        // Show Overflow of Body when Everything has Loaded
         $(window).load(function(){
-        $("body").css("overflow", "visible");        
+        $("body").css("overflow", "visible");
         var nice=$('html').niceScroll({
         cursorborder:"5",
         cursorcolor:"#00AFF0",
         cursorwidth:"3px",
-        boxzoom:true, 
+        boxzoom:true,
         autohidemode:true
         });
     });
@@ -293,4 +276,3 @@
 
 </body>
 </html>
-
