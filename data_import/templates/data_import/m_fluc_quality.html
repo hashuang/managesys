@@ -334,11 +334,11 @@ function drawBarChart_cost_fluc(result){
                 // $("#txt").append("<caption >"+field+"字段因素追溯的分析结果</caption><tr> <th>序号</th><th>影响因素中文名</th><th>影响因素英文名</th><th>影响因素回归系数</th><th>影响因素偏离值</th></tr>");
                 $("#txt").empty();//清除表格内容
                 $("#txt").append('分析结果')
-                for (var i=0;i<data.offset_number;i++){
+                for (var i=0;i<2;i++){
                     // $("#txt").append(" <tr> <th>"+(i+1)+"</th><th>"+data.En_to_Ch_result[i]+"</th><th>"+data.xasis_fieldname[i]+"</th><th>"+data.regression_coefficient[i]+"</th><th>"+data.offset_result[i]+"</th></tr>");
 
                     if (i < 5){
-                        $("#cause_txt").append((i+1)+'、'+data.En_to_Ch_result_score[i]+data.offset_result_nature[i]+data.posNum[i]+'\n');
+                        $("#cause_txt").append((i+1)+'、'+data.En_to_Ch_result_max[i]+data.offset_result_nature_two[i]+data.posNum_final[i]+'\n');
                     }
                 }
 

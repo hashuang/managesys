@@ -11,6 +11,7 @@ import datetime
 import csv
 from decimal import *
 from scipy.stats import norm
+from . import batchprocess
 
 #总体波动率分析(fluctuation.html)
 
@@ -477,7 +478,7 @@ def fluc_influence(request):
 	#field='MIRON_WGT'
 	result=[]
 
-	#从数据库读取回归系数文件
+	#从数据库读取相关系数文件
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT * FROM pro_bof_his_REGRESSION_COF where MIDFIELD='"+field +"' and INFIELD != 'BIAS' order by abs(COF) desc"
@@ -493,33 +494,7 @@ def fluc_influence(request):
 		xasis_fieldname.append(scrapy_records[i].get('INFIELD', None))
 		regression_coefficient.append(scrapy_records[i].get('COF', None))
 		str_sql=str_sql+','+scrapy_records[i].get('INFIELD', None)
-	# print(len(scrapy_records))
-	# print(xasis_fieldname)
-	# print(regression_coefficient)
-
-	# #从csv文件读取回归系数文件
-	# with open('data_import/regression_all_EN1.csv','r') as csvfile:
-	# # with open('data_import/test.csv','r') as csvfile:
-	#     reader = csv.reader(csvfile)
-	#     rows= [row for row in reader]
-	# aa = np.array(rows)
-	# aa = sorted(aa, key=lambda d:abs(float(d[2])),reverse=True)
-	# for aaa in aa:
-	# 	if(aaa[0]==field):
-	# 		result.append(aaa)
-	# result1 = np.array(result)#转变为numpy数组格式
-	# length_result1=len(result1)
-	# print("长度"+str(length_result1))
-	# print(result1)#根据回归系数大小排序结果
-	# print("------------------")
-	# xasis_fieldname=[]#字段英文名字数组
-	# regression_coefficient=[]#字段回归系数值数组
-	# str_sql=''
-	# for i in range(length_result1):
-	# 	xasis_fieldname.append(result1[i][1])
-	# 	regression_coefficient.append(result1[i][2])
-	# 	str_sql=str_sql+','+result1[i][1]
-	# # print(str_sql)
+	
 
 
 	contentVO={
@@ -626,7 +601,7 @@ def fluc_influence(request):
 	contentVO['offset_number']=len(xasis_fieldname_result)#回归系数最大因素所取字段个数
 	print("字段名字")
 	print(xasis_fieldname_result)
-	print("回归系数")
+	print("相关系数")
 	print(regression_coefficient_result)
 	print("偏离程度")
 	print(offset_result_final)
@@ -634,6 +609,9 @@ def fluc_influence(request):
 	print("简单定性判断")
 	print(offset_result_nature)
 	contentVO['offset_result_nature']=offset_result_nature
+ 
+	
+
 	#查询转炉工序字段名中英文对照
 	ana_result={}
 	ana_result=zhuanlu.PRO_BOF_HIS_ALLFIELDS
@@ -657,6 +635,7 @@ def fluc_influence(request):
 	dicty=dict(zip(En_to_Ch_result_maxfive,offset_result_final_maxfive))
 	print('组合字段中文名和偏离程度')
 	print(dicty)
+
 
 	#按操作排序
 	a=[]
@@ -684,9 +663,74 @@ def fluc_influence(request):
 	print("格式化")
 	print(posNum)
 
-	contentVO['En_to_Ch_result']=En_to_Ch_result#回归系数最大因素中文字段名字
+	contentVO['En_to_Ch_result']=En_to_Ch_result#相关系数最大因素中文字段名字
 	contentVO['En_to_Ch_result_score']=En_to_Ch_result_score#按操作排序后字段中文名
 	contentVO['posNum']=posNum#按操作排序后偏离程度格式话
+
+	#计算回归系数
+	regression_coefficient=batchprocess.regression(field,xasis_fieldname_result_maxfive,1)
+	if regression_coefficient== False:
+		return None,None,None,None
+	coef=regression_coefficient[0]
+	intercept=regression_coefficient[1]
+
+	print('与前5个最终相关字段对应的回归系数')
+	print(coef)
+	print('截距')
+	print(intercept)
+
+	#取前3个权重最大的字段
+	#按权重大小对5个字段进行排序
+	coef_abs=[abs(float(n)) for n in coef]	
+	print(coef_abs)
+	print(type(coef_abs))
+	M=dict(zip(coef,xasis_fieldname_result_maxfive))
+	print('组合前5个最终相关字段和回归系数')
+	print(M)
+	dicty_coef=dict(zip(coef_abs,xasis_fieldname_result_maxfive))
+	dicty_coef_order=sorted(dicty_coef.items(),reverse=True)
+	print('组合前5个最终相关字段和回归系数按权重大小排序')
+	print(dicty_coef_order)
+	# coef_order_max=dicty_coef_order[0:3]
+	#修改为追溯2个因素
+	coef_order_max=dicty_coef_order[0:2]
+	coef_field=[]
+	coef_value=[]
+	for n in range(len(coef_order_max)):
+		coef_field.append(coef_order_max[n][1])
+		coef_value.append(coef_order_max[n][0])
+	print('前2个权重最大的字段和权重')	
+	print(coef_order_max)
+	print('前2个权重最大的字段')
+	print(coef_field)
+	print('前2个权重最大的字段权重')
+	print(coef_value)
+	
+	En_to_Ch_result_max=[]
+	for i in range(len(coef_field)):
+		En_to_Ch_result_max.append(ana_result[coef_field[i]])
+	print(En_to_Ch_result_max)
+    #得到最终影响因素的偏离程度
+	fianl_offset=[]
+	for n in range(len(En_to_Ch_result_max)):
+		if En_to_Ch_result_max[n] in dicty.keys():
+			fianl_offset.append(dicty[En_to_Ch_result_max[n]])
+	print("前2个影响因素偏离程度")
+	print(fianl_offset)
+	pos_final=map(lambda x:abs(x),fianl_offset)
+	posNum_final=["%.2f%%"%(n*100) for n in list(pos_final)]
+	print("格式化")
+	print(posNum_final)
+	#定性判断
+	offset_result_nature_two=qualitative_offset(fianl_offset)
+	print("定性判断")
+	print(offset_result_nature_two)
+
+
+	contentVO['En_to_Ch_result_max']=En_to_Ch_result_max
+	contentVO['posNum_final']=posNum_final
+	contentVO['offset_result_nature_two']=offset_result_nature_two
+
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
 def by_score(t):
     return t[1]	
@@ -871,3 +915,29 @@ def simple_offset(offset_result_final):
 		else:
 			offset_result_nature.append('偏低')	
 	return  offset_result_nature	
+#对偏离程度进行定性判断：高，偏高，正常范围，偏低，低，极端异常
+def qualitative_offset(offset_result):
+	#偏离程度定性标准，例如-10%~10%为正常，10%~30%为偏高，30%以上为数据异常/极端数据
+	qualitative_standard=[0.1,0.3,0.4]
+	qualitative_offset_result=[]
+	for i in range(len(offset_result)):
+		if abs(float(offset_result[i]))<=qualitative_standard[0]:
+			qualitative_offset_result.append('正常范围')
+		elif abs(float(offset_result[i]))<=qualitative_standard[1]:
+			if float(offset_result[i])>0:#偏高
+				qualitative_offset_result.append('偏高')
+			else:#偏低
+				qualitative_offset_result.append('偏低')
+		# elif  abs(float(offset_result[i]))<=qualitative_standard[2]:
+		# 	if float(offset_result[i])>0:#高
+		# 		qualitative_offset_result.append('高')
+		# 	else:#低
+		# 		qualitative_offset_result.append('低')
+		# else:#极端情况
+		# 	qualitative_offset_result.append('极端异常')
+		else:#取消数据异常情况
+			if float(offset_result[i])>0:#高
+				qualitative_offset_result.append('高')
+			else:
+				qualitative_offset_result.append('低')		
+	return  qualitative_offset_result

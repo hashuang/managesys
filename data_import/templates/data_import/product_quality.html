@@ -44,7 +44,7 @@
 <div id='cause_area' style="float:left;width:400px;height:300px">
    <!--table用来放置因素追溯的分析结果-->
     <p><strong>异常字段追溯结果：</strong></p>
-    <textarea id="cause_txt" style="float:left;width: 400px;height:150px;"></textarea>
+    <textarea id="cause_txt" style="float:left;width: 500px;height:150px;"></textarea>
 </div>
 
 
@@ -162,9 +162,9 @@
                 alert("所选炉次号不在所选筛选条件中！");
             },
             success: function(data) {
-
+                console.log(data.result)
                 if (data.state=='error'){
-                        // alert('当前筛选条件无可分析数据！')
+                        
                         $("#main1").empty();
                         $("#main1").append("\n\n\n\n注：当前"+heat_no+"炉次不存在！");
                         $("#main2").empty();
@@ -178,8 +178,12 @@
                     drawBarChart_cost(data.result);
                     if (data.normal=='true'){
                         $("#main3").empty();
-                        $("#cause_area").hide();
-                    }else{retrospectfactor_all(data.result.str_select);}
+                        $("#cause_txt").empty();
+                        $("#cause_txt").append('无');
+                        $("#cause_area").show();
+                    }else{
+
+                        retrospectfactor_all(data.result);}
                     }
                     
                }
@@ -193,9 +197,11 @@
      //回归系数因素追溯及其偏离程度
     function retrospectfactor_all(result){
         var prime_analyse = $("#prime_analyse").val();
-        var  str_select = result;
+        var  str_select = result.str_select;
+        //var json_result = JSON.stringify(result);
         //alert(prime_analyse)
-
+        //alert(json_result)
+        //alert(str_select)
         var txt = echarts.init(document.getElementById('main3'));
         $("#cause_txt").empty();//清除文本框内容
         txt.showLoading({
@@ -209,7 +215,7 @@
                 alert("错误！！");
             },
             success: function(data) {
-                console.log(data)
+                //alert(data)
                 $("#main3").empty()
                 
                 $("#cause_txt").append(data.str_all);

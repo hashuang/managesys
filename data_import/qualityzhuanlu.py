@@ -157,8 +157,25 @@ def cost(request):
 	yaxis=[frame.C[0],frame.SI[0],frame.MN[0],frame.P[0],frame.S[0],frame.STEELWGT[0],frame.FINAL_TEMP_VALUE[0]]
 	print('xasis_fieldname',xasis_fieldname)#分析字段英文名
 	print('yaxis',yaxis)#分析字段实际值
-	offset_result=offset(xasis_fieldname,yaxis,str_select)#计算偏离程度函数的返回值
+	#offset_result=offset(xasis_fieldname,yaxis,str_select)#计算偏离程度函数的返回值
 	#offset_result=offset(xasis_fieldname,yaxis)#计算偏离程度函数的返回值
+
+	
+	offset_result=[]
+	offset_result_single_a=offset(xasis_fieldname,yaxis,str_select)
+	#介于五数概括法后的极值与规定的范围之间的数即偏离程度超过50%的按50%处理	
+	for n in range(len(offset_result_single_a)):
+		if abs(float(offset_result_single_a[n]))>0.5:
+			if float(offset_result_single_a[n])<0:
+				offset_result.append('-0.5')
+			else:	
+				offset_result.append('0.5')
+		else:
+			offset_result.append(offset_result_single_a[n])
+
+
+
+
 
 	qualitative_offset_result=qualitative_offset(offset_result)#对偏离程度进行定性判断
 	offset_resultlist=["%.2f%%"%(n*100) for n in list(offset_result)]
@@ -182,7 +199,9 @@ def cost(request):
 	ana_result['yvalue']=yaxis#该炉次字段的实际值
 	ana_result['str_select']=str_select#筛选条件
 	ana_result['attribute']='含量'
-	ana_result['offset_result']=offset_resultlist#各字段的偏离程度值
+	
+	ana_result['offset_result']=offset_result#各字段的偏离程度值
+	ana_result['offset_resultlist']=offset_resultlist#各字段的偏离程度值格式化
 	ana_result['qualitative_offset_result']=qualitative_offset_result#各字段的偏离程度定性判断结果
 	contentVO['result']=ana_result
 	return HttpResponse(json.dumps(contentVO),content_type='application/json')
@@ -1111,7 +1130,8 @@ from . import batchprocess
 '''
 def retrospectfactor_all(request):
 	prime_cost=request.POST.get("prime_cost");
-	str_select=str(request.POST.get("str_select"));	
+	str_select=str(request.POST.get("str_select"));
+	#result = json.loads(request.POST.get("result"));	
 	print(prime_cost)
 	str_all=retrospectfactor_all_to(prime_cost,str_select)
 		
@@ -1124,12 +1144,23 @@ def retrospectfactor_all(request):
 def retrospectfactor_all_to(prime_cost,str_select):
 	#取某一炉次的质量分析字段C、SI、MN、P、S、钢水重量、温度的实际值
 	
+
+	# xaxis=result['xname']#字段中文名字
+	# xasis_fieldname_single=result['xEnglishname']#字段英文名字
+	# yaxis_single=result['yvalue']#该炉次字段的实际值
+	
+	# offset_result_single=result['offset_result']#各字段的偏离程度值
+	# offset_value_single=result['offset_resultlist']#各字段的偏离程度值格式化
+	# qualitative_offset_result=result['qualitative_offset_result']#各字段的偏离程度定性判断结果
+	
+
+
+
 	str_all=" "
 	sqlVO={}
 	sqlVO["db_name"]="l2own"
 	sqlVO["sql"]="SELECT HEAT_NO,nvl(C,0) as C,nvl(SI,0) as SI ,nvl(MN,0) as MN,nvl(P,0) as P ,nvl(S,0) as S, nvl(FE,0) as FE, nvl(STEELWGT,0) as STEELWGT,nvl(FINAL_TEMP_VALUE,0)as FINAL_TEMP_VALUE FROM qg_user.PRO_BOF_HIS_ALLFIELDS where heat_no='"+prime_cost+"'";
 	
-	# sqlVO["sql"] = "SELECT " + ",".join(xasis_fieldname_single) + " from QG_USER.PRO_BOF_HIS_ALLFIELDS where heat_no= '"+prime_cost+"'"
 
 	scrapy_records_single=models.BaseManage().direct_select_query_sqlVO(sqlVO)
 	xasis_fieldname_single=['C','SI','MN','P','S','STEELWGT','FINAL_TEMP_VALUE']
@@ -1175,8 +1206,8 @@ def retrospectfactor_all_to(prime_cost,str_select):
 	qualitative_offset_result=qualitative_offset(offset_result_single)
 	print('单炉次质量分析字段偏离度定向分析')
 	print(qualitative_offset_result)
-	#写入word
-
+	
+	#写入网页str
 	
 	for i in range(len(xasis_fieldname_single)):
 		xaxis_chinese=xaxis[i];
@@ -1197,7 +1228,7 @@ def retrospectfactor_all_to(prime_cost,str_select):
 		 	continue;		
 		else:
 			str_des=xaxis_chinese+qualitative_offset_result_single+',偏离度为'+offset_value+'原因是:'      
-			str_all=str_all+str_des+'\n'	
+			str_all=str_all+str_des+''	
 			for i in range(len(En_to_Ch_result_score)):
 				if i<len(En_to_Ch_result_score)-1:
 					if float(offset_value_single_cof[i][0:-1])>50:
